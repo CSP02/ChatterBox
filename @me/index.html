@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"
+        integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/gh/CSP02/Toggler/Toggler.min.js"></script>
+
+    <title>me</title>
+</head>
+
+<body>
+    <div id="loading">
+        <div id="chatter_loading">
+            <div id="circle_1"></div>
+            <div id="circle_2"></div>
+            <div id="circle_3"></div>
+        </div>
+    </div>
+    <nav id="user_details">
+        <button id="open_users_list" class="inactive"><i class="fa-solid fa-users"></i></button>
+
+        <div style="display: flex; align-items: center">
+            <button id="profile_pfp" class="pfp">
+            </button>
+            <button id="logout">logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+    </nav>
+    <div id="app_wrapper">
+        <div id="app_main_container">
+            <div id="messages"></div>
+            <div id="user_message">
+                <button id="new_message_popup">new messages!</button>
+                <!-- <div id="action_indicator"></div> -->
+                <div
+                    style="display: flex; justify-items: center;flex-direction: column;align-items: center;justify-content: space-evenly;">
+                    <div id="sendMessHolder">
+                        <div type="text" id="message_box" contenteditable></div>
+                        <button id="send_message" disabled>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="users_list">
+        </div>
+    </div>
+
+    <div id="profile_page" style="display: none;">
+        <div id="reload" style="display: none;">
+            <div>
+                <p>Your details are updated successfully!</p>
+                <p>To start chatting you have to login again.</p>
+                <a href="/">Login again</a>
+            </div>
+        </div>
+        <img src="" alt="pfp" id="avatar">
+        <div class="profile_attributes">
+            <label for="profile_avatar_url">Avatar URL:</label>
+            <input type="url" id="profile_avatar_url" name="profile_avatar_url" />
+        </div>
+        <div class="profile_attributes">
+            <label for="profile_username">Username:</label>
+            <input type="text" id="profile_username" name="profile_username" />
+        </div>
+        <div class="profile_attributes">
+            <label for="profile_color">Prefered color:</label>
+            <input type="color" id="profile_color" name="profile_color" />
+        </div>
+        <div class="profile_attributes" style="display: flex;">
+            <button id="update_profile">Update</button>
+            <button id="close_update_profile">Close</button>
+        </div>
+    </div>
+    <script src="script.js" type="module"></script>
+</body>
+
+</html>

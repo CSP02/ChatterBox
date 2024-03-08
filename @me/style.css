@@ -1,0 +1,586 @@
+* {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: rgb(24, 24, 24);
+    color: white;
+    font-family: Roboto;
+    font-weight: 300;
+}
+
+a {
+    text-decoration: none;
+    color: #6b9cff;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+nav {
+    z-index: 2;
+}
+
+.embed {
+    max-width: 30dvw;
+    background-color: rgb(19, 19, 19);
+    padding: .5rem;
+    margin: .2rem;
+    display: grid;
+    border-radius: .3rem;
+    border: 2px solid rgb(71, 71, 71);
+    justify-items: start;
+    justify-content: space-around;
+}
+
+.embed_title {
+    max-width: 30dvw;
+    text-wrap: wrap;
+    font-weight: bold;
+    font-size: 14pt;
+    padding: .2rem;
+}
+
+.embed_description {
+    max-width: 30dvw;
+    text-wrap: wrap;
+    padding: .2rem;
+    max-width: 100%;
+    font-size: 12pt;
+}
+
+.embed_image {
+    padding: .2rem;
+    max-width: 30dvw;
+    border-radius: .5rem;
+}
+
+.component_image {
+    padding: .2rem;
+    max-height: 80dvh;
+    border-radius: .5rem;
+}
+
+#app_wrapper {
+    display: flex;
+    position: fixed;
+    width: 100%;
+}
+
+#app_main_container {
+    display: grid;
+    align-content: space-between;
+    height: 100dvh;
+    width: 80dvw;
+    align-items: end;
+}
+
+#loading {
+    height: var(--max_device_height);
+    width: var(--max_device_width);
+    background-color: var(--background_color);
+    position: fixed;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+}
+
+#chatter_loading {
+    display: flex;
+    height: 60px;
+    align-items: center;
+    margin: var(--default_margin);
+    padding: var(--default_padding);
+}
+
+#circle_1,
+#circle_2,
+#circle_3 {
+    height: 30px;
+    width: 30px;
+    background-color: rgb(255, 84, 84);
+    border-radius: 50%;
+    margin: var(--default_margin);
+    animation: loading alternate-reverse .4s infinite;
+}
+
+#circle_2 {
+    background-color: rgb(112, 255, 84);
+    animation-delay: .2s;
+}
+
+#circle_3 {
+    background-color: rgb(84, 95, 255);
+    animation-delay: .4s;
+}
+
+/** 
+* ? Loading animation
+*/
+@keyframes loading {
+    0% {
+        margin-top: .3rem;
+        height: 25px;
+    }
+
+    100% {
+        margin-top: -10%;
+    }
+}
+
+#user_details {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: .2rem;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(24px);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#color {
+    background-color: transparent;
+    border: none;
+    padding: .2rem;
+}
+
+#color:hover {
+    cursor: pointer;
+}
+
+#profile_pfp {
+    border: none;
+    background-color: transparent;
+}
+
+#profile_pfp img {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+}
+
+#profile_color {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+}
+
+#profile_color::-webkit-color-swatch {
+    border-radius: .5rem;
+    border: none;
+}
+
+.message_holder {
+    padding: .5rem;
+    display: flex;
+    border-radius: .2rem;
+}
+
+img.message_db,
+a.message_db img {
+    max-height: 200px;
+    padding: .3rem;
+    width: auto;
+    border-radius: .3rem;
+}
+
+.message_holder * {
+    white-space: break-spaces;
+}
+
+#profile_page {
+    position: fixed;
+    margin-top: calc(24pt + 2.5rem);
+    height: 100dvh;
+    width: 100dvw;
+    background-color: #242424;
+    overflow: scroll;
+    justify-items: start;
+    justify-content: center;
+    align-content: center;
+    overflow-x: hidden;
+}
+
+#avatar {
+    height: 150px;
+    width: 150px;
+    margin: .7rem;
+    padding: .7rem;
+    border-radius: 50%;
+}
+
+.profile_attributes {
+    margin: 0.5rem 0.7rem;
+    padding: 0.3rem;
+    display: grid;
+    justify-items: start;
+    align-content: space-around;
+}
+
+#update_profile,
+#close_update_profile {
+    margin: 0.7rem;
+    padding: 0.5rem;
+    color: rgb(26, 26, 26);
+    font-size: 14pt;
+    background-color: #4aff4a;
+    border: none;
+    border-radius: 0.5rem;
+}
+
+#close_update_profile {
+    background-color: rgb(255, 100, 100);
+}
+
+.profile_attributes * {
+    padding: .3rem;
+}
+
+.profile_attributes input {
+    background-color: #171717;
+    color: white;
+    border-radius: .5rem;
+    font-size: 16pt;
+    outline: none;
+    border: none;
+}
+
+.pfp {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    font-size: 34pt;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+    margin: .3rem;
+    padding: .3rem;
+    border-radius: 50%;
+}
+
+#users_list {
+    height: calc(100dvh - (24pt + 2rem));
+    width: 20dvw;
+    padding-top: calc(24pt + 2rem);
+    position: absolute;
+    background: #141414;
+    right: 0;
+}
+
+#users_list img {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+#users_list div {
+    display: flex;
+    align-items: center;
+    font-size: 18pt;
+    overflow: auto;
+}
+
+#users_list h4 {
+    margin: .3rem;
+    padding: .3rem;
+}
+
+.chat_username {
+    font-size: 18pt;
+    font-weight: 400;
+    margin: .1rem;
+}
+
+.message_db {
+    min-width: 14pt;
+    max-width: 70dvw;
+    font-size: 14pt;
+    margin: .1rem;
+    width: auto;
+    text-wrap: wrap;
+    overflow-wrap: anywhere;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.message_db b {
+    padding: 0.2rem;
+    background-color: #005266;
+    border-radius: 0.3rem;
+    text-align: center;
+}
+
+#user_message {
+    padding: 0.5rem;
+    margin: 0.2rem 0 0 0;
+    font-size: 11pt;
+    background-color: #171717;
+
+}
+
+#message_box {
+    border: 1px solid transparent;
+    border-radius: 0.3rem;
+    margin: 0.3rem;
+    font-size: 14pt;
+    background-color: transparent;
+    color: #d9d9d9;
+    outline: none;
+    overflow: scroll;
+    overflow-x: hidden;
+    max-height: inherit;
+    scrollbar-color: transparent transparent;
+    width: calc(75dvw - 1.3rem - 50px - 1rem);
+}
+
+#sendMessHolder:focus {
+    border: 1px solid #919191;
+    /* box-shadow: 0 0 10px #86fe86; */
+}
+
+#send_message,
+#logout {
+    padding: .5rem;
+    font-size: 16pt;
+    border: none;
+    border-radius: .3rem;
+    color: #ebebeb;
+    background-color: transparent;
+    /*background-color: rgb(91, 255, 91);*/
+}
+
+#send_message {
+    font-size: 24pt;
+}
+
+#new_message_popup {
+    background-color: burlywood;
+    font-size: 14pt;
+    border-radius: .3rem;
+    border: none;
+    width: 100%;
+    display: none;
+}
+
+#empty_messages {
+    font-size: 24pt;
+    display: grid;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+
+#sendMessHolder {
+    margin: 0.3rem;
+    background-color: #242424;
+    width: 100%;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid transparent;
+    border-radius: 0.3rem;
+    max-height: 20dvh;
+    /* text-wrap: wrap; */
+    /* overflow-wrap: anywhere;*/
+}
+
+#messages {
+    overflow: scroll;
+    text-wrap: nowrap;
+    padding: 0.1rem;
+    margin: 0.5rem;
+    margin-top: calc(100dvh - 50px - 1.8rem);
+    overflow-x: hidden;
+    max-height: calc(100dvh - 20dvh - 0.7rem);
+}
+
+#logout {
+    background-color: rgb(34, 34, 34);
+    color: rgb(255, 140, 140);
+    padding: .5rem;
+    margin: .1rem;
+    font-size: 14pt;
+}
+
+#logout:hover {
+    opacity: .7;
+}
+
+button:disabled {
+    opacity: .1;
+}
+
+input:disabled:hover,
+button:disabled:hover {
+    cursor: not-allowed;
+}
+
+input[type="color"] {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    outline: none;
+    border: 1px solid white;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+#messages::-webkit-scrollbar,
+#profile_page::-webkit-scrollbar {
+    background-color: transparent;
+    width: 0.3rem;
+}
+
+#messages::-webkit-scrollbar-thumb,
+#profile_page::-webkit-scrollbar {
+    background-color: rgb(230, 230, 230);
+    width: .1rem;
+    border-radius: 6px 6px 6px 6px;
+}
+
+#messages::-webkit-scrollbar-button,
+#profile_page::-webkit-scrollbar {
+    display: none;
+}
+
+#open_users_list {
+    display: none;
+}
+
+.timestamp {
+    font-size: 10pt;
+    opacity: .7;
+    color: white;
+}
+
+#reload {
+    position: fixed;
+    height: 100dvh;
+    width: 100dvw;
+    background-color: rgba(0, 0, 0, .8);
+    backdrop-filter: blur(24px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#reload div {
+    display: grid;
+}
+
+#reload div * {
+    margin: .2rem;
+}
+
+#reload div a {
+    background-color: rgb(255, 100, 100);
+    padding: .3rem;
+    color: white;
+    text-align: center;
+    border-radius: .3rem;
+}
+
+@media screen and (max-width: 600px) {
+    .pfp {
+        width: 25px;
+        height: 25px;
+        min-width: 25px;
+        min-height: 25px;
+        font-size: 18pt;
+    }
+
+    img.message_db,
+    a.message_db img {
+        max-height: 150px;
+        width: auto;
+        max-width: 70dvw
+    }
+
+    #app_main_container {
+        width: 100dvw;
+    }
+
+    #users_list {
+        position: absolute;
+        margin-right: -100%;
+        width: 70dvw;
+    }
+
+    #users_list img {
+        width: 25px;
+        height: 25px;
+    }
+
+    #open_users_list {
+        display: block;
+        font-size: 12pt;
+        padding: .3rem;
+        border: none;
+        background-color: transparent;
+    }
+
+    button.inactive {
+        color: rgb(121, 121, 121);
+    }
+
+    button.active {
+        color: white;
+    }
+
+    .timestamp {
+        font-size: 8pt;
+        opacity: .7;
+        color: white;
+    }
+
+    #profile_pfp img {
+        height: 25px;
+        width: 25px;
+    }
+
+    #profile_page {
+        margin: 0;
+        height: 100dvh;
+        align-content: center;
+    }
+
+    .profile_attributes {
+        margin: 0;
+        padding: 0;
+    }
+
+    .chat_username,
+    #users_list div p {
+        max-width: calc(40dvw - 1rem - 25px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .embed,
+    .embed_title,
+    .embed .embed_image {
+        max-width: 70dvw;
+    }
+
+    #users_list div {
+        padding: .5rem;
+    }
+
+    #messages {
+        margin-top: calc(100dvh - 50px - 10rem);
+        max-height: calc(100dvh - 20dvh - 1rem);
+    }
+}
