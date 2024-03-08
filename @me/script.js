@@ -110,6 +110,7 @@ messageBox.addEventListener("input", (event) => {
     if (event.inputType === "insertParagraph" || (event.inputType === "insertText" && event.data === null)) {
         event.preventDefault();
         sendMessage.click();
+        sendMessage.disabled = true
     }
 });
 

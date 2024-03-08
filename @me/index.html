@@ -27,36 +27,42 @@
             <div id="circle_3"></div>
         </div>
     </div>
-    <nav id="user_details">
-        <button id="open_users_list" class="inactive"><i class="fa-solid fa-users"></i></button>
+    <div style="position: fixed;">
+        <nav id="user_details">
+            <button id="open_users_list" class="inactive"><i class="fa-solid fa-users"></i></button>
 
-        <div style="display: flex; align-items: center">
-            <button id="profile_pfp" class="pfp">
-            </button>
-            <button id="logout">logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
-        </div>
-    </nav>
-    <div id="app_wrapper">
-        <div id="app_main_container">
-            <div id="messages"></div>
-            <div id="user_message">
-                <button id="new_message_popup">new messages!</button>
-                <!-- <div id="action_indicator"></div> -->
-                <div
-                    style="display: flex; justify-items: center;flex-direction: column;align-items: center;justify-content: space-evenly;">
-                    <div id="sendMessHolder">
-                        <div type="text" id="message_box" contenteditable></div>
-                        <button id="send_message" disabled>
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
+            <div style="display: flex; align-items: center">
+                <button id="profile_pfp" class="pfp">
+                </button>
+                <button id="logout">logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+            </div>
+        </nav>
+        <div id="app_wrapper">
+            <div id="app_main_container">
+                <div id="messages"></div>
+                <div id="user_message">
+                    <button id="new_message_popup">new messages!</button>
+                    <!-- <div id="action_indicator"></div> -->
+                    <div
+                        style="display: flex; justify-items: center;flex-direction: column;align-items: center;justify-content: space-evenly;">
+                        <div id="sendMessHolder">
+                            <div type="text" id="message_box" contenteditable></div>
+                            <button id="send_message" disabled>
+                                <svg width="40px" height="40px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none">
+                                    <path fill="#ffffff" fill-rule="evenodd"
+                                        d="M2.345 2.245a1 1 0 0 1 1.102-.14l18 9a1 1 0 0 1 0 1.79l-18 9a1 1 0 0 1-1.396-1.211L4.613 13H10a1 1 0 1 0 0-2H4.613L2.05 3.316a1 1 0 0 1 .294-1.071z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="users_list">
+            <div id="users_list">
+            </div>
         </div>
     </div>
-
     <div id="profile_page" style="display: none;">
         <div id="reload" style="display: none;">
             <div>
@@ -65,18 +71,22 @@
                 <a href="/">Login again</a>
             </div>
         </div>
-        <img src="" alt="pfp" id="avatar">
-        <div class="profile_attributes">
-            <label for="profile_avatar_url">Avatar URL:</label>
-            <input type="url" id="profile_avatar_url" name="profile_avatar_url" />
+        <div id="avatar_wrapper">
+            <div class="profile_attributes">
+                <label for="profile_avatar_url">Avatar URL:</label>
+                <input type="url" id="profile_avatar_url" name="profile_avatar_url" />
+            </div>
+            <img src="" alt="pfp" id="avatar">
         </div>
-        <div class="profile_attributes">
-            <label for="profile_username">Username:</label>
-            <input type="text" id="profile_username" name="profile_username" />
-        </div>
-        <div class="profile_attributes">
-            <label for="profile_color">Prefered color:</label>
-            <input type="color" id="profile_color" name="profile_color" />
+        <div id="profile_attr_wrapper">
+            <div class="profile_attributes">
+                <label for="profile_username">Username:</label>
+                <input type="text" id="profile_username" name="profile_username" />
+            </div>
+            <div class="profile_attributes">
+                <label for="profile_color">Prefered color:</label>
+                <input type="color" id="profile_color" name="profile_color" />
+            </div>
         </div>
         <div class="profile_attributes" style="display: flex;">
             <button id="update_profile">Update</button>

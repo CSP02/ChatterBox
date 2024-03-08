@@ -49,6 +49,7 @@ export function HandleSocketEvents() {
 
             pfp.classList.add("pfp")
             userDetailsWrapper.append(...[pfp, username])
+            userDetailsWrapper.classList.add("online_users")
             allUsersWrapper.appendChild(userDetailsWrapper)
         })
         usersList.innerHTML = ""

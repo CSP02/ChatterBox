@@ -266,7 +266,7 @@ async function ResolveContent(content, contentHolder, message) {
                 const image = new Image
                 image.src = component.imageURL
 
-                image.classList.add("embed_image")
+                image.classList.add("component_image")
                 components.push(image)
             }
         })
@@ -335,65 +335,3 @@ export function UpdateUserdetails(user) {
     profilePageColor.value = updatedColor;
     profilePageAvatarURL.value = updatedPfp;
 }
-
-// function AddLink(){
-//     const link = document.createElement("a");
-//     const text = document.createTextNode(data + " ");
-//     fetch(data, { mode: "cors" }).then(async response => {
-//         if (response.ok) return await response.blob()
-//     }).then(response => {
-//         if (response.type.includes("image")) {
-//             const image = new Image()
-//             image.src = data
-//             images.push(image)
-//             contentHolder.parentElement.append(...images)
-//         } else {
-//             fetch(data, { mode: "cors" }).then(async response => {
-//                 if (response.ok) return await response.text()
-//             }).then(response => {
-//                 const parser = new DOMParser()
-//                 const resHtml = parser.parseFromString(response, "text/html")
-//                 const metaTags = resHtml.head.getElementsByTagName("meta");
-
-//                 const embedProperties = [...metaTags].filter(metaTag => {
-//                     const property = metaTag.getAttribute("property")
-//                     if (property === "og:title" || property === "og:description" || property === "og:image") return metaTag
-//                 });
-
-//                 const embed = document.createElement("div")
-//                 embed.classList.add("embed")
-
-//                 if (embedProperties.length > 0) {
-//                     const titleProperty = embedProperties.filter(pro => pro.getAttribute("property") === "og:title")[0]
-//                     const desProperty = embedProperties.filter(pro => pro.getAttribute("property") === "og:description")[0]
-//                     const imageProperty = embedProperties.filter(pro => pro.getAttribute("property") === "og:image")[0]
-
-//                     if (titleProperty) {
-//                         const title = document.createElement("a")
-//                         title.href = titleProperty.content
-//                         title.innerText = titleProperty.content
-//                         title.classList.add(`embed_${titleProperty.getAttribute("property")}`.replaceAll("og:", ""))
-//                         embed.appendChild(title)
-//                     }
-
-//                     if (desProperty) {
-//                         const text = document.createElement("p")
-//                         text.innerText = desProperty.content
-//                         text.style = ""
-//                         text.classList.add(`embed_${desProperty.getAttribute("property")}`.replaceAll("og:", ""))
-//                         embed.appendChild(text)
-//                     }
-
-//                     if (imageProperty) {
-//                         const image = new Image
-//                         image.src = imageProperty.content
-//                         image.style = ""
-//                         image.classList.add(`embed_${imageProperty.getAttribute("property")}`.replaceAll("og:", ""))
-//                         embed.appendChild(image)
-//                     }
-//                 }
-//                 contentHolder.parentElement.append(embed)
-//             })
-//         }
-//     })
-// }
