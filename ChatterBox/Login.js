@@ -4,7 +4,7 @@ let loggedUser = null
 
 export async function LoginUser(user) {
     await fetch(
-        "https://chatter-box-api-jade.vercel.app/api/login",
+        "https://chatter-box-api-chi.vercel.app/api/login",
         {
             method: "POST",
             mode: "cors",

@@ -124,7 +124,7 @@ export async function GetAllMessages() {
 
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        "https://chatter-box-api-jade.vercel.app/api/get_messages",
+        "https://chatter-box-api-chi.vercel.app/api/get_messages",
         {
             mode: "cors",
             headers: headers
@@ -135,7 +135,7 @@ export async function GetAllMessages() {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("https://chatter-box-api-jade.vercel.app/api/request_new_token", {
+                fetch("https://chatter-box-api-chi.vercel.app/api/request_new_token", {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -170,7 +170,7 @@ export async function SendMessage(message) {
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        "https://chatter-box-api-jade.vercel.app/api/send_message",
+        "https://chatter-box-api-chi.vercel.app/api/send_message",
         {
             method: "POST",
             mode: "cors",
@@ -185,7 +185,7 @@ export async function SendMessage(message) {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("https://chatter-box-api-jade.vercel.app/api/request_new_token", {
+                fetch("https://chatter-box-api-chi.vercel.app/api/request_new_token", {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -217,7 +217,7 @@ export async function UpdateUser() {
     };
 
     fetch(
-        "https://chatter-box-api-jade.vercel.app/api/profile",
+        "https://chatter-box-api-chi.vercel.app/api/profile",
         {
             method: "PUT",
             mode: "cors",
@@ -232,7 +232,7 @@ export async function UpdateUser() {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("https://chatter-box-api-jade.vercel.app/api/request_new_token", {
+                fetch("https://chatter-box-api-chi.vercel.app/api/request_new_token", {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
