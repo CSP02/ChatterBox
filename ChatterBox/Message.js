@@ -4,17 +4,23 @@ const socket = io();
 const messagesHolder = document.getElementById("messages");
 let loggedUser = null;
 let token = null;
+let refreshToken = null
 const types = new ComponentTypes()
 
 export function SetDefaults(defaults) {
     token = defaults.token
     loggedUser = JSON.parse(defaults.user)
+    refreshToken = defaults.refreshToken
 }
 
 export function SendSocketEvent(event, data) {
     socket.emit(event, data);
 }
 
+const previousMessage = {
+    username: "",
+    timestamp: ""
+}
 function AddToMessages(message) {
     const messageHolder = document.createElement("div");
     const usernameHolder = document.createElement("p");
@@ -85,15 +91,34 @@ function AddToMessages(message) {
 
     contentHolder.classList.add("message_db");
     ResolveContent(content, contentHolder, message);
-
-    messAndUserholder.append(...[usernameHolder, contentHolder]);
     messageHolder.classList.add("message_holder");
-    messageHolder.append(...[pfp, messAndUserholder]);
+
+    if (previousMessage.username !== "" && previousMessage.timestamp !== "") {
+        if (previousMessage.username === username && new Date(message.timestamp) - new Date(previousMessage.timestamp) <= 60000 && messagesHolder.children.length > 0) {
+            const prevMessHolder = messagesHolder.lastChild.lastChild
+
+            prevMessHolder.appendChild(contentHolder)
+            previousMessage.username = username;
+            previousMessage.timestamp = new Date(message.timestamp)
+            return
+        } else {
+            messAndUserholder.append(...[usernameHolder, contentHolder]);
+            messageHolder.append(...[pfp, messAndUserholder]);
+        }
+    } else {
+        messAndUserholder.append(...[usernameHolder, contentHolder]);
+        messageHolder.append(...[pfp, messAndUserholder]);
+    }
+    previousMessage.username = username;
+    previousMessage.timestamp = new Date(message.timestamp)
+
 
     messagesHolder.appendChild(messageHolder);
 }
 
-export async function GetAllMessages(token) {
+export async function GetAllMessages() {
+    previousMessage.username = ""
+    previousMessage.timestamp = ""
     const messagesDiv = document.getElementById("messages");
     const headers = new Headers()
 
@@ -106,22 +131,41 @@ export async function GetAllMessages(token) {
         },
     )
         .then((response) => {
+            if (response.status === 401) {
+                const headers = new Headers()
+
+                headers.append("Authorization", `Bearer ${refreshToken}`)
+                fetch("http://localhost:3001/api/request_new_token", {
+                    mode: "cors",
+                    headers: headers
+                }).then(async response => {
+                    if (response.ok) return await response.json()
+                }).then(response => {
+                    token = response.token
+                    refreshToken = response.refreshToken
+
+                    GetAllMessages()
+                })
+            }
             if (response.ok) return response.json();
         })
         .then(async (response) => {
             const isEmpty = await response.EmptyChat;
             const messages = await response.messages;
 
-            if (await isEmpty) return (messagesDiv.innerText = "No Messages");
+            if (await isEmpty) return messagesDiv.classList.add("empty_messages");
+            messagesDiv.classList.remove("empty_messages")
             messagesDiv.innerHTML = "";
             messages.forEach((message) => {
                 AddToMessages(message);
             });
+            ScrollToBottom(false);
         });
-    ScrollToBottom(false);
 }
 
 export async function SendMessage(message) {
+    previousMessage.username = ""
+    previousMessage.timestamp = ""
     message.reqType = "SEND_MESSAGE";
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
@@ -137,6 +181,22 @@ export async function SendMessage(message) {
         },
     )
         .then((response) => {
+            if (response.status === 401) {
+                const headers = new Headers()
+
+                headers.append("Authorization", `Bearer ${refreshToken}`)
+                fetch("http://localhost:3001/api/request_new_token", {
+                    mode: "cors",
+                    headers: headers
+                }).then(async response => {
+                    if (response.ok) return await response.json()
+                }).then(response => {
+                    token = response.token
+                    refreshToken = response.refreshToken
+
+                    SendMessage(message)
+                })
+            }
             if (response.ok) return response.json();
         })
         .then(async (response) => {
@@ -168,6 +228,22 @@ export async function UpdateUser() {
         },
     )
         .then(async (response) => {
+            if (response.status === 401) {
+                const headers = new Headers()
+
+                headers.append("Authorization", `Bearer ${refreshToken}`)
+                fetch("http://localhost:3001/api/request_new_token", {
+                    mode: "cors",
+                    headers: headers
+                }).then(async response => {
+                    if (response.ok) return await response.json()
+                }).then(response => {
+                    token = response.token
+                    refreshToken = response.refreshToken
+
+                    UpdateUser()
+                })
+            }
             if (response.ok) return await response.json();
         })
         .then((response) => {
@@ -246,7 +322,10 @@ async function ResolveContent(content, contentHolder, message) {
                 if (!component.title && !component.description && !component.image) { }
                 else {
                     title.classList.add("embed_title")
-                    title.innerText = component.title
+                    const titleLink = document.createElement("a")
+                    titleLink.href = component.url
+                    titleLink.innerText = component.title
+                    title.appendChild(titleLink)
 
                     description.classList.add("embed_description")
                     description.innerText = component.description ? component.description : ""
@@ -277,37 +356,25 @@ async function ResolveContent(content, contentHolder, message) {
     }, 100)
 }
 
-export function ScrollToBottom(isInitial) {
-    setTimeout(() => {
-        const messagesDiv = document.getElementById("messages");
-        if (isInitial) {
-            if (messagesDiv.scrollHeight >= messagesDiv.clientHeight)
-                messagesDiv.scrollTop =
-                    messagesDiv.scrollHeight + messagesDiv.clientHeight;
-            document.getElementById("new_message_popup").style.display = "none";
-            return;
-        } else {
-            const scrollPos = Math.abs(
-                messagesDiv.scrollHeight -
-                messagesDiv.clientHeight -
-                messagesDiv.scrollTop,
-            );
-            if (scrollPos <= 0) {
-                messagesDiv.scrollTop =
-                    messagesDiv.scrollHeight + messagesDiv.clientHeight;
-                document.getElementById("new_message_popup").style.display = "none";
-            } else {
-                if (messagesDiv.scrollHeight >= messagesDiv.clientHeight)
-                    document.getElementById("new_message_popup").style.display = "block";
-            }
-        }
-    }, 150);
+export function ScrollToBottom(onload) {
+    const messagesDiv = document.getElementById("messages")
+    const scrollHeight = messagesDiv.scrollHeight
+    const scrollTop = messagesDiv.scrollTop
+    const offsetHeight = messagesDiv.offsetHeight
+    const lastChild = messagesDiv.lastChild
 
+    if (scrollHeight <= scrollTop + offsetHeight + 140) {
+        messagesDiv.scrollTo(0, scrollHeight + lastChild.offsetHeight)
+        document.getElementById("new_message_popup").style.display = "none";
+    } else {
+        if (scrollHeight >= messagesDiv.clientHeight)
+            document.getElementById("new_message_popup").style.display = "block";
+    }
 }
 
 export function LogoutUser() {
     token = null;
-
+    window.location = "http://localhost:3000/"
     location.reload();
 }
 

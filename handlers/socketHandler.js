@@ -53,9 +53,7 @@ export function HandleSocketEvents() {
             allUsersWrapper.appendChild(userDetailsWrapper)
         })
         usersList.innerHTML = ""
-        const heading = document.createElement("h4")
-        heading.innerText = "Users:"
         allUsersWrapper.style.display = "grid"
-        usersList.append(...[heading, allUsersWrapper])
+        usersList.append(...[allUsersWrapper])
     })
 }

@@ -1,4 +1,5 @@
 let token = null
+let refreshToken = null
 let loggedUser = null
 
 export async function LoginUser(user) {
@@ -18,8 +19,10 @@ export async function LoginUser(user) {
         .then(async (response) => {
             if ((await response.CorrectCredentials) && response.token) {
                 token = response.token;
+                refreshToken = response.refreshToken
                 loggedUser = response.user.username;
                 window.sessionStorage.setItem("token", token)
+                window.sessionStorage.setItem("refresh token", refreshToken)
                 window.sessionStorage.setItem("user", JSON.stringify(response.user))
                 // socket.emit("LOGIN", response);
                 window.location = "http://localhost:3000/@me"

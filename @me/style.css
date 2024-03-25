@@ -21,6 +21,7 @@
     margin: 0;
     padding: 0;
     scroll-behavior: smooth;
+    line-height: 1.5;
 }
 
 body {
@@ -125,6 +126,14 @@ button:hover {
     opacity: .7;
 }
 
+button:disabled:hover {
+    opacity: .1;
+}
+
+button#new_message_popup:hover {
+    opacity: 1;
+}
+
 #user_details {
     height: auto;
     padding: var(--default_padding);
@@ -151,7 +160,7 @@ button:hover {
 
 #app_wrapper {
     display: flex;
-    height: calc(100dvh - 70px);
+    height: calc(100dvh - 60px);
     width: 100dvw;
     overflow: hidden;
 }
@@ -174,6 +183,39 @@ button:hover {
     text-wrap: wrap;
 }
 
+.message_db {
+    width: calc(80dvw - 1.4rem - 50px - 1rem);
+    border-radius: .3rem;
+    padding: .1rem;
+    text-wrap: wrap;
+    overflow: hidden;
+}
+
+.message_db:hover {
+    background-color: #161616;
+}
+
+.consecutive {
+    padding: 0px;
+    margin-left: 50px;
+}
+
+#messages.empty_messages {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    color: rgb(124, 124, 124);
+}
+
+.empty_messages::before {
+    content: "It's empty here!";
+    font-size: 24pt;
+}
+
+.empty_messages+#user_message #new_message_popup {
+    display: none;
+}
+
 .message_holder div {
     padding: var(--default_padding) var(--extended_padding);
 }
@@ -185,8 +227,9 @@ button:hover {
 }
 
 .timestamp {
-    font-size: 8pt;
+    font-size: 7pt;
     opacity: .7;
+    font-weight: normal;
     padding: 0 .2rem;
 }
 
@@ -198,7 +241,7 @@ button:hover {
 }
 
 .embed {
-    width: 40dvw;
+    width: 30dvw;
     background-color: rgb(32, 32, 32);
     border: 1px solid rgb(105, 105, 105);
     border-radius: .3rem;
@@ -213,7 +256,7 @@ button:hover {
 }
 
 .embed_image {
-    max-width: 40dvw;
+    max-width: 30dvw;
     border-radius: .3rem;
 }
 
@@ -229,8 +272,9 @@ button:hover {
 }
 
 #user_message {
-    height: 10dvh;
     background-color: rgb(14, 14, 14);
+    position: absolute;
+    bottom: 0;
 }
 
 #send_message {
@@ -250,6 +294,9 @@ button:hover {
     margin: var(--extended_margin);
     padding: var(--extended_padding);
     height: calc(16pt + 0.2rem);
+    max-height: 10dvh;
+    height: auto;
+    overflow: scroll;
     background-color: #272727;
     border-radius: .5rem;
     outline: none;
@@ -258,7 +305,7 @@ button:hover {
 #new_message_popup {
     position: fixed;
     margin: var(--extended_margin);
-    margin-top: -1.5rem;
+    margin-top: -2.5rem;
     width: 78dvw;
     background-color: rgba(74, 74, 177, 0.521);
     backdrop-filter: blur(18px);
@@ -268,7 +315,7 @@ button:hover {
 }
 
 #users_list {
-    background-color: black;
+    background-color: rgb(14, 14, 14);
     width: 20dvw;
     height: 100dvh;
 }
@@ -279,11 +326,13 @@ button:hover {
 
 .online_users {
     display: flex;
+    background-color: #363636;
     border-radius: .3rem;
     padding: var(--extended_padding);
     margin: var(--default_margin);
     align-items: center;
     font-size: 16pt;
+    box-shadow: black 0 0 7px;
 }
 
 .online_users p {
@@ -301,6 +350,9 @@ button.pfp {
     padding: 0;
     height: 50px;
     width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: transparent;
     border: none;
 }
@@ -352,8 +404,8 @@ button.pfp {
 }
 
 #profile_pfp img {
-    height: 50px;
-    width: 50px;
+    height: 35px;
+    width: 35px;
     border-radius: 50%;
 }
 
@@ -397,7 +449,8 @@ button.pfp {
 }
 
 #messages::-webkit-scrollbar-button,
-#profile_page::-webkit-scrollbar {
+#profile_page::-webkit-scrollbar,
+#message_box::-webkit-scrollbar {
     display: none;
 }
 
@@ -437,7 +490,7 @@ button.pfp {
         width: 100dvw;
     }
 
-    #sendMessHolder{
+    #sendMessHolder {
         width: 100dvw;
     }
 
@@ -473,8 +526,22 @@ button.pfp {
         width: 70dvw;
     }
 
-    .embed_image{
+    .embed_image {
         max-width: 70dvw;
         width: 70dvw;
+    }
+
+    #avatar_wrapper,
+    #profile_attr_wrapper {
+        display: grid;
+        align-items: center;
+    }
+
+    .message_db {
+        width: 70dvw;
+    }
+
+    #new_message_popup {
+        width: 95dvw;
     }
 }

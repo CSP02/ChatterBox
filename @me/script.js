@@ -1,10 +1,14 @@
 /**
  * ? Imports from other scripts
  */
-import { SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, ScrollToBottom, SendMessage, UpdateUser } from "../ChatterBox/Message.js"
+import { SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, SendMessage, UpdateUser, ScrollToBottom } from "../ChatterBox/Message.js"
 import { HandleSocketEvents } from "../handlers/socketHandler.js"
 
-SetDefaults({ token: window.sessionStorage.getItem("token"), user: window.sessionStorage.getItem("user") })
+SetDefaults({
+    token: window.sessionStorage.getItem("token"),
+    user: window.sessionStorage.getItem("user"),
+    refreshToken: window.sessionStorage.getItem("refresh token")
+})
 
 /**
  * ? Handle the socket events like "MESSAGES", "LOGIN", etc.
@@ -69,20 +73,17 @@ sendMessage.addEventListener("click", event => {
 
 const messagesDiv = document.getElementById("messages")
 
-/**
- * ? Scroll event for #messages (element which shows all the messages from database)
- * ? this is because when user scroll up we have to get a notification kind of popup which says the we have new messages 
- * ? But when the user is at the bottom of the messages (means they are at end of conversation) it should auto scroll when a new message occurs
- */
-messagesDiv.addEventListener("scroll", event => {
-    // Getting the scroll pos which says if scroll position is at the end of the #messages element or not
-    const scrollPos = Math.abs(messagesDiv.scrollHeight - messagesDiv.clientHeight - messagesDiv.scrollTop)
-    if (scrollPos <= 0) { // If the scroll position is at the end of the #messages we are scrolling to the end (just making sure) and removing the popup
-        messagesDiv.scrollTop = messagesDiv.scrollHeight + messagesDiv.clientHeight
-        newMessagePopup.style.display = "none"
-    }
-})
+messagesDiv.addEventListener("scroll", () => {
+    const messagesDiv = document.getElementById("messages")
+    const scrollHeight = messagesDiv.scrollHeight
+    const scrollTop = messagesDiv.scrollTop
+    const offsetHeight = messagesDiv.offsetHeight
+    const lastChild = messagesDiv.lastChild
 
+    if (scrollHeight <= scrollTop + offsetHeight + 140) {
+        document.getElementById("new_message_popup").style.display = "none";
+    } 
+})
 /**
  * ? Event listener for the "new messages" popup
  * ? when clicked we should scroll to end of the #messages element 
@@ -97,6 +98,15 @@ newMessagePopup.addEventListener("click", () => {
  */
 const messageBox = document.getElementById("message_box")
 messageBox.addEventListener("input", (event) => {
+    if (messageBox.innerText.length > 500) {
+        messageBox.style.border = "1px solid red"
+        // newMessagePopup.innerText = "exceeded 500 characters the remaining characters will be excluded in the message!"
+        // newMessagePopup.style.display = "block"
+    } else {
+        messageBox.style.border = "none"
+        // newMessagePopup.innerText = "New messages!"
+        // newMessagePopup.style.display = "none"
+    }
     // SendTypingEvent()
     // removing all spaces at the beginning and at the end of the content in the message box and check if the length is greater than 0
     if (messageBox.innerText.trim().length > 0) {
@@ -123,8 +133,7 @@ window.onload = () => {
 
     // Get all messages from the Database
     GetAllMessages();
-    //scroll to the bottom of the messages
-    ScrollToBottom(true);
+    ScrollToBottom(true)
 }
 
 document.getElementById("open_users_list").addEventListener("click", click => {
