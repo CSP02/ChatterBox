@@ -46,7 +46,7 @@ signup.addEventListener("click", async (event) => {
     
     // Choosing a random pfp
     const randomPfp = Math.round(Math.random() * 10) > 5 ? Math.round(Math.random() * 10) - 5 : Math.round(Math.random() * 10)
-    const avatarURL = `http://localhost:3000/default_pfps/defaultPFP_${randomPfp <= 0 ? 1 : randomPfp}.png`
+    const avatarURL = `/default_pfps/defaultPFP_${randomPfp <= 0 ? 1 : randomPfp}.png`
 
     // Creating a user object which we pass to signup the user with the given details
     const user = {

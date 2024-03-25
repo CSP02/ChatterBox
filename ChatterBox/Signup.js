@@ -1,6 +1,6 @@
 export function ValidatePassword(password, user) {
     fetch(
-        "http://localhost:3000/ValidatePassword",
+        "/ValidatePassword",
         {
             mode: "cors",
             method: "POST",
@@ -28,7 +28,7 @@ export function ValidatePassword(password, user) {
 
 async function SignUpUser(user) {    
     await fetch(
-        "http://localhost:3001/api/signup",
+        "https://chatter-box-api-jade.vercel.app/api/signup",
         {
             method: "POST",
             mode: "cors",

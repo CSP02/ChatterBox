@@ -124,7 +124,7 @@ export async function GetAllMessages() {
 
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        "http://localhost:3001/api/get_messages",
+        "https://chatter-box-api-jade.vercel.app/api/get_messages",
         {
             mode: "cors",
             headers: headers
@@ -135,7 +135,7 @@ export async function GetAllMessages() {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("http://localhost:3001/api/request_new_token", {
+                fetch("https://chatter-box-api-jade.vercel.app/api/request_new_token", {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -170,7 +170,7 @@ export async function SendMessage(message) {
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        "http://localhost:3001/api/send_message",
+        "https://chatter-box-api-jade.vercel.app/api/send_message",
         {
             method: "POST",
             mode: "cors",
@@ -185,7 +185,7 @@ export async function SendMessage(message) {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("http://localhost:3001/api/request_new_token", {
+                fetch("https://chatter-box-api-jade.vercel.app/api/request_new_token", {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -217,7 +217,7 @@ export async function UpdateUser() {
     };
 
     fetch(
-        "http://localhost:3001/api/profile",
+        "https://chatter-box-api-jade.vercel.app/api/profile",
         {
             method: "PUT",
             mode: "cors",
@@ -232,7 +232,7 @@ export async function UpdateUser() {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("http://localhost:3001/api/request_new_token", {
+                fetch("https://chatter-box-api-jade.vercel.app/api/request_new_token", {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -374,8 +374,15 @@ export function ScrollToBottom(onload) {
 
 export function LogoutUser() {
     token = null;
-    window.location = "http://localhost:3000/"
-    location.reload();
+    refreshToken = null;
+    loggedUser = null
+
+    window.sessionStorage.setItem("token", token)
+    window.sessionStorage.setItem("refresh token", refreshToken)
+    window.sessionStorage.setItem("user", loggedUser)
+
+    location = "/"
+    // location.reload();
 }
 
 export function UpdateUserdetails(user) {

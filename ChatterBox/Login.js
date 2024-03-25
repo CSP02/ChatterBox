@@ -4,7 +4,7 @@ let loggedUser = null
 
 export async function LoginUser(user) {
     await fetch(
-        "http://localhost:3001/api/login",
+        "https://chatter-box-api-jade.vercel.app/api/login",
         {
             method: "POST",
             mode: "cors",
@@ -25,7 +25,7 @@ export async function LoginUser(user) {
                 window.sessionStorage.setItem("refresh token", refreshToken)
                 window.sessionStorage.setItem("user", JSON.stringify(response.user))
                 // socket.emit("LOGIN", response);
-                window.location = "http://localhost:3000/@me"
+                window.location = "/@me"
             } else {
                 document.getElementById("invalid_credentials").innerText =
                     "Username or Password is incorrect!";

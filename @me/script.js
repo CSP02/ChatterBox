@@ -1,7 +1,7 @@
 /**
  * ? Imports from other scripts
  */
-import { SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, SendMessage, UpdateUser, ScrollToBottom } from "../ChatterBox/Message.js"
+import { LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, SendMessage, UpdateUser, ScrollToBottom } from "../ChatterBox/Message.js"
 import { HandleSocketEvents } from "../handlers/socketHandler.js"
 
 SetDefaults({
