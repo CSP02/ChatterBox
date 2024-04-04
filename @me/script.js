@@ -1,19 +1,13 @@
 /**
  * ? Imports from other scripts
  */
-import { LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, SendMessage, UpdateUser, ScrollToBottom } from "../ChatterBox/Message.js"
-import { HandleSocketEvents } from "../handlers/socketHandler.js"
+import { CreateChannel, LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, GetChannels, SendMessage, UpdateUser, ScrollToBottom } from "../ChatterBox/Message.js"
 
 SetDefaults({
     token: window.sessionStorage.getItem("token"),
     user: window.sessionStorage.getItem("user"),
     refreshToken: window.sessionStorage.getItem("refresh token")
 })
-
-/**
- * ? Handle the socket events like "MESSAGES", "LOGIN", etc.
- */
-HandleSocketEvents()
 
 /**
  * ? Defining document elements
@@ -25,6 +19,10 @@ const logout = document.getElementById("logout")
 const profile = document.getElementById("profile_pfp")
 const updateProfileButton = document.getElementById("update_profile")
 const closeUpdateProfile = document.getElementById("close_update_profile")
+const showCreateForm = document.getElementById("create_channel")
+const createChannelButton = document.getElementById("channel_create_but")
+const cancelChannelButton = document.getElementById("cancel")
+const formWrapper = document.getElementById("create_channel_form")
 
 /**
  * ? Event listener for profile button which shows the profile details
@@ -82,7 +80,7 @@ messagesDiv.addEventListener("scroll", () => {
 
     if (scrollHeight <= scrollTop + offsetHeight + 140) {
         document.getElementById("new_message_popup").style.display = "none";
-    } 
+    }
 })
 /**
  * ? Event listener for the "new messages" popup
@@ -99,13 +97,11 @@ newMessagePopup.addEventListener("click", () => {
 const messageBox = document.getElementById("message_box")
 messageBox.addEventListener("input", (event) => {
     if (messageBox.innerText.length > 500) {
-        messageBox.style.border = "1px solid red"
+        messageBox.style.outlineColor = "#ff4d4d"
         // newMessagePopup.innerText = "exceeded 500 characters the remaining characters will be excluded in the message!"
         // newMessagePopup.style.display = "block"
-    } else {
-        messageBox.style.border = "none"
-        // newMessagePopup.innerText = "New messages!"
-        // newMessagePopup.style.display = "none"
+    }else{
+        messageBox.style.outlineColor = "rgb(214, 214, 214)"
     }
     // SendTypingEvent()
     // removing all spaces at the beginning and at the end of the content in the message box and check if the length is greater than 0
@@ -124,6 +120,19 @@ messageBox.addEventListener("input", (event) => {
     }
 });
 
+showCreateForm.addEventListener("click", click => {
+    formWrapper.style.display = "flex"
+})
+
+createChannelButton.addEventListener("click", click => {
+    CreateChannel()
+    formWrapper.style.display = "none"
+})
+
+cancelChannelButton.addEventListener("click", click => {
+    formWrapper.style.display = "none"
+})
+
 window.onload = () => {
     document.getElementById("loading").style.display = "none"
     const user = JSON.parse(window.sessionStorage.getItem("user"))
@@ -133,6 +142,9 @@ window.onload = () => {
 
     // Get all messages from the Database
     GetAllMessages();
+
+    // Get all channels user present in
+    GetChannels()
     ScrollToBottom(true)
 }
 

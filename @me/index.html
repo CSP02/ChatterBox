@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/@me/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jost:ital,wght@0,100..900;1,100..900&family=Karla:ital,wght@0,200..800;1,200..800&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"
         integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
@@ -20,6 +22,26 @@
 </head>
 
 <body>
+    <div id="create_channel_form" class="form_wrapper">
+        <div id="channel_form_wrapper" class="form">
+            <label for="channel_name">Channel Name</label>
+            <input type="text" placeholder="chitty cats" id="channel_name">
+            <div id="buttons" class="buttons">
+                <button id="cancel">Cancel</button>
+                <button id="channel_create_but">Create</button>
+            </div>
+        </div>
+    </div>
+    <div id="invite_form" class="form_wrapper">
+        <div class="form">
+            <label for="Username">Username of your friend:</label>
+            <input type="text" id="Username" name="Username" placeholder="username">
+            <div id="invite_buttons" class="buttons">
+                <button id="cancel_invite">Cancel</button>
+                <button id="invite_okay">Add member</button>
+            </div>
+        </div>
+    </div>
     <div id="loading">
         <div id="chatter_loading">
             <div id="circle_1"></div>
@@ -27,39 +49,43 @@
             <div id="circle_3"></div>
         </div>
     </div>
-    <div style="position: fixed;">
-        <nav id="user_details">
-            <button id="open_users_list" class="inactive"><i class="fa-solid fa-users"></i></button>
+    <div id="app_wrapper">
+        <div id="channels">
+            <button id="create_channel"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div id="app_main_container" style="grid-template-rows: .2fr 1fr 1fr .01fr;">
+            <div id="channel_name_indicator"></div>
+            <div id="messages">
+                <div id="init_message">Nothing here! check your channels maybe?</div>
+            </div>
+            <div id="user_message">
+                <button id="new_message_popup">new messages!</button>
+                <!-- <div id="action_indicator"></div> -->
 
-            <div style="display: flex; align-items: center">
+                <div id="send_message_holder" style="grid-template-columns: 1fr .01fr;">
+                    <div type="text" id="message_box" contenteditable></div>
+                    <button id="send_message" disabled>
+                        <svg width="30px" height="30px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                            fill="none">
+                            <path fill="#ffffff" fill-rule="evenodd"
+                                d="M2.345 2.245a1 1 0 0 1 1.102-.14l18 9a1 1 0 0 1 0 1.79l-18 9a1 1 0 0 1-1.396-1.211L4.613 13H10a1 1 0 1 0 0-2H4.613L2.05 3.316a1 1 0 0 1 .294-1.071z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <div id="list_users">
+            <div id="users_list">
+            </div>
+        </div>
+        <div id="auth_buts">
+            <button id="open_users_list" class="inactive"><i class="fa-solid fa-users"></i></button>
+            <div>
                 <button id="profile_pfp" class="pfp">
                 </button>
                 <button id="logout">logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
-            </div>
-        </nav>
-        <div id="app_wrapper">
-            <div id="app_main_container">
-                <div id="messages"></div>
-                <div id="user_message">
-                    <button id="new_message_popup">new messages!</button>
-                    <!-- <div id="action_indicator"></div> -->
-                    <div
-                        style="display: flex; justify-items: center;flex-direction: column;align-items: center;justify-content: space-evenly;">
-                        <div id="sendMessHolder">
-                            <div type="text" id="message_box" contenteditable></div>
-                            <button id="send_message" disabled>
-                                <svg width="40px" height="40px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none">
-                                    <path fill="#ffffff" fill-rule="evenodd"
-                                        d="M2.345 2.245a1 1 0 0 1 1.102-.14l18 9a1 1 0 0 1 0 1.79l-18 9a1 1 0 0 1-1.396-1.211L4.613 13H10a1 1 0 1 0 0-2H4.613L2.05 3.316a1 1 0 0 1 .294-1.071z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="users_list">
             </div>
         </div>
     </div>
@@ -68,29 +94,31 @@
             <div>
                 <p>Your details are updated successfully!</p>
                 <p>To start chatting you have to login again.</p>
-                <a href="/">Login again</a>
+                <a href="/login">Login again</a>
             </div>
         </div>
-        <div id="avatar_wrapper">
-            <div class="profile_attributes">
-                <label for="profile_avatar_url">Avatar URL:</label>
-                <input type="url" id="profile_avatar_url" name="profile_avatar_url" />
+        <div id="profile_container">
+            <div id="avatar_wrapper">
+                <div class="profile_attributes">
+                    <label for="profile_avatar_url">Avatar URL:</label>
+                    <input type="url" id="profile_avatar_url" name="profile_avatar_url" />
+                </div>
+                <img src="" alt="pfp" id="avatar">
             </div>
-            <img src="" alt="pfp" id="avatar">
-        </div>
-        <div id="profile_attr_wrapper">
-            <div class="profile_attributes">
-                <label for="profile_username">Username:</label>
-                <input type="text" id="profile_username" name="profile_username" />
+            <div id="profile_attr_wrapper">
+                <div class="profile_attributes">
+                    <label for="profile_username">Username:</label>
+                    <input type="text" id="profile_username" name="profile_username" />
+                </div>
+                <div class="profile_attributes">
+                    <label for="profile_color">Prefered color:</label>
+                    <input type="color" id="profile_color" name="profile_color" />
+                </div>
             </div>
-            <div class="profile_attributes">
-                <label for="profile_color">Prefered color:</label>
-                <input type="color" id="profile_color" name="profile_color" />
+            <div class="profile_attributes" id="update_profile_buttons">
+                <button id="update_profile">Update</button>
+                <button id="close_update_profile">Close</button>
             </div>
-        </div>
-        <div class="profile_attributes" style="display: flex;">
-            <button id="update_profile">Update</button>
-            <button id="close_update_profile">Close</button>
         </div>
     </div>
     <script src="/@me/script.js" type="module"></script>

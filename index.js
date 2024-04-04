@@ -41,11 +41,50 @@ app.post("/ValidatePassword", async (req, res) => {
  */
 
 let activeUsers = []
+const url = "http://localhost:3000"
+let channelURL = `${url}/@me`
 io.on("connection", socket => {
-    console.log("A user connected", socket.id)
+    console.log("|------------------------|\n|    A user connected    |\n|------------------------|\n", socket.id)
     const socketDetails = {
         id: socket.id
     }
+
+    socket.on("JOIN_CHANNEL", data => {
+        const channel = data.channel
+        const username = data.user.username
+        const pfp = data.user.avatarURL
+        const colorPrefered = data.user.color
+
+        const user = {
+            username: username,
+            pfp: pfp,
+            color: colorPrefered
+        }
+
+        socketDetails.user = user
+        activeUsers.push(socketDetails)
+
+        socket.join(`${url}/@me/${channel.name}`)
+        channelURL = `${url}/@me/${channel.name}`
+        
+        io.emit("UPDATE_USERS_LIST", activeUsers);
+
+        console.log("|----------Joined--------|\n")
+        console.log(socket.rooms)
+        console.log("\n|------------------------|")
+    })
+
+    socket.on("LEAVE_CHANNEL", channel => {
+        socket.leave(`${url}/@me/${channel.name}`)
+
+        activeUsers = activeUsers.filter(ob => ob.id !== socket.id && ob.user)
+        io.emit("UPDATE_USERS_LIST", activeUsers);
+
+        console.clear()
+        console.log("|----------Leaved--------|\n")
+        console.log(socket.rooms)
+        console.log("\n|------------------------|")
+    })
 
     // Catches the login event from a client and sends the user details for every other clients
     socket.on("LOGIN", data => {

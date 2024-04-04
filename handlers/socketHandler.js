@@ -6,9 +6,7 @@ import { GetAllMessages } from "../ChatterBox/Message.js"
 /**
  * ? method to handle all the sockets events
  */
-export function HandleSocketEvents() {
-    const socket = io()
-
+export function HandleSocketEvents(socket) {
     // Send the user details of a newly logged user to everyone who connected to the socket
     socket.on("LOGIN", data => {
         socket.emit("MEMBER_ADD", data.user)
@@ -23,7 +21,8 @@ export function HandleSocketEvents() {
     socket.on("UPDATE_USERS_LIST", users => {
         const currentUsers = []
         const usersList = document.getElementById("users_list")
-        const allUsersWrapper = document.createElement("div")
+
+        usersList.innerHTML = ""
 
         users.forEach(user => {
             for (let i = 0; i < currentUsers.length; i++) {
@@ -50,10 +49,7 @@ export function HandleSocketEvents() {
             pfp.classList.add("pfp")
             userDetailsWrapper.append(...[pfp, username])
             userDetailsWrapper.classList.add("online_users")
-            allUsersWrapper.appendChild(userDetailsWrapper)
+            usersList.appendChild(userDetailsWrapper)
         })
-        usersList.innerHTML = ""
-        allUsersWrapper.style.display = "grid"
-        usersList.append(...[allUsersWrapper])
     })
 }

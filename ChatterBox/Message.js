@@ -1,11 +1,16 @@
 import ComponentTypes from "./types.js"
+import { HandleSocketEvents } from "../handlers/socketHandler.js";
 
-const socket = io();
+let socket = io()
 const messagesHolder = document.getElementById("messages");
 let loggedUser = null;
 let token = null;
 let refreshToken = null
+const apiURL = "http://localhost:3001"
+let activeChannel = { name: "http://localhost:3000/@me" }
 const types = new ComponentTypes()
+
+HandleSocketEvents(socket)
 
 export function SetDefaults(defaults) {
     token = defaults.token
@@ -93,6 +98,8 @@ function AddToMessages(message) {
     ResolveContent(content, contentHolder, message);
     messageHolder.classList.add("message_holder");
 
+    messAndUserholder.classList.add("message_user_holder")
+
     if (previousMessage.username !== "" && previousMessage.timestamp !== "") {
         if (previousMessage.username === username && new Date(message.timestamp) - new Date(previousMessage.timestamp) <= 60000 && messagesHolder.children.length > 0) {
             const prevMessHolder = messagesHolder.lastChild.lastChild
@@ -116,6 +123,102 @@ function AddToMessages(message) {
     messagesHolder.appendChild(messageHolder);
 }
 
+function AddToChannels(channels) {
+    const channelsWrapper = document.getElementById("channels")
+
+    channels.forEach(channel => {
+        const channelName = channel.name
+        const iconURL = channel.iconURL
+
+        const nameButton = document.createElement("button")
+        nameButton.id = channelName
+        nameButton.innerText = channelName
+        nameButton.classList.add("inactive")
+        nameButton.classList.add("channel")
+
+        nameButton.addEventListener("click", click => {
+            const channelsList = [...document.getElementsByClassName("channel")]
+            channelsList.forEach(channellist => {
+                channellist.classList.replace("active", "inactive")
+            })
+            nameButton.classList.replace("inactive", "active")
+            console.log(loggedUser)
+            socket.emit("LEAVE_CHANNEL", { channel: activeChannel, user: loggedUser })
+            socket.emit("JOIN_CHANNEL", { channel: channel, user: loggedUser })
+            activeChannel = channel
+
+            GetAllMessages()
+
+            const channelNameText = document.getElementById("channel_name_indicator")
+            channelNameText.innerText = activeChannel.name
+            const invite = document.createElement("button")
+            const icon = document.createElement("i")
+            icon.classList.add("fas", "fa-user-plus")
+
+            invite.appendChild(icon)
+            invite.id = `invite_to_${channel._id}`
+            invite.classList.add("invite")
+
+            invite.addEventListener("click", click => {
+                const inviteForm = document.getElementById("invite_form")
+                inviteForm.style.display = "flex"
+
+                const invieButton = document.getElementById("invite_okay")
+                invieButton.addEventListener("click", click => {
+                    const channelname = invite.id.split("_").reverse()[0]
+                    const username = document.getElementById("Username").value
+
+                    AddUserToChannel(channelname, username)
+                    inviteForm.style.display = "none"
+                })
+                const cancelInvite = document.getElementById("cancel_invite")
+                cancelInvite.addEventListener("click", click => {
+                    console.log("cancel")
+                    inviteForm.style.display = "none"
+                })
+            })
+            channelNameText.appendChild(invite)
+        })
+
+        channelsWrapper.appendChild(nameButton)
+    })
+}
+
+function AddUserToChannel(channelId, username) {
+    const headers = new Headers()
+    headers.append("Authorization", `Bearer ${token}`)
+
+    fetch(
+        `${apiURL}/api/add_user?channel_id=${channelId}&username=${username}`,
+        {
+            mode: "cors",
+            headers: headers
+        },
+    )
+        .then(async (response) => {
+            if (response.status === 401) {
+                const headers = new Headers()
+
+                headers.append("Authorization", `Bearer ${refreshToken}`)
+                fetch(`${apiURL}/api/request_new_token`, {
+                    mode: "cors",
+                    headers: headers
+                }).then(async response => {
+                    if (response.ok) return await response.json()
+                }).then(response => {
+                    token = response.token
+                    refreshToken = response.refreshToken
+
+                    AddUserToChannel(channelId, username)
+                })
+            }
+            if (response.ok) return await response.json();
+        })
+        .then((response) => {
+            console.log("added!")
+        });
+}
+
 export async function GetAllMessages() {
     previousMessage.username = ""
     previousMessage.timestamp = ""
@@ -124,7 +227,7 @@ export async function GetAllMessages() {
 
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        "https://chatter-box-api-chi.vercel.app/api/get_messages",
+        `${apiURL}/api/get_messages?channel_id=${activeChannel._id}`,
         {
             mode: "cors",
             headers: headers
@@ -135,7 +238,7 @@ export async function GetAllMessages() {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("https://chatter-box-api-chi.vercel.app/api/request_new_token", {
+                fetch(`${apiURL}/api/request_new_token`, {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -163,6 +266,77 @@ export async function GetAllMessages() {
         });
 }
 
+export async function GetChannels() {
+    const headers = new Headers()
+    headers.append("Authorization", `Bearer ${token}`)
+
+    fetch(`${apiURL}/api/channels`, {
+        mode: "cors",
+        headers: headers
+    }).then((response) => {
+        if (response.status === 401) {
+            const headers = new Headers()
+
+            headers.append("Authorization", `Bearer ${refreshToken}`)
+            fetch(`${apiURL}/api/request_new_token`, {
+                mode: "cors",
+                headers: headers
+            }).then(async response => {
+                if (response.ok) return await response.json()
+            }).then(response => {
+                GetChannels()
+            })
+        }
+        if (response.ok) return response.json();
+    })
+        .then(async (response) => {
+            if (response.channels.length <= 0) return
+            const channels = await response.channels
+
+            AddToChannels(channels)
+            window.sessionStorage.setItem("channels", JSON.stringify(channels))
+        });
+}
+
+export async function CreateChannel() {
+    const headers = new Headers()
+    headers.append("Authorization", `Bearer ${token}`)
+
+    const channelName = document.getElementById("channel_name").value
+    const body = {
+        channelName: channelName
+    }
+
+    fetch(`${apiURL}/api/channels`, {
+        mode: "cors",
+        headers: headers,
+        method: "POST",
+        body: new Blob([JSON.stringify(body)], { type: "application/json" })
+    }).then((response) => {
+        if (response.status === 401) {
+            const headers = new Headers()
+
+            headers.append("Authorization", `Bearer ${refreshToken}`)
+            fetch(`${apiURL}/api/channels`, {
+                mode: "cors",
+                headers: headers,
+                method: "POST",
+                body: new Blob([JSON.stringify(body)], { type: "application/json" })
+            }).then(async response => {
+                if (response.ok) return await response.json()
+            }).then(response => {
+                CreateChannel()
+            })
+        }
+        if (response.ok) return response.json();
+    })
+        .then(async (response) => {
+            if (!response.channel) return
+
+            AddToChannels([response.channel])
+        });
+}
+
 export async function SendMessage(message) {
     previousMessage.username = ""
     previousMessage.timestamp = ""
@@ -170,7 +344,7 @@ export async function SendMessage(message) {
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        "https://chatter-box-api-chi.vercel.app/api/send_message",
+        `${apiURL}/api/send_message?channel_id=${activeChannel._id}`,
         {
             method: "POST",
             mode: "cors",
@@ -185,7 +359,7 @@ export async function SendMessage(message) {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("https://chatter-box-api-chi.vercel.app/api/request_new_token", {
+                fetch(`${apiURL}/api/request_new_token`, {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -216,23 +390,21 @@ export async function UpdateUser() {
         avatarURL: updateAvatarURL.value,
     };
 
-    fetch(
-        "https://chatter-box-api-chi.vercel.app/api/profile",
-        {
-            method: "PUT",
-            mode: "cors",
-            body: new Blob([JSON.stringify(updateUser)], {
-                type: "application/json",
-            }),
-            headers: headers
-        },
+    fetch(`${apiURL}/api/profile`, {
+        method: "PUT",
+        mode: "cors",
+        body: new Blob([JSON.stringify(updateUser)], {
+            type: "application/json",
+        }),
+        headers: headers
+    },
     )
         .then(async (response) => {
             if (response.status === 401) {
                 const headers = new Headers()
 
                 headers.append("Authorization", `Bearer ${refreshToken}`)
-                fetch("https://chatter-box-api-chi.vercel.app/api/request_new_token", {
+                fetch(`${apiURL}/api/request_new_token`, {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -382,7 +554,6 @@ export function LogoutUser() {
     window.sessionStorage.setItem("user", loggedUser)
 
     location = "/"
-    // location.reload();
 }
 
 export function UpdateUserdetails(user) {
