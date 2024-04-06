@@ -2,12 +2,6 @@
  * ? Imports from other scripts
  */
 import { ValidatePassword } from "../ChatterBox/Signup.js"
-import { HandleSocketEvents } from "../handlers/socketHandler.js"
-
-/**
- * ? Handle the socket events like "MESSAGES", "LOGIN", etc.
- */
-HandleSocketEvents()
 
 /**
  * ? Defining document elements
@@ -19,7 +13,7 @@ const prefColor = document.getElementById("pref_color")
 const profileColor = document.getElementById("profile_color")
 
 window.onload = () => {
-    document.getElementById("loading").style.display = "none"
+    loading.style.display = "none"
     // Random color generator
     let randomColor = "#"
     let i = 0

@@ -1,12 +1,13 @@
 /**
  * ? Imports from other scripts
  */
-import { CreateChannel, LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, GetChannels, SendMessage, UpdateUser, ScrollToBottom } from "../ChatterBox/Message.js"
+import { AddUserToChannel, CreateChannel, LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, GetChannels, SendMessage, UpdateUser, ScrollToBottom, SendJoinEvent } from "../ChatterBox/Message.js"
 
 SetDefaults({
     token: window.sessionStorage.getItem("token"),
     user: window.sessionStorage.getItem("user"),
-    refreshToken: window.sessionStorage.getItem("refresh token")
+    refreshToken: window.sessionStorage.getItem("refresh token"),
+    activeChannel: window.sessionStorage.getItem("active_channel")
 })
 
 /**
@@ -100,7 +101,7 @@ messageBox.addEventListener("input", (event) => {
         messageBox.style.outlineColor = "#ff4d4d"
         // newMessagePopup.innerText = "exceeded 500 characters the remaining characters will be excluded in the message!"
         // newMessagePopup.style.display = "block"
-    }else{
+    } else {
         messageBox.style.outlineColor = "rgb(214, 214, 214)"
     }
     // SendTypingEvent()
@@ -134,23 +135,88 @@ cancelChannelButton.addEventListener("click", click => {
 })
 
 window.onload = () => {
-    document.getElementById("loading").style.display = "none"
+    // const [type, id] = location.search.replace("?", "").split("=")
     const user = JSON.parse(window.sessionStorage.getItem("user"))
+
     // update the active users list 
     UpdateUserdetails(user);
-    SendSocketEvent("LOGIN", user)
 
-    // Get all messages from the Database
-    GetAllMessages();
+    SendSocketEvent("LOGIN", user)
 
     // Get all channels user present in
     GetChannels()
-    ScrollToBottom(true)
+
+    setTimeout(() => {
+        const path = location.pathname
+        if (path !== "/@me/") {
+            const channel = document.getElementsByClassName(path.split("/").reverse()[0].toString())[0]
+            const channelId = { _id: path.split("/").reverse()[0].toString() }
+            const channelIndicator = document.getElementById("channel_name_indicator")
+
+            channel.classList.replace("inactive", "active")
+            channelIndicator.innerText = channel.innerText
+            const previousChannel = window.sessionStorage.getItem("active_channel")
+
+            SendJoinEvent(channelId, previousChannel)
+
+            window.sessionStorage.setItem("active_channel", channelId)
+
+            const invite = document.createElement("button")
+            const icon = document.createElement("i")
+            icon.classList.add("fas", "fa-user-plus")
+
+            invite.appendChild(icon)
+            invite.id = `invite_to_${channel}`
+            invite.classList.add("invite")
+
+            invite.addEventListener("click", click => {
+                const inviteForm = document.getElementById("invite_form")
+                inviteForm.style.display = "flex"
+
+                const invieButton = document.getElementById("invite_okay")
+                invieButton.addEventListener("click", click => {
+                    const username = document.getElementById("Username").value
+
+                    AddUserToChannel(channelId, username)
+                    inviteForm.style.display = "none"
+                })
+                const cancelInvite = document.getElementById("cancel_invite")
+                cancelInvite.addEventListener("click", click => {
+                    console.log("cancel")
+                    inviteForm.style.display = "none"
+                })
+            })
+            channelIndicator.appendChild(invite)
+
+            // Get all messages from the Database
+            GetAllMessages(channelId);
+        }
+        ScrollToBottom(true)
+
+        document.getElementById("loading").style.display = "none"
+    }, 1000)
 }
 
 document.getElementById("open_users_list").addEventListener("click", click => {
-    const toggler = new Toggler
+    const usersList = document.getElementById("list_users")
+    if (usersList.classList.contains("opened")) {
+        usersList.classList.replace("opened", "closed")
+        usersList.style.marginLeft = "-100%"
+    }
+    else if (usersList.classList.contains("closed")) {
+        usersList.classList.replace("closed", "opened")
+        usersList.style.marginLeft = ".5rem"
+    }
+})
 
-    toggler.toggleSlide("users_list", "right", .6)
-    toggler.toggleClass("open_users_list", "inactive", "active")
+document.getElementById("open_channel_button").addEventListener("click", click => {
+    const channels = document.getElementById("channels")
+    if (channels.classList.contains("opened")) {
+        channels.classList.replace("opened", "closed")
+        channels.style.marginLeft = "-100%"
+    }
+    else if (channels.classList.contains("closed")) {
+        channels.classList.replace("closed", "opened")
+        channels.style.marginLeft = ".5rem"
+    }
 })

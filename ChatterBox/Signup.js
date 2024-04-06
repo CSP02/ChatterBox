@@ -28,7 +28,7 @@ export function ValidatePassword(password, user) {
 
 async function SignUpUser(user) {    
     await fetch(
-        "https://chatter-box-api-chi.vercel.app/api/signup",
+        "http://localhost:3001/api/signup",
         {
             method: "POST",
             mode: "cors",

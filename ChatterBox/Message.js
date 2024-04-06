@@ -16,6 +16,7 @@ export function SetDefaults(defaults) {
     token = defaults.token
     loggedUser = JSON.parse(defaults.user)
     refreshToken = defaults.refreshToken
+    activeChannel = defaults.activeChannel
 }
 
 export function SendSocketEvent(event, data) {
@@ -123,6 +124,11 @@ function AddToMessages(message) {
     messagesHolder.appendChild(messageHolder);
 }
 
+export function SendJoinEvent(channel, activeChannel){
+    socket.emit("JOIN_CHANNEL", { channel: channel, user: loggedUser })
+    activeChannel = channel
+}
+
 function AddToChannels(channels) {
     const channelsWrapper = document.getElementById("channels")
 
@@ -135,61 +141,27 @@ function AddToChannels(channels) {
         nameButton.innerText = channelName
         nameButton.classList.add("inactive")
         nameButton.classList.add("channel")
+        nameButton.classList.add(channel._id)
 
         nameButton.addEventListener("click", click => {
-            const channelsList = [...document.getElementsByClassName("channel")]
-            channelsList.forEach(channellist => {
-                channellist.classList.replace("active", "inactive")
-            })
-            nameButton.classList.replace("inactive", "active")
-            console.log(loggedUser)
             socket.emit("LEAVE_CHANNEL", { channel: activeChannel, user: loggedUser })
-            socket.emit("JOIN_CHANNEL", { channel: channel, user: loggedUser })
-            activeChannel = channel
+            window.sessionStorage.setItem("active_channel", activeChannel)
 
-            GetAllMessages()
+            location = "http://localhost:3000/@me/" + channel._id
 
-            const channelNameText = document.getElementById("channel_name_indicator")
-            channelNameText.innerText = activeChannel.name
-            const invite = document.createElement("button")
-            const icon = document.createElement("i")
-            icon.classList.add("fas", "fa-user-plus")
-
-            invite.appendChild(icon)
-            invite.id = `invite_to_${channel._id}`
-            invite.classList.add("invite")
-
-            invite.addEventListener("click", click => {
-                const inviteForm = document.getElementById("invite_form")
-                inviteForm.style.display = "flex"
-
-                const invieButton = document.getElementById("invite_okay")
-                invieButton.addEventListener("click", click => {
-                    const channelname = invite.id.split("_").reverse()[0]
-                    const username = document.getElementById("Username").value
-
-                    AddUserToChannel(channelname, username)
-                    inviteForm.style.display = "none"
-                })
-                const cancelInvite = document.getElementById("cancel_invite")
-                cancelInvite.addEventListener("click", click => {
-                    console.log("cancel")
-                    inviteForm.style.display = "none"
-                })
-            })
-            channelNameText.appendChild(invite)
         })
 
         channelsWrapper.appendChild(nameButton)
     })
 }
 
-function AddUserToChannel(channelId, username) {
+export function AddUserToChannel(channelId, username) {
+    console.log(channelId)
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
 
     fetch(
-        `${apiURL}/api/add_user?channel_id=${channelId}&username=${username}`,
+        `${apiURL}/api/add_user?channel_id=${channelId._id}&username=${username}`,
         {
             mode: "cors",
             headers: headers
@@ -215,11 +187,11 @@ function AddUserToChannel(channelId, username) {
             if (response.ok) return await response.json();
         })
         .then((response) => {
-            console.log("added!")
+            socket.emit("USER_INVITE", username)
         });
 }
 
-export async function GetAllMessages() {
+export async function GetAllMessages(activeChannel) {
     previousMessage.username = ""
     previousMessage.timestamp = ""
     const messagesDiv = document.getElementById("messages");
@@ -247,7 +219,7 @@ export async function GetAllMessages() {
                     token = response.token
                     refreshToken = response.refreshToken
 
-                    GetAllMessages()
+                    GetAllMessages(activeChannel)
                 })
             }
             if (response.ok) return response.json();
@@ -284,6 +256,9 @@ export async function GetChannels() {
             }).then(async response => {
                 if (response.ok) return await response.json()
             }).then(response => {
+                token = response.token
+                refreshToken = response.refreshToken
+
                 GetChannels()
             })
         }
@@ -325,6 +300,9 @@ export async function CreateChannel() {
             }).then(async response => {
                 if (response.ok) return await response.json()
             }).then(response => {
+                token = response.token
+                refreshToken = response.refreshToken
+
                 CreateChannel()
             })
         }
@@ -340,11 +318,14 @@ export async function CreateChannel() {
 export async function SendMessage(message) {
     previousMessage.username = ""
     previousMessage.timestamp = ""
+    const path = location.pathname
+    const channelId = path.split("/").reverse()[0].toString()
+    
     message.reqType = "SEND_MESSAGE";
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        `${apiURL}/api/send_message?channel_id=${activeChannel._id}`,
+        `${apiURL}/api/send_message?channel_id=${channelId}`,
         {
             method: "POST",
             mode: "cors",
@@ -374,7 +355,7 @@ export async function SendMessage(message) {
             if (response.ok) return response.json();
         })
         .then(async (response) => {
-            socket.emit("MESSAGES", "yes");
+            socket.emit("MESSAGES", channelId);
         });
 }
 

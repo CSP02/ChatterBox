@@ -477,6 +477,8 @@ button#new_message_popup:hover {
     margin: 0 .3rem;
     border-radius: .6rem;
     width: inherit;
+    overflow: hidden;
+    overflow-wrap: anywhere;
 }
 
 .mentioned .message_db {
@@ -661,6 +663,130 @@ button#new_message_popup:hover {
     box-shadow: black 0 0 5px;
 }
 
-#reload div a{
+#reload div a {
     color: rgb(255, 135, 135);
+}
+
+#open_channel_button {
+    display: none;
+}
+
+/**
+* ? Mobile devices
+*/
+
+@media screen and (max-width: 680px) {
+    body * {
+        margin: 0;
+        padding: 0;
+    }
+
+    #open_channel_button,
+    #open_users_list {
+        display: block;
+        background-color: #161616;
+        box-shadow: black 0 0 5px;
+        border-radius: .6rem;
+        border: none;
+        margin: 1rem;
+        height: 50px;
+        width: 50px;
+        font-size: 14pt;
+        color: white;
+    }
+
+    #app_wrapper {
+        display: block;
+    }
+
+
+    #channels,
+    #list_users {
+        height: calc(90dvh - 3.5rem);
+        margin: .5rem;
+        z-index: 2;
+        transition: .2s ease;
+    }
+
+    #channels {
+        position: absolute;
+        z-index: 6;
+        width: 90dvw;
+        margin-left: -100%;
+    }
+
+    #open_users_list {
+        display: block;
+    }
+
+    #open_buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #list_users {
+        position: absolute;
+        top: 0;
+        width: 90dvw;
+        margin-left: -100%;
+    }
+
+    #auth_buts,
+    #app_main_container {
+        margin: .5rem;
+    }
+
+    #auth_buts {
+        max-height: 10dvh;
+        display: flex;
+    }
+
+    #auth_buts_wrapper {
+        width: 100%;
+    }
+
+    #app_main_container {
+        height: calc(90dvh - 2.5rem);
+        position: relative;
+    }
+
+    #channel_name_indicator {
+        z-index: 1;
+    }
+
+    .embed {
+        max-width: 100%;
+    }
+
+    .message_db {
+        max-width: 80%;
+        text-wrap: wrap;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+    }
+
+    .mentioned .message_db {
+        display: block;
+    }
+
+    #avatar {
+        height: 100px;
+        width: 100px;
+    }
+
+    #profile_container {
+        margin: .5rem;
+    }
+
+    .channel {
+        min-height: 50px;
+    }
+
+    .inactive_button {
+        color: grey;
+    }
+
+    .active_button {
+        color: white;
+    }
 }

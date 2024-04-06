@@ -36,15 +36,18 @@ app.post("/ValidatePassword", async (req, res) => {
     return res.send({ isValid: cond1 && cond2, charLen8: cond1, mixOfDiff: cond2 }) // return true if both the conditions are true
 })
 
+app.get(`/@me/:channel_id`, async (req, res) => {
+    res.sendFile(__dirname + "/@me/")
+})
+
 /**
  * ? socket.io events
  */
 
-let activeUsers = []
+let activeUsers = new Map()
 const url = "http://localhost:3000"
-let channelURL = `${url}/@me`
+
 io.on("connection", socket => {
-    console.log("|------------------------|\n|    A user connected    |\n|------------------------|\n", socket.id)
     const socketDetails = {
         id: socket.id
     }
@@ -55,6 +58,8 @@ io.on("connection", socket => {
         const pfp = data.user.avatarURL
         const colorPrefered = data.user.color
 
+        if (!activeUsers.has(channel._id)) activeUsers.set(channel._id, [])
+
         const user = {
             username: username,
             pfp: pfp,
@@ -62,25 +67,35 @@ io.on("connection", socket => {
         }
 
         socketDetails.user = user
-        activeUsers.push(socketDetails)
+        // activeUsers.push(socketDetails)
 
-        socket.join(`${url}/@me/${channel.name}`)
-        channelURL = `${url}/@me/${channel.name}`
-        
-        io.emit("UPDATE_USERS_LIST", activeUsers);
+        socket.join(`${url}/@me/${channel._id}`)
+        const users = activeUsers.get(channel._id)
+        // if (users === undefined) activeUsers.set(channel._id, [])
+        users.push(socketDetails)
+        activeUsers.set(channel._id, users)
+        console.log(activeUsers)
+
+        io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", users);
 
         console.log("|----------Joined--------|\n")
         console.log(socket.rooms)
         console.log("\n|------------------------|")
     })
 
-    socket.on("LEAVE_CHANNEL", channel => {
-        socket.leave(`${url}/@me/${channel.name}`)
+    socket.on("LEAVE_CHANNEL", data => {
+        const channel = data
+        socket.leave(`${url}/@me/${channel._id}`)
 
-        activeUsers = activeUsers.filter(ob => ob.id !== socket.id && ob.user)
-        io.emit("UPDATE_USERS_LIST", activeUsers);
+        if (!activeUsers.has(channel._id)) activeUsers.set(channel._id, [])
+
+        const allUsers = activeUsers.get(channel._id)
+        const users = allUsers.filter(ob => ob.id !== socket.id && ob.user)
+        activeUsers.set(channel._id, users)
+        io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", users);
 
         console.clear()
+        console.log(channel._id)
         console.log("|----------Leaved--------|\n")
         console.log(socket.rooms)
         console.log("\n|------------------------|")
@@ -98,18 +113,21 @@ io.on("connection", socket => {
             color: colorPrefered
         }
 
-        socketDetails.user = user
-        activeUsers.push(socketDetails)
         io.emit("LOGIN", { user: user })
-        io.emit("UPDATE_USERS_LIST", activeUsers)
     })
 
     socket.on("MESSAGES", data => {
-        io.emit("MESSAGES", "YES")
+        const channelId = data
+        const channelURL = `${url}/@me/${channelId}`
+        io.to(channelURL).emit("MESSAGES", {_id: data})
     })
 
     socket.on("disconnect", data => {
-        activeUsers = activeUsers.filter(ob => ob.id !== socket.id && ob.user)
-        io.emit("UPDATE_USERS_LIST", activeUsers);
+        console.log(data)
+        // const allUsers = activeUsers.get(channel._id)
+        // const users = allUsers.filter(ob => ob.id !== socket.id && ob.user)
+        // activeUsers.set(channel._id, users)
+
+        // io.emit("UPDATE_USERS_LIST", activeUsers);
     })
 })

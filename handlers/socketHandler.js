@@ -14,7 +14,8 @@ export function HandleSocketEvents(socket) {
 
     // Get all messages when someone sent a message
     socket.on("MESSAGES", data => {
-        GetAllMessages()
+        console.log("got a message")
+        GetAllMessages(data)
     })
 
     // This event is when user updates their profile
