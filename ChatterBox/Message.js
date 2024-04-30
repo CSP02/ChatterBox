@@ -124,7 +124,7 @@ function AddToMessages(message) {
     messagesHolder.appendChild(messageHolder);
 }
 
-export function SendJoinEvent(channel, activeChannel){
+export function SendJoinEvent(channel, activeChannel) {
     socket.emit("JOIN_CHANNEL", { channel: channel, user: loggedUser })
     activeChannel = channel
 }
@@ -191,7 +191,7 @@ export function AddUserToChannel(channelId, username) {
         });
 }
 
-export async function GetAllMessages(activeChannel) {
+export async function GetMessages(activeChannel) {
     previousMessage.username = ""
     previousMessage.timestamp = ""
     const messagesDiv = document.getElementById("messages");
@@ -199,7 +199,7 @@ export async function GetAllMessages(activeChannel) {
 
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        `${apiURL}/api/get_messages?channel_id=${activeChannel._id}`,
+        `${apiURL}/api/messages?channel_id=${activeChannel._id}&chunk=10`,
         {
             mode: "cors",
             headers: headers
@@ -219,16 +219,15 @@ export async function GetAllMessages(activeChannel) {
                     token = response.token
                     refreshToken = response.refreshToken
 
-                    GetAllMessages(activeChannel)
+                    GetMessages(activeChannel)
                 })
             }
             if (response.ok) return response.json();
         })
         .then(async (response) => {
-            const isEmpty = await response.EmptyChat;
             const messages = await response.messages;
 
-            if (await isEmpty) return messagesDiv.classList.add("empty_messages");
+            if (messages.length <= 0) return messagesDiv.classList.add("empty_messages");
             messagesDiv.classList.remove("empty_messages")
             messagesDiv.innerHTML = "";
             messages.forEach((message) => {
@@ -265,7 +264,8 @@ export async function GetChannels() {
         if (response.ok) return response.json();
     })
         .then(async (response) => {
-            if (response.channels.length <= 0) return
+            console.log(await response)
+            if (await response.channels.length <= 0) return
             const channels = await response.channels
 
             AddToChannels(channels)
@@ -320,12 +320,11 @@ export async function SendMessage(message) {
     previousMessage.timestamp = ""
     const path = location.pathname
     const channelId = path.split("/").reverse()[0].toString()
-    
-    message.reqType = "SEND_MESSAGE";
+
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
     fetch(
-        `${apiURL}/api/send_message?channel_id=${channelId}`,
+        `${apiURL}/api/messages?channel_id=${channelId}`,
         {
             method: "POST",
             mode: "cors",
@@ -486,6 +485,11 @@ async function ResolveContent(content, contentHolder, message) {
                     if (component.image) {
                         image.classList.add("embed_image")
                         image.src = component.image
+                        image.onload = () => {
+                            setTimeout(() => {
+                                ScrollToBottom(true)
+                            }, 100)
+                        }
                         embedWrapper.append(...[title, description, image])
                     } else {
                         embedWrapper.append(...[title, description])
@@ -497,7 +501,11 @@ async function ResolveContent(content, contentHolder, message) {
             if (component.type === types.ComponentTypes.IMAGE) {
                 const image = new Image
                 image.src = component.imageURL
-
+                image.onload = () => {
+                    setTimeout(() => {
+                        ScrollToBottom(true)
+                    }, 100)
+                }
                 image.classList.add("component_image")
                 components.push(image)
             }
@@ -515,6 +523,8 @@ export function ScrollToBottom(onload) {
     const scrollTop = messagesDiv.scrollTop
     const offsetHeight = messagesDiv.offsetHeight
     const lastChild = messagesDiv.lastChild
+
+    if (onload) return messagesDiv.scrollTo(0, scrollHeight + lastChild.offsetHeight)
 
     if (scrollHeight <= scrollTop + offsetHeight + 140) {
         messagesDiv.scrollTo(0, scrollHeight + lastChild.offsetHeight)

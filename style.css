@@ -14,7 +14,7 @@
     --default_margin: .2rem;
     --extended_padding: .5rem;
     --extended_margin: .5rem;
-    --background_color: #363636;
+    --background_color: rgb(14, 14, 14);
     --primary_color: #2E4F4F;
     --border_color: #61a5a5;
     --button_ok: #9BCF53;
@@ -32,18 +32,7 @@ body {
 
 a {
     color: rgb(159, 176, 255);
-}
-
-button {
-    background-color: transparent;
-    border: none;
-    padding: var(--default_padding);
-    margin: var(--default_margin);
-}
-
-button:hover {
-    opacity: .7;
-    cursor: pointer;
+    text-decoration: none;
 }
 
 nav {
@@ -130,17 +119,8 @@ nav {
 }
 
 #auth_buttons a{
-    margin: var(--default_margin);
-    background-color: var(--button_ok);
-    color: black;
-    border-radius: .3rem;
-    text-decoration: none;
+    color: rgb(34, 34, 34);
 }
-
-#auth_buttons a:hover{
-    opacity: .7;
-}
-
 /**
 * ? Responsive
 */

@@ -1,7 +1,7 @@
 /**
  * ? Imports from other scripts
  */
-import { AddUserToChannel, CreateChannel, LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetAllMessages, GetChannels, SendMessage, UpdateUser, ScrollToBottom, SendJoinEvent } from "../ChatterBox/Message.js"
+import { AddUserToChannel, CreateChannel, LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetMessages, GetChannels, SendMessage, UpdateUser, ScrollToBottom, SendJoinEvent } from "../ChatterBox/Message.js"
 
 SetDefaults({
     token: window.sessionStorage.getItem("token"),
@@ -104,7 +104,15 @@ messageBox.addEventListener("input", (event) => {
     } else {
         messageBox.style.outlineColor = "rgb(214, 214, 214)"
     }
-    // SendTypingEvent()
+
+    const user = JSON.parse(window.sessionStorage.getItem("user"))
+    const data = {
+        username: user.username,
+        channelId: location.pathname.split("/").reverse()[0].toString()
+    }
+    // setTimeout(() => {
+        SendSocketEvent("TYPING", data)
+    // }, 3000)
     // removing all spaces at the beginning and at the end of the content in the message box and check if the length is greater than 0
     if (messageBox.innerText.trim().length > 0) {
         sendMessage.removeAttribute("disabled"); // enable button if the length is greater than 0
@@ -152,7 +160,7 @@ window.onload = () => {
             const channel = document.getElementsByClassName(path.split("/").reverse()[0].toString())[0]
             const channelId = { _id: path.split("/").reverse()[0].toString() }
             const channelIndicator = document.getElementById("channel_name_indicator")
-
+            if (!channel) location.reload()
             channel.classList.replace("inactive", "active")
             channelIndicator.innerText = channel.innerText
             const previousChannel = window.sessionStorage.getItem("active_channel")
@@ -173,8 +181,8 @@ window.onload = () => {
                 const inviteForm = document.getElementById("invite_form")
                 inviteForm.style.display = "flex"
 
-                const invieButton = document.getElementById("invite_okay")
-                invieButton.addEventListener("click", click => {
+                const inviteButton = document.getElementById("invite_okay")
+                inviteButton.addEventListener("click", click => {
                     const username = document.getElementById("Username").value
 
                     AddUserToChannel(channelId, username)
@@ -189,7 +197,7 @@ window.onload = () => {
             channelIndicator.appendChild(invite)
 
             // Get all messages from the Database
-            GetAllMessages(channelId);
+            GetMessages(channelId);
         }
         ScrollToBottom(true)
 

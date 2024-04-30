@@ -90,8 +90,8 @@ nav {
     animation-delay: .4s;
 }
 
-#login{
-    background-color: var(--background_color);
+#login {
+    background-color: rgb(14, 14, 14);
     height: var(--max_device_height);
     width: var(--max_device_width);
     position: fixed;
@@ -104,8 +104,13 @@ nav {
 #login_fields_wrapper {
     display: grid;
     margin: var(--default_margin);
+    padding: .7rem;
+    border-radius: .3rem;
+    box-shadow: black 0 0 5px;
+    background-color: rgb(20, 20, 20);
 }
 
+/* 
 #username_box,
 #password_box{
     padding: var(--extended_padding);
@@ -120,7 +125,7 @@ nav {
 #username_box:focus,
 #password_box:focus{
     outline: 3px solid var(--border_color);
-}
+} */
 
 #auth_buttons {
     margin: var(--default_margin);
@@ -129,7 +134,7 @@ nav {
     justify-content: space-between;
 }
 
-#login_button,
+/* #login_button,
 #cancel_button {
     color: rgb(24, 24, 24);
     padding: var(--extended_padding);
@@ -148,7 +153,7 @@ nav {
 #cancel_button {
     background-color: var(--button_danger);
     margin: auto .2rem 0 0;
-}
+} */
 
 /** 
 * ? Loading animation

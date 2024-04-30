@@ -671,6 +671,20 @@ button#new_message_popup:hover {
     display: none;
 }
 
+#action_indicator {
+    margin-left: 1rem;
+    height: 1.5rem;
+    padding: 0;
+    white-space: break-spaces;
+    display: flex;
+}
+
+#action_indicator span {
+    max-width: 10dvw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /**
 * ? Mobile devices
 */

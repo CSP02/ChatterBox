@@ -45,6 +45,14 @@ app.get(`/@me/:channel_id`, async (req, res) => {
  */
 
 let activeUsers = new Map()
+let usersTyping = []
+let isCooled = true
+
+setInterval(() => {
+    usersTyping = []
+    isCooled = true
+}, 3000)
+
 const url = "http://localhost:3000"
 
 io.on("connection", socket => {
@@ -119,7 +127,20 @@ io.on("connection", socket => {
     socket.on("MESSAGES", data => {
         const channelId = data
         const channelURL = `${url}/@me/${channelId}`
-        io.to(channelURL).emit("MESSAGES", {_id: data})
+        io.to(channelURL).emit("MESSAGES", { _id: data })
+    })
+
+    socket.on("TYPING", data => {
+        const username = data.username
+        const channelId = data.channelId
+
+        if (!usersTyping.includes(username))
+            usersTyping.push(username)
+
+        if (isCooled) {
+            io.to(`${url}/@me/${channelId}`).emit("TYPING", usersTyping)
+            isCooled = false
+        }
     })
 
     socket.on("disconnect", data => {

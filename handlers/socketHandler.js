@@ -1,7 +1,7 @@
 /**
  * ? Imports
  */
-import { GetAllMessages } from "../ChatterBox/Message.js"
+import { GetMessages } from "../ChatterBox/Message.js"
 
 /**
  * ? method to handle all the sockets events
@@ -14,8 +14,7 @@ export function HandleSocketEvents(socket) {
 
     // Get all messages when someone sent a message
     socket.on("MESSAGES", data => {
-        console.log("got a message")
-        GetAllMessages(data)
+        GetMessages(data)
     })
 
     // This event is when user updates their profile
@@ -52,5 +51,22 @@ export function HandleSocketEvents(socket) {
             userDetailsWrapper.classList.add("online_users")
             usersList.appendChild(userDetailsWrapper)
         })
+    })
+
+    socket.on("TYPING", usernames => {
+        const actionIndicator = document.getElementById("action_indicator")
+        const namesInInd = document.createElement("span")
+
+        namesInInd.innerText = [...usernames].join(", ")
+        namesInInd.classList.add("typing_usernames")
+
+        actionIndicator.innerHTML = ""
+        actionIndicator.appendChild(namesInInd)
+        const textNode = document.createTextNode(`${usernames.length === 1 ? " is" : " are"} typing`)
+        actionIndicator.appendChild(textNode)
+
+        setTimeout(() => {
+            actionIndicator.innerHTML = ""
+        }, 15000)
     })
 }
