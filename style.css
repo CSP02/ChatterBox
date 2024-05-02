@@ -28,6 +28,7 @@ body {
     color: white;
     font-family: "Roboto", sans-serif;
     font-weight: 300;
+    overflow-y: none;
 }
 
 a {
@@ -38,6 +39,46 @@ a {
 nav {
     position: fixed;
     display: flex;
+    width: 100dvw;
+    height: 10dvh;
+    justify-content: space-between;
+    z-index: 1000;
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+}
+
+nav a {
+    color: white;
+    font-size: 18pt;
+}
+
+nav a:hover {
+    color: rgb(211, 211, 211);
+    text-decoration: underline;
+}
+
+#auth_buttons a {
+    font-size: 12pt;
+}
+
+#auth_buttons a:hover {
+    text-decoration: none;
+}
+
+.attop {
+    border-bottom: 1px solid transparent;
+    background-color: transparent;
+    transition: .2s ease;
+}
+
+.nattop {
+    border-bottom: 1px solid rgb(75, 75, 75);
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(24px);
+    transition: .2s ease;
 }
 
 #loading {
@@ -97,35 +138,41 @@ nav {
     height: var(--max_device_height);
     width: var(--max_device_width);
     display: grid;
-    align-items: center;
-    justify-items: center;
     font-size: 18pt;
 }
 
 #wrapper {
     display: grid;
-    height: auto;
-    width: 30dvw;
-    justify-items: center;
-    align-items: center;
+    height: 100dvh;
+    overflow-y: auto;
 }
 
-#wrapper *{
+#wrapper * {
     padding: var(--extended_padding);
 }
 
-#auth_buttons{
+#content {
+    padding: 1.5rem;
+    margin-top: 12dvh;
+}
+
+#auth_buttons {
     display: flex;
 }
 
-#auth_buttons a{
+#auth_buttons a {
     color: rgb(34, 34, 34);
 }
+
+#wrapper::-webkit-scrollbar{
+    width: .5rem;
+}
+
 /**
 * ? Responsive
 */
-@media screen and (max-width: 600px){
-    #wrapper{
+@media screen and (max-width: 600px) {
+    #wrapper {
         width: auto;
     }
 }
