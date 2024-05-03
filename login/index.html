@@ -16,6 +16,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <link href="https://cdn.jsdelivr.net/gh/CSP02/vanbUI@latest/vanbUI/vanbUI.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/Resources/chatterbox_logo_transparent.png" type="image/png">
 
     <title>Login</title>
 </head>
@@ -30,8 +31,7 @@
     </div>
     <nav style="position: fixed;width: 100%;z-index: 1000;padding: .5rem;">
         <a href="/">
-            <img src="/Resources/chatterbox_logo_transparent.png" alt="test"
-                height="65px" width="65px" >
+            <img src="/Resources/chatterbox_logo_transparent.png" alt="test" height="65px" width="65px">
         </a>
     </nav>
     <div id="login">
@@ -46,10 +46,12 @@
             <input type="password" placeholder="Password" name="password_box" id="password_box" required
                 autocomplete="false" vanb="true" variant="input" class="auth_inps" style="padding: .7rem;">
             <div id="auth_buttons">
-                <button id="login_button" type="submit" vanb="true" variant="white" style="width: 100%;padding: .7rem;">Login</button>
+                <button id="login_button" type="submit" vanb="true" variant="white"
+                    style="width: 100%;padding: .7rem;">Login</button>
                 <!-- <button id="signup_button">Sign up</button> -->
             </div>
-            <p style="font-size: 10pt;text-align: center;padding: .3rem;margin: .3rem;">Don't have an account? <a href="/signup" style="text-decoration: none;">Sign up</a></p>
+            <p style="font-size: 10pt;text-align: center;padding: .3rem;margin: .3rem;">Don't have an account? <a
+                    href="/signup" style="text-decoration: none;">Sign up</a></p>
         </div>
         <!-- <div id="empty_fields" style="display: none; font-size: 12pt;color: rgb(255, 107, 107);text-align: center;">Username and password cannot be empty</div> -->
     </div>

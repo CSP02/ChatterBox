@@ -160,7 +160,7 @@ window.onload = () => {
             const channel = document.getElementById(path.split("/").reverse()[0].toString())
             const channelId = { _id: path.split("/").reverse()[0].toString() }
             const channelIndicator = document.getElementById("channel_name_indicator")
-            if (!channel) location.reload()
+            if (!channel) location = "/@me/"
             channel.classList.replace("inactive", "active")
             channelIndicator.innerText = channel.innerText
             const previousChannel = window.sessionStorage.getItem("active_channel")

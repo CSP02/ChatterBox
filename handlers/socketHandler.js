@@ -74,11 +74,15 @@ export function HandleSocketEvents(socket) {
 
     socket.on("USER_INVITE", data => {
         const notification = document.getElementById("notification")
-        const notificationTone = document.getElementById("notify_tone")
 
+        const notificationTone = document.createElement("audio")
+        notificationTone.src = "/Resources/notification_tone.mp3"
+
+        notificationTone.style.display = "none"
         notification.innerText = data
         notification.style.marginTop = "0"
 
+        document.body.appendChild(notificationTone)
         notificationTone.play()
 
         setTimeout(() => {
