@@ -137,26 +137,24 @@ function AddToChannels(channels) {
         const iconURL = channel.iconURL
 
         const nameButton = document.createElement("button")
-        nameButton.id = channelName
         nameButton.innerText = channelName
         nameButton.classList.add("inactive")
         nameButton.classList.add("channel")
-        nameButton.classList.add(channel._id)
+        nameButton.id = channel._id
 
         nameButton.addEventListener("click", click => {
             socket.emit("LEAVE_CHANNEL", { channel: activeChannel, user: loggedUser })
             window.sessionStorage.setItem("active_channel", activeChannel)
 
             location = "http://localhost:3000/@me/" + channel._id
-
         })
 
-        channelsWrapper.appendChild(nameButton)
+        if (document.getElementById(channel._id) === null)
+            channelsWrapper.appendChild(nameButton)
     })
 }
 
 export function AddUserToChannel(channelId, username) {
-    console.log(channelId)
     const headers = new Headers()
     headers.append("Authorization", `Bearer ${token}`)
 
@@ -187,7 +185,7 @@ export function AddUserToChannel(channelId, username) {
             if (response.ok) return await response.json();
         })
         .then((response) => {
-            socket.emit("USER_INVITE", username)
+            socket.emit("USER_INVITE", username, loggedUser)
         });
 }
 

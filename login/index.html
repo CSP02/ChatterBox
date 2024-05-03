@@ -28,21 +28,28 @@
             <div id="circle_3"></div>
         </div>
     </div>
+    <nav style="position: fixed;width: 100%;z-index: 1000;padding: .5rem;">
+        <a href="/">
+            <img src="/Resources/chatterbox_logo_transparent.png" alt="test"
+                height="65px" width="65px" >
+        </a>
+    </nav>
     <div id="login">
+        <div id="logo_and_text">
+            <img src="/Resources/chatterbox_logo_transparent.png" alt="" srcset="" style="height: 85px; width: 85px;">
+            <!-- <h2 style="margin: .3rem .5rem;color: rgb(209, 209, 209);text-align: center;">ChatterBox</h2> -->
+        </div>
         <div id="login_fields_wrapper">
-            <h2 style="margin: .5rem;color: rgb(209, 209, 209);text-align: center;padding: .5rem;">Login to chatter box</h2>
             <div id="invalid_credentials"></div>
             <input placeholder="Username" type="text" name="username_box" id="username_box" required
-                autocomplete="false" vanb="true" variant="input">
+                autocomplete="false" vanb="true" variant="input" class="auth_inps" style="padding: .7rem;">
             <input type="password" placeholder="Password" name="password_box" id="password_box" required
-                autocomplete="false" vanb="true" variant="input">
+                autocomplete="false" vanb="true" variant="input" class="auth_inps" style="padding: .7rem;">
             <div id="auth_buttons">
-                <button id="cancel_button" vanb="true" variant="outline"><a href="/"
-                        style="text-decoration: none; color:rgb(224, 224, 224);">Cancel</a></button>
-                <button id="login_button" type="submit" vanb="true" variant="success">Login</button>
+                <button id="login_button" type="submit" vanb="true" variant="white" style="width: 100%;padding: .7rem;">Login</button>
                 <!-- <button id="signup_button">Sign up</button> -->
             </div>
-            <p style="font-size: 10pt;text-align: center;">Don't have an account? <a href="/signup">Sign up</a></p>
+            <p style="font-size: 10pt;text-align: center;padding: .3rem;margin: .3rem;">Don't have an account? <a href="/signup" style="text-decoration: none;">Sign up</a></p>
         </div>
         <!-- <div id="empty_fields" style="display: none; font-size: 12pt;color: rgb(255, 107, 107);text-align: center;">Username and password cannot be empty</div> -->
     </div>

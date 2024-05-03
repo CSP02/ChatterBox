@@ -103,57 +103,27 @@ nav {
 
 #login_fields_wrapper {
     display: grid;
-    margin: var(--default_margin);
-    padding: .7rem;
     border-radius: .3rem;
-    box-shadow: black 0 0 5px;
-    background-color: rgb(20, 20, 20);
 }
-
-/* 
-#username_box,
-#password_box{
-    padding: var(--extended_padding);
-    margin: var(--default_margin);
-    border: none;
-    outline: none;
-    border-radius: .3rem;
-    color: rgb(24, 24, 24);
-    font-size: 14pt;
-}
-
-#username_box:focus,
-#password_box:focus{
-    outline: 3px solid var(--border_color);
-} */
 
 #auth_buttons {
-    margin: var(--default_margin);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
-/* #login_button,
-#cancel_button {
-    color: rgb(24, 24, 24);
-    padding: var(--extended_padding);
-    border-radius: .3rem;
-    margin: 0;
-    font-size: 14pt;
-    margin: var(--default_margin) 0;
-    background-color: var(--button_ok);
-    width: 100%;
+input.auth_inps{
+    width: auto;
 }
 
-#login_button{
-    margin: auto 0 0 .2rem;
+#logo_and_text{
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: .5rem;
 }
-
-#cancel_button {
-    background-color: var(--button_danger);
-    margin: auto .2rem 0 0;
-} */
 
 /** 
 * ? Loading animation

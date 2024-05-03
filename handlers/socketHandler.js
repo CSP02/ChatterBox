@@ -1,7 +1,7 @@
 /**
  * ? Imports
  */
-import { GetMessages } from "../ChatterBox/Message.js"
+import { GetMessages, GetChannels } from "../ChatterBox/Message.js"
 
 /**
  * ? method to handle all the sockets events
@@ -54,10 +54,11 @@ export function HandleSocketEvents(socket) {
     })
 
     socket.on("TYPING", usernames => {
+        console.log(usernames)
         const actionIndicator = document.getElementById("action_indicator")
         const namesInInd = document.createElement("span")
 
-        namesInInd.innerText = [...usernames].join(", ")
+        namesInInd.innerText = [...Array.from(usernames)].join(", ")
         namesInInd.classList.add("typing_usernames")
 
         actionIndicator.innerHTML = ""
@@ -67,6 +68,22 @@ export function HandleSocketEvents(socket) {
 
         setTimeout(() => {
             actionIndicator.innerHTML = ""
+            socket.emit("CLEAR_TYPING_USERS", "clear")
         }, 15000)
+    })
+
+    socket.on("USER_INVITE", data => {
+        const notification = document.getElementById("notification")
+        const notificationTone = document.getElementById("notify_tone")
+
+        notification.innerText = data
+        notification.style.marginTop = "0"
+
+        notificationTone.play()
+
+        setTimeout(() => {
+            notification.style.marginTop = "-100%"
+        }, 3000);
+        GetChannels()
     })
 }

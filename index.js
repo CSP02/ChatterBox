@@ -46,12 +46,12 @@ app.get(`/@me/:channel_id`, async (req, res) => {
 
 let activeUsers = new Map()
 let usersTyping = []
-let isCooled = true
+// let isCooled = true
 
-setInterval(() => {
-    usersTyping = []
-    isCooled = true
-}, 3000)
+// setInterval(() => {
+//     usersTyping = []
+//     isCooled = true
+// }, 3000)
 
 const url = "http://localhost:3000"
 
@@ -82,13 +82,9 @@ io.on("connection", socket => {
         // if (users === undefined) activeUsers.set(channel._id, [])
         users.push(socketDetails)
         activeUsers.set(channel._id, users)
-        console.log(activeUsers)
+        // console.log(activeUsers)
 
         io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", users);
-
-        console.log("|----------Joined--------|\n")
-        console.log(socket.rooms)
-        console.log("\n|------------------------|")
     })
 
     socket.on("LEAVE_CHANNEL", data => {
@@ -101,12 +97,6 @@ io.on("connection", socket => {
         const users = allUsers.filter(ob => ob.id !== socket.id && ob.user)
         activeUsers.set(channel._id, users)
         io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", users);
-
-        console.clear()
-        console.log(channel._id)
-        console.log("|----------Leaved--------|\n")
-        console.log(socket.rooms)
-        console.log("\n|------------------------|")
     })
 
     // Catches the login event from a client and sends the user details for every other clients
@@ -115,6 +105,7 @@ io.on("connection", socket => {
         const pfp = data.avatarURL
         const colorPrefered = data.color
 
+        socket.join(`${url}/@me/${username}`)
         const user = {
             username: username,
             pfp: pfp,
@@ -137,10 +128,15 @@ io.on("connection", socket => {
         if (!usersTyping.includes(username))
             usersTyping.push(username)
 
-        if (isCooled) {
-            io.to(`${url}/@me/${channelId}`).emit("TYPING", usersTyping)
-            isCooled = false
-        }
+        io.to(`${url}/@me/${channelId}`).emit("TYPING", usersTyping)
+    })
+
+    socket.on("CLEAR_TYPING_USERS", data => {
+        usersTyping = []
+    })
+
+    socket.on("USER_INVITE", (username, user) => {
+        io.to(`${url}/@me/${username}`).emit("USER_INVITE", `${user.username} added you to a channel`)
     })
 
     socket.on("disconnect", data => {

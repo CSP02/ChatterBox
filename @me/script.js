@@ -157,7 +157,7 @@ window.onload = () => {
     setTimeout(() => {
         const path = location.pathname
         if (path !== "/@me/") {
-            const channel = document.getElementsByClassName(path.split("/").reverse()[0].toString())[0]
+            const channel = document.getElementById(path.split("/").reverse()[0].toString())
             const channelId = { _id: path.split("/").reverse()[0].toString() }
             const channelIndicator = document.getElementById("channel_name_indicator")
             if (!channel) location.reload()
