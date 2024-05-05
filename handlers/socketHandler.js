@@ -54,7 +54,6 @@ export function HandleSocketEvents(socket) {
     })
 
     socket.on("TYPING", usernames => {
-        console.log(usernames)
         const actionIndicator = document.getElementById("action_indicator")
         const namesInInd = document.createElement("span")
 

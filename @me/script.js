@@ -203,6 +203,8 @@ window.onload = () => {
 
         document.getElementById("loading").style.display = "none"
     }, 1000)
+
+    messageBox.focus()
 }
 
 document.getElementById("open_users_list").addEventListener("click", click => {

@@ -9,6 +9,7 @@ let refreshToken = null
 const apiURL = "http://localhost:3001"
 let activeChannel = { name: "http://localhost:3000/@me" }
 const types = new ComponentTypes()
+const repliedToCache = { isEmpty: true }
 
 HandleSocketEvents(socket)
 
@@ -39,6 +40,7 @@ function AddToMessages(message) {
     const color = message.user.color;
     const content = message.content;
     const avatarURL = message.user.avatarURL;
+    const repliedTo = message.repliedTo
     const date = new Date(message.timestamp);
     const day = date.getDate();
     const month = date.getMonth() + 1;
@@ -96,12 +98,80 @@ function AddToMessages(message) {
     })
 
     contentHolder.classList.add("message_db");
+    if (repliedTo !== undefined && repliedTo.username !== "") {
+        const replyIndicator = document.createElement("div")
+        const userPfp = document.createElement("img")
+        const username = document.createElement("span")
+        const content = document.createElement("span")
+
+        username.innerText = repliedTo.username
+        content.innerText = repliedTo.content
+        content.classList.add("reply_content")
+        userPfp.src = repliedTo.avatarURL
+        userPfp.style = "height:25px;width:25px;border-radius:50%;"
+
+        username.style.color = repliedTo.color
+
+        replyIndicator.append(...[userPfp, username, content])
+        replyIndicator.classList.add("replied_to")
+        messAndUserholder.appendChild(replyIndicator)
+
+        pfp.style.marginTop = "calc(25px + 1.2rem)"
+    }
     ResolveContent(content, contentHolder, message);
+    const reply = document.createElement("button")
+    const icon = document.createElement("i")
+    icon.classList.add("fa-solid")
+    icon.classList.add('fa-reply')
+    reply.classList.add("reply_icon")
+    reply.append(icon)
+
+    reply.addEventListener("click", click => {
+        const content = reply.parentElement.innerText
+        let user = reply.parentElement.parentElement.firstChild.firstChild.innerText
+
+        if (user === "") user = reply.parentElement.parentElement.firstChild.nextSibling.firstChild.innerText
+        repliedToCache.username = user
+        repliedToCache.content = content
+
+        
+        window.sessionStorage.setItem("repliedTo", JSON.stringify(repliedToCache))
+        
+        const replyEl = document.createElement("div")
+        const username = document.createElement("span")
+        const cancelButton = document.createElement("button")
+        const closeIcon = document.createElement("i")
+
+        const replyIndicator = document.getElementById("reply_indicator")
+
+        closeIcon.classList.add("fa-solid")
+        closeIcon.classList.add("fa-circle-xmark")
+        cancelButton.appendChild(closeIcon)
+        cancelButton.classList.add("cancel_reply")
+
+        username.innerText = "replying to " + JSON.parse(window.sessionStorage.getItem("repliedTo")).username
+        console.log(window.sessionStorage.getItem("repliedTo"))
+        cancelButton.addEventListener("click", click => {
+            window.sessionStorage.setItem("repliedTo", "")
+            replyEl.remove()
+            replyIndicator.style.display = "none"
+            document.getElementById("message_box").focus()
+        })
+        replyEl.append(...[username, cancelButton])
+
+        replyIndicator.style.display = "flex"
+        replyIndicator.innerHTML = ""
+        replyIndicator.appendChild(replyEl)
+
+        document.getElementById("message_box").focus()
+    })
+
+    contentHolder.append(reply)
     messageHolder.classList.add("message_holder");
 
     messAndUserholder.classList.add("message_user_holder")
 
-    if (previousMessage.username !== "" && previousMessage.timestamp !== "") {
+    if (previousMessage.username !== "" && previousMessage.timestamp !== "" && !message.repliedTo) {
         if (previousMessage.username === username && new Date(message.timestamp) - new Date(previousMessage.timestamp) <= 60000 && messagesHolder.children.length > 0) {
             const prevMessHolder = messagesHolder.lastChild.lastChild
 
@@ -262,7 +332,6 @@ export async function GetChannels() {
         if (response.ok) return response.json();
     })
         .then(async (response) => {
-            console.log(await response)
             if (await response.channels.length <= 0) return
             const channels = await response.channels
 
@@ -316,6 +385,15 @@ export async function CreateChannel() {
 export async function SendMessage(message) {
     previousMessage.username = ""
     previousMessage.timestamp = ""
+    if (window.sessionStorage.getItem("repliedTo") !== "") {
+        const repliedTo = JSON.parse(window.sessionStorage.getItem("repliedTo"))
+        console.log(repliedTo.username, repliedTo.content)
+        message.repliedTo = {
+            username: repliedTo.username,
+            content: repliedTo.content
+        }
+    }
+
     const path = location.pathname
     const channelId = path.split("/").reverse()[0].toString()
 
@@ -353,6 +431,10 @@ export async function SendMessage(message) {
         })
         .then(async (response) => {
             socket.emit("MESSAGES", channelId);
+            document.getElementById("message_box").focus()
+            document.getElementById("reply_indicator").innerHTML = ""
+            document.getElementById("reply_indicator").style.display = "none"
+            window.sessionStorage.setItem("repliedTo", "")
         });
 }
 
@@ -419,6 +501,17 @@ export function SendTypingEvent() {
 
 async function ResolveContent(content, contentHolder, message) {
     let finalText = content.split(" ");
+
+    if (message.repliedTo && message.repliedTo.username === loggedUser.username) {
+        setTimeout(() => {
+            console.log(contentHolder.parentElement)
+            const messageHolder = contentHolder.parentElement.parentElement
+            messageHolder.classList.add("mentioned");
+            messageHolder.style.backgroundColor = loggedUser.color + "11"
+            messageHolder.style.borderTop = "solid " + loggedUser.color
+            messageHolder.style.borderBottom = "solid " + loggedUser.color
+        }, 100);
+    }
 
     content.split(" ").forEach((data) => {
         if (data.startsWith("https://") || data.startsWith("http://")) {

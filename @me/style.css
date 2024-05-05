@@ -492,8 +492,34 @@ button#new_message_popup:hover {
     margin: 0 .3rem;
     border-radius: .6rem;
     width: inherit;
-    overflow: hidden;
+    position: relative;
     overflow-wrap: anywhere;
+}
+
+.message_db:hover .reply_icon {
+    display: flex;
+    height: 25px;
+    width: 25px;
+    transform: translate(-10px, -10px);
+    z-index: 100;
+}
+
+.reply_icon {
+    background-color: rgb(37, 37, 37);
+    border: none;
+    height: 50px;
+    width: 50px;
+    color: rgb(214, 214, 214);
+    border-radius: .3rem;
+    box-shadow: black 0 0 3px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: none;
+}
+
+.reply_icon:hover {
+    opacity: .7;
 }
 
 .mentioned .message_db {
@@ -521,6 +547,62 @@ button#new_message_popup:hover {
 
 .message_db:hover {
     background-color: rgb(17, 17, 17);
+}
+
+div.reply_message {
+    display: grid;
+}
+
+.replied_to {
+    display: flex;
+    padding: .3rem .8rem;
+    background-color: #101010;
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+    opacity: .8;
+    font-size: 12pt;
+    font-style: italic;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.replied_to span {
+    margin: .3rem;
+}
+
+span.reply_content {
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    width: 20dvw;
+}
+
+#reply_indicator {
+    padding: .5rem;
+    background-color: rgb(17, 17, 17);
+    border-top-right-radius: .3rem;
+    border-top-left-radius: .3rem;
+    display: none;
+    box-shadow: black 0 0 2px;
+}
+
+#reply_indicator div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.cancel_reply {
+    background-color: transparent;
+    border: none;
+    border-radius: .3rem;
+    color: rgb(221, 221, 221);
+}
+
+.cancel_reply:hover {
+    opacity: .7;
 }
 
 /**
