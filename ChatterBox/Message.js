@@ -387,7 +387,7 @@ export async function CreateChannel() {
 export async function SendMessage(message) {
     previousMessage.username = ""
     previousMessage.timestamp = ""
-    if (window.sessionStorage.getItem("repliedTo") !== "") {
+    if (window.sessionStorage.getItem("repliedTo") !== null && window.sessionStorage.getItem("repliedTo") !== "") {
         const repliedTo = JSON.parse(window.sessionStorage.getItem("repliedTo"))
         console.log(repliedTo.username, repliedTo.content)
         message.repliedTo = {
