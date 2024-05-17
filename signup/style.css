@@ -14,7 +14,7 @@
     --default_margin: .2rem;
     --extended_padding: .5rem;
     --extended_margin: .5rem;
-    --background_color: #363636;
+    --background_color: rgb(21, 21, 21);
     --primary_color: #2E4F4F;
     --border_color: #61a5a5;
     --button_ok: #9BCF53;
@@ -91,7 +91,7 @@ nav {
 }
 
 #signup {
-    background-color: var(--background_color);
+    background-color: rgb(14, 14, 14);
     height: var(--max_device_height);
     width: var(--max_device_width);
     position: fixed;
@@ -104,56 +104,72 @@ nav {
 #signup_fields_wrapper {
     display: grid;
     margin: var(--default_margin);
+    justify-items: center;
+    width: 17dvw;
+    position: relative;
 }
 
 #username_box,
 #password_box,
-#pref_color{
-    padding: var(--extended_padding);
-    margin: var(--default_margin);
-    border: none;
-    outline: none;
-    border-radius: .3rem;
-    color: rgb(24, 24, 24);
-    font-size: 14pt;
+#pref_color {
+    padding: .7rem;
+}
+
+#validation_list,
+#user_valid {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+    transition: .2s ease;
+    background-color: rgb(15 15 15);
+    border-radius: .6rem;
+    box-shadow: black 0 0 5px;
+    padding: .5rem;
+    margin: .5rem;
+    right: -150%;
+    top: 0;
+}
+
+#validation_list ol,
+#user_valid ol {
+    margin: 1rem;
+    padding: 0 .5rem;
+    color: rgb(223, 223, 223);
+}
+
+#password_box:hover+#validation_list,
+#username_box:hover+#user_valid {
+    opacity: 1;
+    z-index: 100;
+    transition: .2s ease;
+}
+
+#color_text {
+    display: flex;
+    align-items: center;
 }
 
 #pref_color {
-    width: 100%;
+    width: 30%;
 }
 
-#username_box:focus,
-#password_box:focus,
-#pref_color:focus{
-    outline: 3px solid var(--border_color);
+#profile_color {
+    width: 30%;
 }
 
 #auth_buttons {
     margin: var(--default_margin);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-}
-
-#signup_button,
-#cancel_button {
-    color: rgb(24, 24, 24);
-    padding: var(--extended_padding);
-    border-radius: .3rem;
-    margin: 0;
-    font-size: 14pt;
-    margin: var(--default_margin) 0;
-    background-color: var(--button_ok);
+    justify-content: center;
     width: 100%;
 }
 
 #signup_button {
-    margin: auto 0 0 .2rem;
-}
-
-#cancel_button {
-    background-color: var(--button_danger);
-    margin: auto .2rem 0 0;
+    font-size: 14pt;
+    padding: .5rem .7rem;
+    width: 100%;
+    padding: .3rem;
 }
 
 /** 
@@ -176,13 +192,17 @@ nav {
 #profile_color {
     background-color: transparent;
     border: none;
-    width: 100%;
     height: 100%;
+}
+
+#profile_color::-webkit-color-swatch-wrapper {
+    width: 50px;
+    height: 50px;
 }
 
 #profile_color::-webkit-color-swatch {
     background-color: transparent;
     padding: var(--default_padding);
-    border-radius: .5rem;
+    border-radius: .3rem;
     border: none;
 }

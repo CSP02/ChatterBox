@@ -110,9 +110,7 @@ messageBox.addEventListener("input", (event) => {
         username: user.username,
         channelId: location.pathname.split("/").reverse()[0].toString()
     }
-    // setTimeout(() => {
-        SendSocketEvent("TYPING", data)
-    // }, 3000)
+    SendSocketEvent("TYPING", data)
     // removing all spaces at the beginning and at the end of the content in the message box and check if the length is greater than 0
     if (messageBox.innerText.trim().length > 0) {
         sendMessage.removeAttribute("disabled"); // enable button if the length is greater than 0
@@ -167,7 +165,7 @@ window.onload = () => {
 
             SendJoinEvent(channelId, previousChannel)
 
-            window.sessionStorage.setItem("active_channel", channelId)
+            // window.sessionStorage.setItem("active_channel", JSON.stringify(channelId))
 
             const invite = document.createElement("button")
             const icon = document.createElement("i")
@@ -198,13 +196,17 @@ window.onload = () => {
 
             // Get all messages from the Database
             GetMessages(channelId);
+            messageBox.setAttribute("contenteditable", true)
+            messageBox.style.boxShadow = "black 0 0 5px"
+            messageBox.focus()
+        } else {
+            messageBox.setAttribute("contenteditable", false)
+            messageBox.style = ""
         }
         ScrollToBottom(true)
 
         document.getElementById("loading").style.display = "none"
     }, 1000)
-
-    messageBox.focus()
 }
 
 document.getElementById("open_users_list").addEventListener("click", click => {

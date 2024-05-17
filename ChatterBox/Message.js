@@ -17,7 +17,7 @@ export function SetDefaults(defaults) {
     token = defaults.token
     loggedUser = JSON.parse(defaults.user)
     refreshToken = defaults.refreshToken
-    activeChannel = defaults.activeChannel
+    activeChannel = JSON.parse(defaults.activeChannel)
 }
 
 export function SendSocketEvent(event, data) {
@@ -134,9 +134,9 @@ function AddToMessages(message) {
         repliedToCache.username = user
         repliedToCache.content = content
 
-        
+
         window.sessionStorage.setItem("repliedTo", JSON.stringify(repliedToCache))
-        
+
         const replyEl = document.createElement("div")
         const username = document.createElement("span")
         const cancelButton = document.createElement("button")
@@ -213,8 +213,10 @@ function AddToChannels(channels) {
         nameButton.id = channel._id
 
         nameButton.addEventListener("click", click => {
-            socket.emit("LEAVE_CHANNEL", { channel: activeChannel, user: loggedUser })
-            window.sessionStorage.setItem("active_channel", activeChannel)
+            if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "@me") {
+                socket.emit("LEAVE_CHANNEL", { channel: { _id: location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] }, user: loggedUser })
+            }
+            window.sessionStorage.setItem("active_channel", JSON.stringify({ _id: channel._id }))
 
             location = "http://localhost:3000/@me/" + channel._id
         })
@@ -504,7 +506,6 @@ async function ResolveContent(content, contentHolder, message) {
 
     if (message.repliedTo && message.repliedTo.username === loggedUser.username) {
         setTimeout(() => {
-            console.log(contentHolder.parentElement)
             const messageHolder = contentHolder.parentElement.parentElement
             messageHolder.classList.add("mentioned");
             messageHolder.style.backgroundColor = loggedUser.color + "11"

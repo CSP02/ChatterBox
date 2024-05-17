@@ -309,6 +309,14 @@ button#new_message_popup:hover {
     align-items: center;
 }
 
+#create_chnl_button {
+    position: sticky;
+    top: 0;
+    border-radius: .6rem;
+    padding: .3rem;
+    z-index: 100;
+}
+
 #messages {
     grid-area: messagesholder;
     background-color: #161616;
@@ -346,7 +354,6 @@ button#new_message_popup:hover {
     padding: .5rem;
     border-radius: .6rem;
     background-color: rgb(46, 46, 46);
-    box-shadow: black 0 0 5px;
     outline-offset: 2px;
     max-height: 10dvh;
     overflow-y: auto;
@@ -452,23 +459,35 @@ button#new_message_popup:hover {
 }
 
 .channel {
-    background-color: rgb(27, 27, 27);
+    background-color: rgb(32, 32, 32);
     border-radius: .6rem;
     border: none;
     color: rgb(218, 218, 218);
     font-size: 14pt;
-    margin: .5rem;
+    overflow: hidden;
+    text-wrap: nowrap;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis;
+    border: 2px solid transparent;
+    transition: .2s ease;
 }
 
 .active {
-    background-color: rgb(46, 46, 46);
+    background-color: rgb(56, 56, 56);
     box-shadow: black 0 0 5px;
+    border: 2px solid #989898;
+}
+
+.channel:hover {
+    border: 2px solid #989898;
+    transition: .2s ease;
 }
 
 .message_holder {
     display: flex;
     align-items: flex-start;
     margin: .2rem 0;
+    padding: .5rem 0;
 }
 
 .chat_username {
@@ -557,8 +576,8 @@ div.reply_message {
     display: flex;
     padding: .3rem .8rem;
     background-color: #101010;
-    border-top-left-radius: .3rem;
-    border-top-right-radius: .3rem;
+    border-top-left-radius: .6rem;
+    border-top-right-radius: .6rem;
     opacity: .8;
     font-size: 12pt;
     font-style: italic;
@@ -609,18 +628,18 @@ span.reply_content {
 * ? Scrollbars
 */
 
-#messages::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: .3rem;
     background-color: transparent;
 }
 
-#messages::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     width: .2rem;
     background-color: rgb(73, 73, 73);
     border-radius: .6rem;
 }
 
-#messages::-webkit-scrollbar-button {
+::-webkit-scrollbar-button {
     display: none;
 }
 

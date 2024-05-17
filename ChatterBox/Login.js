@@ -29,7 +29,7 @@ export async function LoginUser(user) {
             } else {
                 document.getElementById("invalid_credentials").innerText =
                     "Username or Password is incorrect!";
-                document.getElementById("invalid_credentials").style.display = "block";
+                document.getElementById("invalid_credentials").style = "";
             }
         });
 }

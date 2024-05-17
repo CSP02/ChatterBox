@@ -16,6 +16,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="shortcut icon" href="/Resources/chatterbox_logo_transparent.png" type="image/png">
     <title>me</title>
+    <link href="https://cdn.jsdelivr.net/gh/CSP02/vanbUI@latest/vanbUI/vanbUI.css" rel="stylesheet">
 </head>
 
 <body>
@@ -26,32 +27,54 @@
             <div id="circle_3"></div>
         </div>
     </div>
+    <nav style="position: fixed;width: 100%;z-index: 1000;padding: .5rem;">
+        <a href="/">
+            <img src="/Resources/chatterbox_logo_transparent.png" alt="test" height="65px" width="65px">
+        </a>
+    </nav>
     <div id="signup">
         <div id="signup_fields_wrapper">
-            <h2 style="margin: .5rem 0;color: rgb(143, 255, 99);">Sign up to chatter box</h2>
+            <div id="logo_and_text">
+                <img src="/Resources/chatterbox_logo_transparent.png" alt="" srcset=""
+                    style="height: 85px; width: 85px;">
+                <!-- <h2 style="margin: .3rem .5rem;color: rgb(209, 209, 209);text-align: center;">ChatterBox</h2> -->
+            </div>
+            <!-- <h2 style="margin: .5rem 0;color: rgb(143, 255, 99);">Sign up to chatter box</h2> -->
             <div id="invalid_credentials"></div>
-            <input placeholder="Username" type="text" name="username_box" id="username_box" required
-                autocomplete="false">
-            <input type="password" placeholder="Password" name="password_box" id="password_box" required
-                autocomplete="false">
-            <!-- <div id="validation_list">
-                <ul>
-                    <li>8 characters long.</li>
-                    <li>contains uppercase.</li>
-                    <li>contains lowercase.</li>
-                    <li>contains numbers.</li>
-                </ul>
-            </div> -->
-            <div style="display: flex;">
-                <input type="text" name="pref_color" id="pref_color" placeholder="#9BCF53">
+            <div style="position: relative;display: block;">
+                <input placeholder="Username" type="text" name="username_box" id="username_box" required
+                    autocomplete="false" vanb="true" variant="input">
+                <div id="user_valid">
+                    Your username must be:
+                    <ol>
+                        <li>case sensitive.</li>
+                        <li>cannot contain spaces.</li>
+                        <li>spaces will be replaced with "_".</li>
+                    </ol>
+                </div>
+            </div>
+            <div style="position: relative;display: block;">
+                <input type="password" placeholder="Password" name="password_box" id="password_box" required
+                    autocomplete="false" vanb="true" variant="input">
+                <div id="validation_list">
+                    Your password must be:
+                    <ol>
+                        <li>8 characters long.</li>
+                        <li>contains an uppercase characters.</li>
+                        <li>contains a lowercase characters.</li>
+                        <li>contains numbers.</li>
+                    </ol>
+                </div>
+            </div>
+            <div id="color_text">
+                <input type="text" name="pref_color" id="pref_color" placeholder="#9BCF53" vanb="true" variant="input">
                 <input type="color" name="color" id="profile_color" value="#9BCF53">
+                <img src="" alt="" vanb="true" type="avatar_small" id="new_pfp">
             </div>
             <div id="auth_buttons">
-                <button id="cancel_button"><a href="/"
-                        style="text-decoration: none; color:rgb(24, 24, 24);">Cancel</a></button>
-                <button id="signup_button">Sign up</button>
+                <button id="signup_button" vanb="true" variant="white" style="padding: .5rem .7rem;">Sign up</button>
             </div>
-            <p style="font-size: 10pt;text-align: center;">Already had an account? <a href="/login">Login</a></p>
+            <p style="font-size: 10pt;text-align: center;">Already have an account? <a href="/login">Login</a></p>
         </div>
     </div>
     <script src="/signup/script.js" type="module"></script>

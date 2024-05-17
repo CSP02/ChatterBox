@@ -1,7 +1,6 @@
 * {
     margin: 0;
     padding: 0;
-    color: white;
 }
 
 :root {
@@ -110,6 +109,10 @@ nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+}
+
+#invalid_credentials{
+    color: rgb(156, 28, 28);
 }
 
 input.auth_inps{

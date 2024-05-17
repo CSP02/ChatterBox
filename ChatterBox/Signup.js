@@ -16,17 +16,14 @@ export function ValidatePassword(password, user) {
             if (response.isValid) {
                 // Validating password with simple rules (8 characters long with a number, a lowercase and an uppercase character)
                 SignUpUser(user); // SignUpUser() method imported from "./ChatterBox/Message.js"
-                document.getElementById("invalid_credentials").style.display = "none"; // Remove the warning which tells about the validation rules for the password
             } else {
                 // if the password didn't pass the validation show the rules!
-                document.getElementById("invalid_credentials").innerText =
-                    "Password must be at least 8 characters long and should contain a number, lowercase characters and uppercase characters";
-                document.getElementById("invalid_credentials").style.display = "block";
+                alert("Password must be at\n1. At least 8 characters long\n2. should contain a number, lowercase characters and uppercase characters");
             }
         });
 }
 
-async function SignUpUser(user) {    
+async function SignUpUser(user) {   
     await fetch(
         "http://localhost:3001/api/signup",
         {
@@ -42,7 +39,7 @@ async function SignUpUser(user) {
         })
         .then((response) => {
             if (response.success) {
-                alert("User successfully created!");
+                location = "/login"
             }
             else if (
                 !response.success &&

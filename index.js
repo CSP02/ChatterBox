@@ -3,7 +3,6 @@
  */
 const express = require("express")
 const cookieParser = require("cookie-parser")
-const cors = require("cors")
 
 /**
  * ? express setup
@@ -45,106 +44,150 @@ app.get(`/@me/:channel_id`, async (req, res) => {
  */
 
 let activeUsers = new Map()
-let usersTyping = []
-// let isCooled = true
+let usersTyping = new Map()
 
-// setInterval(() => {
-//     usersTyping = []
-//     isCooled = true
-// }, 3000)
+setInterval(() => {
+    usersTyping.clear()
+}, 5000);
 
 const url = "http://localhost:3000"
 
 io.on("connection", socket => {
-    const socketDetails = {
-        id: socket.id
-    }
+    socket.on("SET_UNAME", data => {
+        try {
+            socket.data.username = data.user.username
+            socket.data.channelId = data.channel ? data.channel._id : data.user.username
+        } catch (error) {
+            console.log(error)
+        }
+    })
 
     socket.on("JOIN_CHANNEL", data => {
-        const channel = data.channel
-        const username = data.user.username
-        const pfp = data.user.avatarURL
-        const colorPrefered = data.user.color
+        try {
+            const channel = data.channel
+            const username = data.user.username
+            const avatarURL = data.user.avatarURL
+            const colorPrefered = data.user.color
 
-        if (!activeUsers.has(channel._id)) activeUsers.set(channel._id, [])
+            const user = {
+                username: username,
+                avatarURL: avatarURL,
+                color: colorPrefered,
+            }
 
-        const user = {
-            username: username,
-            pfp: pfp,
-            color: colorPrefered
+            const aUsersInChnl = (activeUsers.has(channel._id) && activeUsers.get(channel._id).length > 0) ? activeUsers.get(channel._id) : []
+            aUsersInChnl.push(user)
+
+            socket.join(`${url}/@me/${channel._id}`)
+            activeUsers.set(channel._id, aUsersInChnl)
+            io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", activeUsers.get(channel._id));
+        } catch (error) {
+            console.log(error)
         }
-
-        socketDetails.user = user
-        // activeUsers.push(socketDetails)
-
-        socket.join(`${url}/@me/${channel._id}`)
-        const users = activeUsers.get(channel._id)
-        // if (users === undefined) activeUsers.set(channel._id, [])
-        users.push(socketDetails)
-        activeUsers.set(channel._id, users)
-        // console.log(activeUsers)
-
-        io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", users);
     })
 
     socket.on("LEAVE_CHANNEL", data => {
-        const channel = data
-        socket.leave(`${url}/@me/${channel._id}`)
+        try {
+            const channel = data.channel
+            const user = data.user
+            socket.leave(`${url}/@me/${channel._id}`)
 
-        if (!activeUsers.has(channel._id)) activeUsers.set(channel._id, [])
+            const aUsersInChnl = activeUsers.get(channel._id)
+            const updatedUsers = []
+            aUsersInChnl.forEach(u => {
+                const u2push = {
+                    username: u.username,
+                    avatarURL: u.avatarURL,
+                    color: u.color,
+                }
 
-        const allUsers = activeUsers.get(channel._id)
-        const users = allUsers.filter(ob => ob.id !== socket.id && ob.user)
-        activeUsers.set(channel._id, users)
-        io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", users);
+                if (u.username !== user.username) {
+                    updatedUsers.push(u2push)
+                }
+            })
+
+            activeUsers.set(channel._id, updatedUsers)
+            io.to(`${url}/@me/${channel._id}`).emit("UPDATE_GLOBAL_USERS", user)
+        } catch (error) {
+            console.log(error)
+        }
     })
 
     // Catches the login event from a client and sends the user details for every other clients
     socket.on("LOGIN", data => {
-        const username = data.username
-        const pfp = data.avatarURL
-        const colorPrefered = data.color
+        try {
+            const username = data.username
+            const pfp = data.avatarURL
+            const colorPrefered = data.color
 
-        socket.join(`${url}/@me/${username}`)
-        const user = {
-            username: username,
-            pfp: pfp,
-            color: colorPrefered
+            socket.join(`${url}/@me/${username}`)
+            const user = {
+                username: username,
+                pfp: pfp,
+                color: colorPrefered
+            }
+
+            io.emit("LOGIN", { user: user })
+        } catch (error) {
+            console.log(error)
         }
-
-        io.emit("LOGIN", { user: user })
     })
 
     socket.on("MESSAGES", data => {
-        const channelId = data
-        const channelURL = `${url}/@me/${channelId}`
-        io.to(channelURL).emit("MESSAGES", { _id: data })
+        try {
+            const channelId = data
+            const channelURL = `${url}/@me/${channelId}`
+            io.to(channelURL).emit("MESSAGES", { _id: data })
+        } catch (error) {
+            console.log(error)
+        }
     })
 
     socket.on("TYPING", data => {
-        const username = data.username
-        const channelId = data.channelId
+        try {
+            const username = data.username
+            const channelId = data.channelId
 
-        if (!usersTyping.includes(username))
-            usersTyping.push(username)
+            if (usersTyping.has(channelId)) {
+                const channelTypingUsers = usersTyping.get(channelId)
+                if (!channelTypingUsers.includes(username)) {
+                    channelTypingUsers.push(username)
+                    usersTyping.set(channelId, Array.from(new Set(channelTypingUsers).values()))
+                }
+            }
+            else {
+                const channelTypUsers = []
+                channelTypUsers.push(username)
+                usersTyping.set(channelId, Array.from(new Set(channelTypUsers).values()))
+            }
 
-        io.to(`${url}/@me/${channelId}`).emit("TYPING", usersTyping)
-    })
-
-    socket.on("CLEAR_TYPING_USERS", data => {
-        usersTyping = []
+            io.to(`${url}/@me/${channelId}`).emit("TYPING", usersTyping.get(channelId))
+        } catch (error) {
+            console.log(error)
+        }
     })
 
     socket.on("USER_INVITE", (username, user) => {
-        io.to(`${url}/@me/${username}`).emit("USER_INVITE", `${user.username} added you to a channel`)
+        try {
+            io.to(`${url}/@me/${username}`).emit("USER_INVITE", `${user.username} added you to a channel`)
+        } catch (error) {
+            console.log(error)
+        }
     })
 
     socket.on("disconnect", data => {
-        console.log(data)
-        // const allUsers = activeUsers.get(channel._id)
-        // const users = allUsers.filter(ob => ob.id !== socket.id && ob.user)
-        // activeUsers.set(channel._id, users)
-
-        // io.emit("UPDATE_USERS_LIST", activeUsers);
+        try {
+            const username = socket.data.username;
+            [...activeUsers.keys()].forEach(key => {
+                const u2push = [];
+                [...activeUsers.get(key)].forEach(user => {
+                    if (user.username !== username) u2push.push(user)
+                });
+                activeUsers.set(key, u2push)
+            })
+            io.to(`${url}/@me/${socket.data.channelId}`).emit("UPDATE_GLOBAL_USERS", username)
+        } catch (error) {
+            console.log(error)
+        }
     })
 })

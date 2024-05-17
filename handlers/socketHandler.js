@@ -7,6 +7,12 @@ import { GetMessages, GetChannels } from "../ChatterBox/Message.js"
  * ? method to handle all the sockets events
  */
 export function HandleSocketEvents(socket) {
+    socket.on("connect", data => {
+        const user = JSON.parse(window.sessionStorage.getItem("user"))
+        const channel = JSON.parse(window.sessionStorage.getItem("active_channel"))
+        socket.emit("SET_UNAME", { user: user, channel: channel })
+    })
+
     // Send the user details of a newly logged user to everyone who connected to the socket
     socket.on("LOGIN", data => {
         socket.emit("MEMBER_ADD", data.user)
@@ -19,31 +25,22 @@ export function HandleSocketEvents(socket) {
 
     // This event is when user updates their profile
     socket.on("UPDATE_USERS_LIST", users => {
-        const currentUsers = []
         const usersList = document.getElementById("users_list")
 
         usersList.innerHTML = ""
-
         users.forEach(user => {
-            for (let i = 0; i < currentUsers.length; i++) {
-                const currentUser = currentUsers[i]
-
-                if (currentUser.username === user.user.username) return
-            }
-            currentUsers.push(user.user)
-
             const userDetailsWrapper = document.createElement("div")
             const username = document.createElement("p")
             let pfp = new Image()
 
-            username.innerText = user.user.username
-            username.style.color = user.user.color
+            username.innerText = user.username
+            username.style.color = user.color
 
-            if (user.user.pfp && user.user.pfp !== "undefined") pfp.src = user.user.pfp
+            if (user.avatarURL && user.avatarURL !== "undefined") pfp.src = user.avatarURL
             else {
                 pfp = document.createElement("div")
-                pfp.innerText = user.user.username.split("")[0].toUpperCase()
-                pfp.style.backgroundColor = user.user.color
+                pfp.innerText = user.username.split("")[0].toUpperCase()
+                pfp.style.backgroundColor = user.color
             }
 
             pfp.classList.add("pfp")
@@ -53,23 +50,33 @@ export function HandleSocketEvents(socket) {
         })
     })
 
-    socket.on("TYPING", usernames => {
-        const actionIndicator = document.getElementById("action_indicator")
-        const namesInInd = document.createElement("span")
+    socket.on("UPDATE_GLOBAL_USERS", user => {
+        if (user === null) return
+        const usersList = document.getElementById("users_list");
 
-        namesInInd.innerText = [...Array.from(usernames)].join(", ")
-        namesInInd.classList.add("typing_usernames")
+        [...usersList.children].forEach(userEl => {
+            const username = userEl.innerText
+            const usernameE = user
 
-        actionIndicator.innerHTML = ""
-        actionIndicator.appendChild(namesInInd)
-        const textNode = document.createTextNode(`${usernames.length === 1 ? " is" : " are"} typing`)
-        actionIndicator.appendChild(textNode)
-
-        setTimeout(() => {
-            actionIndicator.innerHTML = ""
-            socket.emit("CLEAR_TYPING_USERS", "clear")
-        }, 15000)
+            if (username === usernameE) userEl.remove()
+        })
+        console.log(user)
     })
+
+    const actionIndicator = document.getElementById("action_indicator")
+
+    socket.on("TYPING", usernames => {
+        const usersSet = new Set(usernames)
+        const text = document.createTextNode([...Array.from(usersSet.values())].join(", "))
+        if (Array.from(usersSet.values()).length < 4)
+            actionIndicator.innerText = text.data + `${usernames.length === 1 ? " is" : " are"} typing`
+        else
+            actionIndicator.innerText = "Several people are typing"
+    })
+
+    setInterval(() => {
+        actionIndicator.innerHTML = ""
+    }, 10000)
 
     socket.on("USER_INVITE", data => {
         const notification = document.getElementById("notification")
