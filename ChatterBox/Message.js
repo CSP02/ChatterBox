@@ -1,5 +1,6 @@
 import ComponentTypes from "./types.js"
 import { HandleSocketEvents } from "../handlers/socketHandler.js";
+import { removeEvent } from "../@me/script.js";
 
 let socket = io()
 const messagesHolder = document.getElementById("messages");
@@ -21,7 +22,40 @@ export function SetDefaults(defaults) {
 }
 
 export function SendSocketEvent(event, data) {
-    socket.emit(event, data);
+    if (event === "TYPING") {
+        const headers = new Headers()
+        const channel = JSON.parse(window.sessionStorage.getItem("active_channel"))
+
+        headers.append("Authorization", `Bearer ${token}`)
+        fetch(`${apiURL}/api/typing?channel_id=${channel._id}`, {
+            mode: "cors",
+            headers: headers
+        }).then(async response => {
+            if (response.status === 401) {
+                const headers = new Headers()
+
+                headers.append("Authorization", `Bearer ${refreshToken}`)
+                fetch(`${apiURL}/api/request_new_token`, {
+                    mode: "cors",
+                    headers: headers
+                }).then(async response => {
+                    if (response.ok) return await response.json()
+                }).then(response => {
+                    token = response.token
+                    refreshToken = response.refreshToken
+
+                    SendSocketEvent(event, data)
+                })
+            }
+            return response.json()
+        }).then(response => {
+            if (response.success) {
+                socket.emit(event, data)
+                removeEvent()
+            }
+        })
+    } else if (event !== "TYPING")
+        socket.emit(event, data);
 }
 
 const previousMessage = {

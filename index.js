@@ -3,6 +3,7 @@
  */
 const express = require("express")
 const cookieParser = require("cookie-parser")
+require("dotenv").config()
 
 /**
  * ? express setup
@@ -37,6 +38,23 @@ app.post("/ValidatePassword", async (req, res) => {
 
 app.get(`/@me/:channel_id`, async (req, res) => {
     res.sendFile(__dirname + "/@me/")
+})
+
+app.get(`/gif`, async (req, res) => {
+    const query = req.query.q
+    // const url = new URL(``)
+    await fetch(`https://tenor.googleapis.com/v2/search?q=${query}&key=${process.env.TENORAPIKEY}&client_key=ChatterBox`).then(async response => {
+        if (response.ok) return response.json()
+    }).then(response => {
+        const results = response.results
+        const resToSend = []
+
+        results.forEach(result => {
+            resToSend.push(result.media_formats.gif.url)
+        })
+
+        res.send({results: resToSend})
+    })
 })
 
 /**
@@ -145,6 +163,7 @@ io.on("connection", socket => {
 
     socket.on("TYPING", data => {
         try {
+            console.log("event triggered")
             const username = data.username
             const channelId = data.channelId
 

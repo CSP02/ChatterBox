@@ -96,14 +96,10 @@ newMessagePopup.addEventListener("click", () => {
  * ? This event is to disable the send button when there is no content/text in the textbox
  */
 const messageBox = document.getElementById("message_box")
-messageBox.addEventListener("input", (event) => {
-    if (messageBox.innerText.length > 500) {
-        messageBox.style.outlineColor = "#ff4d4d"
-        // newMessagePopup.innerText = "exceeded 500 characters the remaining characters will be excluded in the message!"
-        // newMessagePopup.style.display = "block"
-    } else {
-        messageBox.style.outlineColor = "rgb(214, 214, 214)"
-    }
+
+const handleEvent = event => {
+    if (messageBox.innerText.length > 500) messageBox.style.outlineColor = "#ff4d4d"
+    else messageBox.style.outlineColor = "rgb(214, 214, 214)"
 
     const user = JSON.parse(window.sessionStorage.getItem("user"))
     const data = {
@@ -125,7 +121,16 @@ messageBox.addEventListener("input", (event) => {
         sendMessage.click();
         sendMessage.disabled = true
     }
-});
+}
+
+messageBox.addEventListener("input", handleEvent);
+
+export function removeEvent() {
+    messageBox.removeEventListener("input", handleEvent)
+    setTimeout(() => {
+        messageBox.addEventListener("input", handleEvent);
+    }, 10000);
+}
 
 showCreateForm.addEventListener("click", click => {
     formWrapper.style.display = "flex"
@@ -138,6 +143,44 @@ createChannelButton.addEventListener("click", click => {
 
 cancelChannelButton.addEventListener("click", click => {
     formWrapper.style.display = "none"
+})
+
+const gifButton = document.getElementById("gif_button")
+gifButton.addEventListener("click", e => {
+    const gifsHolder = document.getElementById("gif_results")
+
+    if (gifsHolder.style.right === "0px") gifsHolder.style.right = "-100%"
+    else if (gifsHolder.style.right === "-100%") gifsHolder.style.right = "0px"
+})
+
+const searchGifButton = document.getElementById("search_gif")
+searchGifButton.addEventListener("click", e => {
+    const searchQuery = document.getElementById("gif_query").value
+    const searchResults = document.getElementById("search_results_holder")
+
+    fetch(`/gif?q=${searchQuery}`).then(async response => {
+        if (response.ok) return response.json()
+    }).then(response => {
+        const gifs = response.results
+        searchResults.innerHTML = ""
+        gifs.forEach(gif => {
+
+            const img = new Image()
+            img.src = gif
+            img.classList.add("gif_image")
+
+            img.addEventListener("click", e => {
+                const url = img.src
+
+                messageBox.innerText = url
+                if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "@me") {
+                    sendMessage.removeAttribute("disabled")
+                    sendMessage.click()
+                }
+            })
+            searchResults.appendChild(img)
+        })
+    })
 })
 
 window.onload = () => {

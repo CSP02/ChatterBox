@@ -379,10 +379,92 @@ button#new_message_popup:hover {
     box-shadow: black 0 0 5px;
 }
 
+#gif_button {
+    grid-area: gifsearch;
+    width: 50px;
+    margin: .5rem;
+    display: flex;
+    height: 50px;
+    padding: .5rem;
+    border-radius: .6rem;
+    background-color: transparent;
+    border: none;
+    color: #c4c4c4;
+    justify-content: center;
+    align-items: center;
+    font-size: 14pt;
+}
+
+#gif_button:hover {
+    box-shadow: black 0 0 5px;
+}
+
 #send_message_holder {
     display: grid;
     grid-template:
-        "inputmessage sendmessage";
+        "inputmessage gifsearch sendmessage";
+    position: relative;
+}
+
+#input_but_holder {
+    margin: 0 0 .5rem 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#gif_query {
+    padding: .5rem;
+    background-color: #373737;
+    border: 2px solid #757575;
+    border-radius: .3rem;
+    font-size: 14pt;
+    width: 100%;
+    margin: 0 .5rem 0 0;
+    color: #e2e2e2;
+    outline: 3px solid transparent;
+    outline-offset: 2px;
+    transition: .2s ease;
+}
+
+#gif_query:focus {
+    outline: 3px solid #dadada;
+    transition: .2s ease;
+}
+
+#search_gif {
+    border: none;
+    height: auto;
+    width: auto;
+    padding: 1em;
+    display: flex;
+    background-color: #3e3e3e;
+    box-shadow: black 0 0 5px;
+    color: white;
+}
+
+#search_results_holder {
+    height: calc(200px - 1.7rem);
+    overflow: auto;
+    overflow-x: hidden;
+    padding: .3rem;
+    margin: .5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gif_image {
+    border-radius: .3rem;
+    transition: .2s ease;
+    max-height: 100%;
+}
+
+.gif_image:hover {
+    scale: 1.02;
+    cursor: pointer;
+    transition: .2s ease;
 }
 
 #profile_pfp {
@@ -469,6 +551,21 @@ button#new_message_popup:hover {
     overflow-wrap: break-word;
     text-overflow: ellipsis;
     border: 2px solid transparent;
+    transition: .2s ease;
+}
+
+#gif_results {
+    position: absolute;
+    right: -100%;
+    transform: translateY(-110%);
+    width: 30dvw;
+    height: 250px;
+    overflow: hidden;
+    background-color: #0f0f0f;
+    padding: .7rem;
+    border-radius: .6rem;
+    box-shadow: black 0 0 5px;
+    border: 2px solid #494949;
     transition: .2s ease;
 }
 
