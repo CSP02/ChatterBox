@@ -38,7 +38,11 @@
     <div id="invite_form" class="form_wrapper">
         <div class="form">
             <label for="Username">Username of your friend:</label>
-            <input type="text" id="Username" name="Username" placeholder="username">
+            <div style="display: flex;">
+                <input type="text" id="Username" name="Username" placeholder="username">
+                <button id="search_user"><i class="fas fa-magnifying-glass"></i></button>
+            </div>
+            <div id="users_search_results"></div>
             <div id="invite_buttons" class="buttons">
                 <button id="cancel_invite">Cancel</button>
                 <button id="invite_okay">Add member</button>

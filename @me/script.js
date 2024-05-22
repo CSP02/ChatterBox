@@ -1,14 +1,54 @@
 /**
  * ? Imports from other scripts
  */
-import { AddUserToChannel, CreateChannel, LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetMessages, GetChannels, SendMessage, UpdateUser, ScrollToBottom, SendJoinEvent } from "../ChatterBox/Message.js"
+import { LogoutUser, SendSocketEvent, SetDefaults, ScrollToBottom, SendJoinEvent } from "../ChatterBox/Utility.js"
+// import { AddUserToChannel, CreateChannel, LogoutUser, SendSocketEvent, UpdateUserdetails, SetDefaults, GetMessages, GetChannels, SendMessage, UpdateUser, ScrollToBottom, SendJoinEvent } from "../ChatterBox/Message.js"
+import { SendMessage, GetMessages } from "../ChatterBox/Message.js"
+import ComponentTypes from "../ChatterBox/types.js"
+import { HandleSocketEvents } from "../handlers/socketHandler.js";
+import { UpdateUser, UpdateUserdetails, AddUserToChannel, SearchUser } from "../ChatterBox/User.js";
+import { GetChannels, CreateChannel } from "../ChatterBox/Channel.js";
+
+let socket = io()
+const messagesHolder = document.getElementById("messages");
+let loggedUser = JSON.parse(window.sessionStorage.getItem("user"));
+let token = window.sessionStorage.getItem("token");
+let refreshToken = window.sessionStorage.getItem("refresh token")
+const apiURL = "http://localhost:3001"
+let activeChannel = { name: "http://localhost:3000/@me" }
+const types = new ComponentTypes()
+const repliedToCache = { isEmpty: true }
+const previousMessage = {
+    username: "",
+    timestamp: ""
+}
+let params
+
+function SetParams(params) {
+    params = {
+        socket: socket,
+        messagesHolder: messagesHolder,
+        logggedUser: loggedUser,
+        token: token,
+        refreshToken: refreshToken,
+        apiURL: apiURL,
+        activeChannel: activeChannel,
+        types: types,
+        repliedToCache: repliedToCache,
+        previousMessage: previousMessage
+    }
+    return params
+}
+
+
+HandleSocketEvents(socket, SetParams(params))
 
 SetDefaults({
     token: window.sessionStorage.getItem("token"),
     user: window.sessionStorage.getItem("user"),
     refreshToken: window.sessionStorage.getItem("refresh token"),
     activeChannel: window.sessionStorage.getItem("active_channel")
-})
+}, socket)
 
 /**
  * ? Defining document elements
@@ -39,7 +79,7 @@ profile.addEventListener("click", event => {
  * ? this will update the "User" in the database to the new profile
  */
 updateProfileButton.addEventListener("click", (event) => {
-    UpdateUser() // Method imported from "./ChatterBox/Message.js"
+    UpdateUser(SetParams(params)) // Method imported from "./ChatterBox/Message.js"
 })
 
 /**
@@ -66,7 +106,7 @@ sendMessage.addEventListener("click", event => {
     const message = {
         content: messageContent.innerText.trim()
     }
-    SendMessage(message) // Method imported from "./ChatterBox/Message.js"
+    SendMessage(message, SetParams(params)) // Method imported from "./ChatterBox/Message.js"
     messageContent.innerText = "" // Removing the content in #message_box element
 })
 
@@ -98,9 +138,6 @@ newMessagePopup.addEventListener("click", () => {
 const messageBox = document.getElementById("message_box")
 
 const handleEvent = event => {
-    if (messageBox.innerText.length > 500) messageBox.style.outlineColor = "#ff4d4d"
-    else messageBox.style.outlineColor = "rgb(214, 214, 214)"
-
     const user = JSON.parse(window.sessionStorage.getItem("user"))
     const data = {
         username: user.username,
@@ -114,14 +151,29 @@ const handleEvent = event => {
         sendMessage.setAttribute("disabled", true); // disable when the length is 0
         messageBox.innerText = "" // clear message box
     }
+}
+let isLineBreak = false
+
+messageBox.addEventListener("input", event => {
+    if (messageBox.innerText.length > 500) messageBox.style.outlineColor = "#ff4d4d"
+    else messageBox.style.outlineColor = "rgb(214, 214, 214)"
+    
+    if (messageBox.innerText.trim() !== "") sendMessage.removeAttribute("disabled")
+    else if (!messageBox.innerText || messageBox.innerText.trim() === "") sendMessage.setAttribute("disabled", true)
 
     // Making "click enter to send" kind of thingy 
-    if (event.inputType === "insertParagraph" || (event.inputType === "insertText" && event.data === null)) {
+    if (event.inputType === "insertLineBreak") messageBox.innerText += "\n"
+    if (event.inputType === "insertParagraph" || (event.inputType === "insertText" && event.data === null) && !isLineBreak) {
         event.preventDefault();
         sendMessage.click();
         sendMessage.disabled = true
     }
-}
+})
+
+messageBox.addEventListener("keydown", key => {
+    if (key.shiftKey) isLineBreak = true
+    else isLineBreak = false
+})
 
 messageBox.addEventListener("input", handleEvent);
 
@@ -137,7 +189,7 @@ showCreateForm.addEventListener("click", click => {
 })
 
 createChannelButton.addEventListener("click", click => {
-    CreateChannel()
+    CreateChannel(SetParams(params))
     formWrapper.style.display = "none"
 })
 
@@ -154,15 +206,22 @@ gifButton.addEventListener("click", e => {
 })
 
 const searchGifButton = document.getElementById("search_gif")
-searchGifButton.addEventListener("click", e => {
-    const searchQuery = document.getElementById("gif_query").value
-    const searchResults = document.getElementById("search_results_holder")
+const searchResults = document.getElementById("search_results_holder")
 
-    fetch(`/gif?q=${searchQuery}`).then(async response => {
+searchGifButton.addEventListener("click", e => {
+    let limit = 5
+    let pos = 1
+    const searchQuery = document.getElementById("gif_query").value
+    searchResults.innerHTML = ""
+    getGifs(`/gif?q=${searchQuery}&limit=${limit}&pos=${pos}`, limit, searchQuery)
+})
+
+function getGifs(url, limit, query) {
+    fetch(url).then(async response => {
         if (response.ok) return response.json()
     }).then(response => {
         const gifs = response.results
-        searchResults.innerHTML = ""
+        const pos = response.next
         gifs.forEach(gif => {
 
             const img = new Image()
@@ -180,20 +239,35 @@ searchGifButton.addEventListener("click", e => {
             })
             searchResults.appendChild(img)
         })
+        const loadMoreButton = document.createElement("button")
+        loadMoreButton.id = "load_more_gifs"
+        loadMoreButton.innerText = "Load more..."
+        loadMoreButton.addEventListener("click", e => {
+            loadMoreButton.remove()
+            const url = `/gif?q=${query}&limit=${limit}&pos=${pos}`
+            getGifs(url, limit, pos)
+        })
+        searchResults.appendChild(loadMoreButton)
     })
+}
+
+const searchUser = document.getElementById("search_user")
+searchUser.addEventListener("click", e => {
+    const username = document.getElementById("Username").value
+    SearchUser(username, SetParams(params))
 })
 
 window.onload = () => {
-    // const [type, id] = location.search.replace("?", "").split("=")
     const user = JSON.parse(window.sessionStorage.getItem("user"))
+    const inviteButton = document.getElementById("invite_okay")
+
+    if (!document.getElementById("Username").value) inviteButton.setAttribute("disabled", true)
 
     // update the active users list 
     UpdateUserdetails(user);
-
     SendSocketEvent("LOGIN", user)
-
     // Get all channels user present in
-    GetChannels()
+    GetChannels(SetParams(params))
 
     setTimeout(() => {
         const path = location.pathname
@@ -222,23 +296,22 @@ window.onload = () => {
                 const inviteForm = document.getElementById("invite_form")
                 inviteForm.style.display = "flex"
 
-                const inviteButton = document.getElementById("invite_okay")
                 inviteButton.addEventListener("click", click => {
-                    const username = document.getElementById("Username").value
-
-                    AddUserToChannel(channelId, username)
+                    if (document.getElementById("user_selection").checked) {
+                        const username = document.getElementById("user_selection").previousSibling.innerText
+                        AddUserToChannel(channelId, username, SetParams(params))
+                    }
                     inviteForm.style.display = "none"
                 })
                 const cancelInvite = document.getElementById("cancel_invite")
                 cancelInvite.addEventListener("click", click => {
-                    console.log("cancel")
                     inviteForm.style.display = "none"
                 })
             })
             channelIndicator.appendChild(invite)
 
             // Get all messages from the Database
-            GetMessages(channelId);
+            GetMessages(channelId, SetParams(params));
             messageBox.setAttribute("contenteditable", true)
             messageBox.style.boxShadow = "black 0 0 5px"
             messageBox.focus()

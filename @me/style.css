@@ -150,7 +150,14 @@ button#new_message_popup:hover {
     padding: 1rem;
     border-radius: .6rem;
     right: 0;
+}
+
+.success_notify{
     border: 2px solid #89ff99;
+}
+
+.failed_notify{
+    border: 2px solid #ff8989;
 }
 
 .form_wrapper {
@@ -416,7 +423,7 @@ button#new_message_popup:hover {
 
 #gif_query {
     padding: .5rem;
-    background-color: #373737;
+    background-color: #2e2e2e;
     border: 2px solid #757575;
     border-radius: .3rem;
     font-size: 14pt;
@@ -439,7 +446,7 @@ button#new_message_popup:hover {
     width: auto;
     padding: 1em;
     display: flex;
-    background-color: #3e3e3e;
+    background-color: #2e2e2e;
     box-shadow: black 0 0 5px;
     color: white;
 }
@@ -465,6 +472,20 @@ button#new_message_popup:hover {
     scale: 1.02;
     cursor: pointer;
     transition: .2s ease;
+}
+
+#load_more_gifs {
+    align-self: center;
+    background-color: #2e2e2e;
+    border: none;
+    border-radius: .3rem;
+    padding: .5rem;
+    color: white;
+    font-size: 14pt;
+}
+
+#load_more_gifs:hover {
+    box-shadow: black 0 0 5px;
 }
 
 #profile_pfp {
@@ -498,6 +519,38 @@ button#new_message_popup:hover {
     margin: .2rem;
     border-radius: .6rem;
     background-color: #363636;
+}
+
+#search_user {
+    height: fit-content;
+    display: flex;
+    border-radius: .6rem;
+    background-color: transparent;
+    border: none;
+    color: rgb(235, 235, 235);
+    border-radius: .4rem;
+    transition: .2s ease;
+}
+
+#search_user:hover {
+    box-shadow: black 0 0 5px;
+    opacity: .8;
+    transition: .2s ease;
+}
+
+.user_details_holder {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.result_user {
+    justify-content: space-between;
+}
+
+.result_user * {
+    margin: 0;
+    padding: 0;
 }
 
 .component_image {
@@ -641,6 +694,10 @@ button#new_message_popup:hover {
 .mentioned .message_db {
     display: flex;
     align-items: center;
+}
+
+.mentioned .message_has_component{
+    display: grid;
 }
 
 .mentioned b {

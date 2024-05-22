@@ -42,18 +42,21 @@ app.get(`/@me/:channel_id`, async (req, res) => {
 
 app.get(`/gif`, async (req, res) => {
     const query = req.query.q
-    // const url = new URL(``)
-    await fetch(`https://tenor.googleapis.com/v2/search?q=${query}&key=${process.env.TENORAPIKEY}&client_key=ChatterBox`).then(async response => {
+    const pos = req.query.pos
+    const limit = req.query.limit
+
+    await fetch(`https://tenor.googleapis.com/v2/search?q=${query}&limit=${limit}&pos=${pos}&key=${process.env.TENORAPIKEY}&client_key=ChatterBox`).then(async response => {
         if (response.ok) return response.json()
     }).then(response => {
         const results = response.results
+        const next = response.next
         const resToSend = []
 
         results.forEach(result => {
             resToSend.push(result.media_formats.gif.url)
         })
 
-        res.send({results: resToSend})
+        res.send({ results: resToSend, next: next })
     })
 })
 
@@ -163,7 +166,6 @@ io.on("connection", socket => {
 
     socket.on("TYPING", data => {
         try {
-            console.log("event triggered")
             const username = data.username
             const channelId = data.channelId
 

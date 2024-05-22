@@ -1,26 +1,26 @@
 /**
  * ? Imports
  */
-import { GetMessages, GetChannels } from "../ChatterBox/Message.js"
-
+import { GetChannels } from "../ChatterBox/Channel.js"
+import { GetMessages } from "../ChatterBox/Message.js"
 /**
  * ? method to handle all the sockets events
  */
-export function HandleSocketEvents(socket) {
+export function HandleSocketEvents(socket, params) {
     socket.on("connect", data => {
         const user = JSON.parse(window.sessionStorage.getItem("user"))
         const channel = JSON.parse(window.sessionStorage.getItem("active_channel"))
         socket.emit("SET_UNAME", { user: user, channel: channel })
     })
-
+    
     // Send the user details of a newly logged user to everyone who connected to the socket
     socket.on("LOGIN", data => {
         socket.emit("MEMBER_ADD", data.user)
     })
-
+    
     // Get all messages when someone sent a message
     socket.on("MESSAGES", data => {
-        GetMessages(data)
+        GetMessages(data, params)
     })
 
     // This event is when user updates their profile
@@ -60,7 +60,6 @@ export function HandleSocketEvents(socket) {
 
             if (username === usernameE) userEl.remove()
         })
-        console.log(user)
     })
 
     const actionIndicator = document.getElementById("action_indicator")
@@ -94,6 +93,6 @@ export function HandleSocketEvents(socket) {
         setTimeout(() => {
             notification.style.marginTop = "-100%"
         }, 3000);
-        GetChannels()
+        GetChannels(params)
     })
 }
