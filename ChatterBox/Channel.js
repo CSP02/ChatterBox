@@ -79,12 +79,12 @@ export async function GetChannels(params) {
             if (await response.channels.length <= 0) return
             const channels = await response.channels
 
-            AddToChannels(channels)
+            AddToChannels(channels, params.socket)
             window.sessionStorage.setItem("channels", JSON.stringify(channels))
         });
 }
 
-function AddToChannels(channels) {
+function AddToChannels(channels, socket) {
     const channelsWrapper = document.getElementById("channels")
 
     channels.forEach(channel => {

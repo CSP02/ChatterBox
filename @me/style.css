@@ -152,11 +152,11 @@ button#new_message_popup:hover {
     right: 0;
 }
 
-.success_notify{
+.success_notify {
     border: 2px solid #89ff99;
 }
 
-.failed_notify{
+.failed_notify {
     border: 2px solid #ff8989;
 }
 
@@ -671,6 +671,8 @@ button#new_message_popup:hover {
     width: 25px;
     transform: translate(-10px, -10px);
     z-index: 100;
+    align-items: center;
+    justify-content: center;
 }
 
 .reply_icon {
@@ -696,17 +698,18 @@ button#new_message_popup:hover {
     align-items: center;
 }
 
-.mentioned .message_has_component{
+.mentioned .message_has_component {
     display: grid;
 }
 
 .mentioned b {
-    padding: .1rem;
-    border-radius: .6rem;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(96, 96, 141);
+    padding: 0px .4rem;
+    border-radius: .3rem;
+    display: flex;
+    background-color: rgb(50 50 73);
     margin-right: .3rem;
+    width: fit-content;
+    justify-content: center;
 }
 
 .message_user_holder {
@@ -960,6 +963,10 @@ span.reply_content {
 */
 
 @media screen and (max-width: 680px) {
+    * {
+        font-size: 10pt;
+    }
+
     body * {
         margin: 0;
         padding: 0;
@@ -997,6 +1004,7 @@ span.reply_content {
         z-index: 6;
         width: 90dvw;
         margin-left: -100%;
+        gap: .5rem;
     }
 
     #open_users_list {
@@ -1040,12 +1048,12 @@ span.reply_content {
 
     .embed {
         max-width: 100%;
+        margin: 0;
     }
 
     .message_db {
-        max-width: 80%;
+        max-width: 90%;
         text-wrap: wrap;
-        overflow: hidden;
         overflow-wrap: anywhere;
     }
 
@@ -1066,11 +1074,39 @@ span.reply_content {
         min-height: 50px;
     }
 
+    .chat_username {
+        font-size: 14pt;
+    }
+
     .inactive_button {
         color: grey;
     }
 
     .active_button {
         color: white;
+    }
+
+    .message_holder .pfp {
+        height: 30px;
+        width: 30px;
+        margin: .5rem 0;
+    }
+
+    #gif_results {
+        width: 85dvw;
+        height: 20dvh;
+    }
+
+    #gif_query{
+        padding: .2rem;
+    }
+
+    .gif_image{
+        max-width: 20dvw;
+        height: auto;
+    }
+
+    .component_image{
+        max-width: 100%;
     }
 }

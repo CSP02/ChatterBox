@@ -162,7 +162,7 @@ messageBox.addEventListener("input", event => {
     else if (!messageBox.innerText || messageBox.innerText.trim() === "") sendMessage.setAttribute("disabled", true)
 
     // Making "click enter to send" kind of thingy 
-    if (event.inputType === "insertLineBreak") messageBox.innerText += "\n"
+    // if (event.inputType === "insertLineBreak") messageBox.innerText += "\n"
     if (event.inputType === "insertParagraph" || (event.inputType === "insertText" && event.data === null) && !isLineBreak) {
         event.preventDefault();
         sendMessage.click();

@@ -235,6 +235,7 @@ export function SendTypingEvent() {
 
 async function ResolveContent(content, contentHolder, message) {
     let finalText = content.split(/\s/g);
+    const text2el = []
 
     if (message.repliedTo && message.repliedTo.username === loggedUser.username) {
         setTimeout(() => {
@@ -246,62 +247,67 @@ async function ResolveContent(content, contentHolder, message) {
         }, 100);
     }
 
-    content.split(/\s/g).forEach((data) => {
-        if (data.startsWith("http://") || data.startsWith("https://")) {
-            const link = document.createElement("a")
-            const text = document.createTextNode(data + " ")
-            link.href = data;
-            link.target = "_blank"
-            link.append(text)
+    content.split("\n").forEach((data) => {
+        data.split(" ").forEach(data => {
+            if (data.startsWith("http://") || data.startsWith("https://")) {
+                const link = document.createElement("a")
+                const text = document.createTextNode(data + "\ ")
+                link.href = data;
+                link.target = "_blank"
+                link.append(text)
 
-            finalText[finalText.indexOf(data)] = link;
-        }
+                text2el.push(link)
+            }
 
-        if (data === `@${loggedUser.username}`) {
-            const mentionWrapper = document.createElement("span")
-            const mention = document.createElement("b");
-            const text = document.createTextNode(" ");
+            if (data === `@${loggedUser.username}`) {
+                const mentionWrapper = document.createElement("b")
+                const mention = document.createTextNode(data + "\ ");
 
-            mention.innerText = data
+                mention.innerText = data
 
-            mentionWrapper.append(...[mention, text])
-            finalText[finalText.indexOf(data)] = mentionWrapper;
-            setTimeout(() => {
-                const messageHolder = contentHolder.parentElement.parentElement
-                messageHolder.classList.add("mentioned");
-                messageHolder.style.backgroundColor = loggedUser.color + "11"
-                messageHolder.style.borderTop = "solid " + loggedUser.color
-                messageHolder.style.borderBottom = "solid " + loggedUser.color
-            }, 100);
-        }
+                mentionWrapper.append(mention)
+                text2el.push(mentionWrapper)
+                setTimeout(() => {
+                    const messageHolder = contentHolder.parentElement.parentElement
+                    messageHolder.classList.add("mentioned");
+                    messageHolder.style.backgroundColor = loggedUser.color + "11"
+                    messageHolder.style.borderTop = "solid " + loggedUser.color
+                    messageHolder.style.borderBottom = "solid " + loggedUser.color
+                }, 100);
+            }
 
-        /**
-         * TODO: Add markdown
-         */
+            /**
+             * TODO: Add markdown
+             */
 
-        if (!(data.includes("http://") || data.includes("https://")) && data !== `@${loggedUser.username}`) {
-            const text = document.createTextNode(data.replaceAll("\\n", "\n") + "\ ");
-            finalText[finalText.indexOf(data)] = text;
-        }
+            if (!(data.includes("http://") || data.includes("https://")) && data !== `@${loggedUser.username}`) {
+                const text = document.createTextNode(data + "\ ");
+                text2el.push(text)
+            }
+        })
+        const breakEl = document.createElement("br")
+
+        text2el.push(breakEl)
     });
-    console.log(finalText)
+
     const wholeTextHolder = document.createElement("span")
     let text = "";
-    [...finalText].forEach((node, index) => {
-        console.log(node)
+    [...text2el].forEach((node, index) => {
         if (node.nodeType === 3) {
             text += node.data
 
-            if (index === finalText.length - 1) {
+            if (index === text2el.length - 1 ) {
                 const textEl = document.createElement("span")
-                textEl.innerText = text
+                textEl.innerText = text.trim()
+                console.log(text, "if")
 
                 wholeTextHolder.appendChild(textEl)
                 text = ""
             }
         } else {
+            if(!text || text === "" || text === "\s") return
             const textEl = document.createElement("span")
-            textEl.innerText = text
+            textEl.innerText = text.trim()
 
             wholeTextHolder.appendChild(textEl)
             wholeTextHolder.appendChild(node)
@@ -309,8 +315,8 @@ async function ResolveContent(content, contentHolder, message) {
         }
 
     })
+    
     contentHolder.appendChild(wholeTextHolder)
-    const components = []
     if (message.components.length > 0)
         [...message.components].forEach(component => {
             const embedWrapper = document.createElement("div")
@@ -361,7 +367,11 @@ async function ResolveContent(content, contentHolder, message) {
                 contentHolder.appendChild(image)
                 contentHolder.classList.add("message_has_component")
             }
-        })
+        });
+
+    // [...document.getElementsByTagName("span")].forEach(span => {
+    //     if(span.innerText === "") span.remove()
+    // })
 }
 
 export function ScrollToBottom(onload) {
@@ -401,7 +411,7 @@ export function UpdateTokens(response) {
     return [response.token, response.refreshToken]
 }
 
-export function SendNotification(data, type){
+export function SendNotification(data, type) {
     const notification = document.getElementById("notification")
     if (type === types.SuccessTypes.SUCCESS) notification.classList.add("success_notify")
     if (type === types.SuccessTypes.FAILED) notification.classList.add("failed_notify")
