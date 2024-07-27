@@ -1,4 +1,4 @@
-import Types from "./types";
+import Types from "./types.js";
 const types = new Types()
 
 export function ValidatePassword(password, user) {
