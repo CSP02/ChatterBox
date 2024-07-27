@@ -104,6 +104,16 @@ button {
     }
 }
 
+@keyframes blink{
+    0%{
+        background-color: #e69c5b61;
+    }
+
+    100%{
+        background-color: transparent;
+    }
+}
+
 button:disabled {
     opacity: .1;
 }
@@ -194,6 +204,55 @@ button#new_message_popup:hover {
     color: white;
 }
 
+#user_selection{
+    height: 20px;
+    width: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 .5rem 0 0;
+}
+
+#user_selection::before{
+    content: "";
+    height: 24px;
+    width: 24px;
+    border-radius: .4rem;
+    border: none;
+    background-color: white;
+    display: block;
+    position: absolute;
+}
+
+#user_selection:checked::before{
+    content: "\f00c";
+    background-color: rgb(97, 97, 202);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font: var(--fa-font-solid);
+}
+
+.online::before {
+    content: "";
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: #51ef51;
+    display: block;
+    position: absolute;
+    z-index: 12;
+    bottom: 14px;
+    left: 40px;
+    border: 4px solid #363636;
+}
+
+.offline{
+    opacity: .5;
+}
+
 .form:focus {
     outline: 3px soild white;
 }
@@ -237,8 +296,9 @@ button#new_message_popup:hover {
 #channels {
     grid-area: channel;
     background-color: #161616;
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
+    height: calc(100% - 1rem);
 }
 
 #app_main_container {
@@ -519,6 +579,7 @@ button#new_message_popup:hover {
     margin: .2rem;
     border-radius: .6rem;
     background-color: #363636;
+    position: relative;
 }
 
 #search_user {
@@ -574,11 +635,6 @@ button#new_message_popup:hover {
     color: rgb(211, 211, 211);
 }
 
-#channels {
-    display: flex;
-    flex-direction: column;
-}
-
 #create_channel {
     height: 45px;
     width: 45px;
@@ -605,6 +661,7 @@ button#new_message_popup:hover {
     text-overflow: ellipsis;
     border: 2px solid transparent;
     transition: .2s ease;
+    width: calc(100% - 1rem);
 }
 
 #gif_results {
@@ -670,7 +727,6 @@ button#new_message_popup:hover {
     height: 25px;
     width: 25px;
     transform: translate(-10px, -10px);
-    z-index: 100;
     align-items: center;
     justify-content: center;
 }
@@ -741,6 +797,14 @@ div.reply_message {
     align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: rgb(177, 177, 177);
+    text-align: left;
+    border: none;
+    width: calc(100% - 1.6rem);
+}
+
+.m_indicator{
+    animation: blink infinite .5s alternate;
 }
 
 .replied_to span {

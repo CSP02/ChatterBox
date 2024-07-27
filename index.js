@@ -100,8 +100,9 @@ io.on("connection", socket => {
             aUsersInChnl.push(user)
 
             socket.join(`${url}/@me/${channel._id}`)
+            io.to(`${url}/@me/${username}`).emit("GET_USERS", channel)
+            io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "online" })
             activeUsers.set(channel._id, aUsersInChnl)
-            io.to(`${url}/@me/${channel._id}`).emit("UPDATE_USERS_LIST", activeUsers.get(channel._id));
         } catch (error) {
             console.log(error)
         }
@@ -126,15 +127,17 @@ io.on("connection", socket => {
                     updatedUsers.push(u2push)
                 }
             })
-
+            io.emit("UPDATE_GLOBAL_USERS", { user: user.username, mode: "offline" })
             activeUsers.set(channel._id, updatedUsers)
-            io.to(`${url}/@me/${channel._id}`).emit("UPDATE_GLOBAL_USERS", user)
         } catch (error) {
             console.log(error)
         }
     })
 
-    // Catches the login event from a client and sends the user details for every other clients
+    socket.on("UUL", data => {
+        io.to(`${url}/@me/${data.channel._id}`).emit("UPDATE_USERS_LIST", data.members)
+    })
+
     socket.on("LOGIN", data => {
         try {
             const username = data.username
@@ -148,7 +151,7 @@ io.on("connection", socket => {
                 color: colorPrefered
             }
 
-            io.emit("LOGIN", { user: user })
+            io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "online" })
         } catch (error) {
             console.log(error)
         }
@@ -199,6 +202,7 @@ io.on("connection", socket => {
     socket.on("disconnect", data => {
         try {
             const username = socket.data.username;
+            
             [...activeUsers.keys()].forEach(key => {
                 const u2push = [];
                 [...activeUsers.get(key)].forEach(user => {
@@ -206,7 +210,7 @@ io.on("connection", socket => {
                 });
                 activeUsers.set(key, u2push)
             })
-            io.to(`${url}/@me/${socket.data.channelId}`).emit("UPDATE_GLOBAL_USERS", username)
+            io.emit("UPDATE_GLOBAL_USERS", {user: username, mode: "offline"})
         } catch (error) {
             console.log(error)
         }

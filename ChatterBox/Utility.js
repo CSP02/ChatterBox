@@ -137,7 +137,7 @@ export async function AddToMessages(message) {
     contentHolder.classList.add("message_db");
     contentHolder.id = messageId
     if (repliedTo !== undefined && repliedTo.username !== "") {
-        const replyIndicator = document.createElement("div")
+        const replyIndicator = document.createElement("button")
         const userPfp = document.createElement("img")
         const username = document.createElement("span")
         const content = document.createElement("span")
@@ -152,6 +152,17 @@ export async function AddToMessages(message) {
 
         replyIndicator.append(...[userPfp, username, content])
         replyIndicator.classList.add("replied_to")
+
+        replyIndicator.addEventListener("click", e => {
+            console.log("test", repliedTo._id)
+            const replyM = document.getElementById(repliedTo._id)
+            replyM.parentElement.parentElement.scrollIntoView({ block: "center" });
+            replyM.classList.add("m_indicator")
+
+            setTimeout(() => {
+                replyM.classList.remove("m_indicator")
+            }, 1500)
+        })
         messAndUserholder.appendChild(replyIndicator)
 
         pfp.style.marginTop = "calc(25px + 1.2rem)"
@@ -179,7 +190,6 @@ export async function AddToMessages(message) {
         closeIcon.classList.add("fa-circle-xmark")
         cancelButton.appendChild(closeIcon)
         cancelButton.classList.add("cancel_reply")
-        console.log(reply.previousSibling)
         username.innerText = "replying to " + reply.parentElement.previousSibling.firstChild.innerText
         cancelButton.addEventListener("click", click => {
             window.sessionStorage.removeItem("repliedTo")
@@ -296,16 +306,15 @@ async function ResolveContent(content, contentHolder, message) {
         if (node.nodeType === 3) {
             text += node.data
 
-            if (index === text2el.length - 1 ) {
+            if (index === text2el.length - 1) {
                 const textEl = document.createElement("span")
                 textEl.innerText = text.trim()
-                console.log(text, "if")
 
                 wholeTextHolder.appendChild(textEl)
                 text = ""
             }
         } else {
-            if(!text || text === "" || text === "\s") return
+            if (!text || text === "" || text === "\s") return
             const textEl = document.createElement("span")
             textEl.innerText = text.trim()
 
@@ -315,7 +324,7 @@ async function ResolveContent(content, contentHolder, message) {
         }
 
     })
-    
+
     contentHolder.appendChild(wholeTextHolder)
     if (message.components.length > 0)
         [...message.components].forEach(component => {
@@ -327,16 +336,25 @@ async function ResolveContent(content, contentHolder, message) {
             const image = new Image()
 
             if (component.type === types.ComponentTypes.EMBED) {
-                if (!component.title && !component.description && !component.image) { }
+                if (!component.title && !component.description && !component.image) {
+                    const textEl = document.createElement("a")
+                    textEl.innerText = component.url.trim()
+                    textEl.href = component.url.trim()
+                    textEl.target = "_blank"
+
+                    wholeTextHolder.appendChild(textEl)
+                    contentHolder.appendChild(wholeTextHolder)
+                }
                 else {
                     title.classList.add("embed_title")
                     const titleLink = document.createElement("a")
                     titleLink.href = component.url
-                    titleLink.innerText = component.title
+                    titleLink.innerText = component.title ? component.title : "..."
+                    titleLink.target = "_blank"
                     title.appendChild(titleLink)
 
                     description.classList.add("embed_description")
-                    description.innerText = component.description ? component.description : ""
+                    description.innerText = component.description ? component.description : "..."
 
                     if (component.image) {
                         image.classList.add("embed_image")
@@ -393,15 +411,24 @@ export function ScrollToBottom(onload) {
 }
 
 export function LogoutUser() {
-    token = null;
-    refreshToken = null;
-    loggedUser = null
+    const headers = new Headers
+    headers.append("Authorization", `Bearer ${token}`)
+    fetch("http://localhost:3001/api/logout", {
+        mode: "cors",
+        headers: headers
+    }).then(async response => {
+        if (response.ok) return response.json()
+    }).then(response => {
+        token = null;
+        refreshToken = null;
+        loggedUser = null
 
-    window.sessionStorage.setItem("token", token)
-    window.sessionStorage.setItem("refresh token", refreshToken)
-    window.sessionStorage.setItem("user", loggedUser)
+        window.sessionStorage.setItem("token", token)
+        window.sessionStorage.setItem("refresh token", refreshToken)
+        window.sessionStorage.setItem("user", loggedUser)
 
-    location = "/"
+        location = "/"
+    })
 }
 
 export function UpdateTokens(response) {

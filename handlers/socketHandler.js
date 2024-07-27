@@ -12,12 +12,12 @@ export function HandleSocketEvents(socket, params) {
         const channel = JSON.parse(window.sessionStorage.getItem("active_channel"))
         socket.emit("SET_UNAME", { user: user, channel: channel })
     })
-    
+
     // Send the user details of a newly logged user to everyone who connected to the socket
     socket.on("LOGIN", data => {
         socket.emit("MEMBER_ADD", data.user)
     })
-    
+
     // Get all messages when someone sent a message
     socket.on("MESSAGES", data => {
         GetMessages(data, params)
@@ -25,9 +25,15 @@ export function HandleSocketEvents(socket, params) {
 
     // This event is when user updates their profile
     socket.on("UPDATE_USERS_LIST", users => {
-        const usersList = document.getElementById("users_list")
+        const onlineUsersList = document.getElementById("online_u")
+        const offlineUsersList = document.getElementById("offline_u")
 
-        usersList.innerHTML = ""
+        onlineUsersList.innerHTML = ""
+        offlineUsersList.innerHTML = ""
+
+        const onlineUsers = []
+        const offlineUsers = []
+
         users.forEach(user => {
             const userDetailsWrapper = document.createElement("div")
             const username = document.createElement("p")
@@ -46,19 +52,44 @@ export function HandleSocketEvents(socket, params) {
             pfp.classList.add("pfp")
             userDetailsWrapper.append(...[pfp, username])
             userDetailsWrapper.classList.add("online_users")
-            usersList.appendChild(userDetailsWrapper)
+            if (user.status === 1) {
+                userDetailsWrapper.classList.add("online")
+                onlineUsers.push(userDetailsWrapper)
+            }
+            else {
+                userDetailsWrapper.classList.add("offline")
+                offlineUsers.push(userDetailsWrapper)
+            }
         })
+        onlineUsersList.append(...onlineUsers)
+        offlineUsersList.append(...offlineUsers)
     })
 
-    socket.on("UPDATE_GLOBAL_USERS", user => {
-        if (user === null) return
-        const usersList = document.getElementById("users_list");
+    socket.on("UPDATE_GLOBAL_USERS", data => {
+        if (data.user === null) return
+        const onlineUsersList = document.getElementById("online_u");
+        const offlineUsersList = document.getElementById("offline_u");
 
-        [...usersList.children].forEach(userEl => {
+        [...onlineUsersList.children].forEach(userEl => {
             const username = userEl.innerText
-            const usernameE = user
+            const usernameE = data.user
 
-            if (username === usernameE) userEl.remove()
+            if (username === usernameE && data.mode === "offline") {
+                userEl.remove()
+                userEl.classList.replace("online", "offline")
+                offlineUsersList.appendChild(userEl)
+            }
+        });
+        
+        [...offlineUsersList.children].forEach(userEl => {
+            const username = userEl.innerText
+            const usernameE = data.user
+
+            if (username === usernameE && data.mode === "online") {
+                userEl.remove()
+                userEl.classList.replace("offline", "online")
+                onlineUsersList.appendChild(userEl)
+            }
         })
     })
 
@@ -94,5 +125,23 @@ export function HandleSocketEvents(socket, params) {
             notification.style.marginTop = "-100%"
         }, 3000);
         GetChannels(params)
+    })
+
+    socket.on("GET_USERS", channel => {
+        const headers = new Headers
+        headers.append("authorization", `Bearer ${window.sessionStorage.getItem("token")}`)
+        fetch(`http://localhost:3001/api/get_users?cid=${channel._id}`, {
+            mode: "cors",
+            headers: headers
+        }).then(async response => {
+            if (response.ok) return response.json()
+        }).then(response => {
+            const members = response.members
+            const channel = JSON.parse(window.sessionStorage.getItem("active_channel"))
+
+            socket.emit("UUL", {
+                members: members, channel: channel
+            })
+        })
     })
 }

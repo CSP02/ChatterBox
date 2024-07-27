@@ -57,9 +57,9 @@ export async function GetChannels(params) {
         mode: "cors",
         headers: headers
     }).then((response) => {
-        if (response.status === 401 && response.error === params.types.ErrorTypes.JWT_EXPIRE) {
+        if (response.status === 401) {
             const headers = new Headers()
-
+            console.log(response.error)
             headers.append("Authorization", `Bearer ${refreshToken}`)
             fetch(`${apiURL}/api/request_new_token`, {
                 mode: "cors",
@@ -70,8 +70,6 @@ export async function GetChannels(params) {
                 [token, refreshToken] = UpdateTokens(response)
                 GetChannels(params)
             })
-        } else if (response.status === 401 || response.status === 500) {
-            alert("Something went wrong! Please reload the website. If this error appeared again please login again.")
         }
         if (response.ok) return response.json();
     })
@@ -90,6 +88,7 @@ function AddToChannels(channels, socket) {
     channels.forEach(channel => {
         const channelName = channel.name
         const iconURL = channel.iconURL
+        const  loggedUser = window.sessionStorage.getItem("user")
 
         const nameButton = document.createElement("button")
         nameButton.innerText = channelName
