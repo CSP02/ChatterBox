@@ -1,5 +1,5 @@
 import Types from "./types.js";
-const types = new Types()
+const types = new Types();
 
 export function ValidatePassword(password, user) {
     fetch("/ValidatePassword", {
@@ -33,6 +33,6 @@ async function SignUpUser(user) {
     }).then((response) => {
         if (response.error === types.ErrorTypes.USER_ALREADY_EXIST)
             return alert("username already exits!");
-        location = "/login"
+        location = "/login";
     });
 }

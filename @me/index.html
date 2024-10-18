@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/@me/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -19,10 +18,21 @@
 
     <link rel="shortcut icon" href="/Resources/chatterbox_logo_transparent.png" type="image/png">
 
+    <link href="https://cdn.jsdelivr.net/gh/CSP02/vanbUI@latest/vanbUI/vanbUI.css" rel="stylesheet">
+    <link rel="stylesheet" href="/@me/style.css">
     <title>me</title>
 </head>
 
 <body>
+    <div id="profile_card_holder">
+        <div id="profile_card">
+            <button id="close_profile_card"
+                onclick="document.getElementById('profile_card_holder').style.zIndex = '-1'"><i
+                    class="fa-solid fa-xmark"></i></button>
+            <img src="" alt="" id="profile_card_pfp">
+            <b id="profile_username"></b>
+        </div>
+    </div>
     <div id="notification"></div>
     <audio src="/Resources/notification_tone.mp3" style="display: none;" id="notify_tone"></audio>
     <div id="create_channel_form" class="form_wrapper">
@@ -65,6 +75,9 @@
         <div id="app_main_container" style="grid-template-rows: .2fr 1fr 1fr .01fr;">
             <div id="channel_name_indicator"></div>
             <div id="messages">
+                <div id="messages_loading">
+                    <div id="msg_load_cir"></div>
+                </div>
                 <div id="init_message">Nothing here! check your channels maybe?</div>
             </div>
             <div id="user_message">
@@ -74,7 +87,7 @@
                 <div id="send_message_holder" style="grid-template-columns: 1fr .01fr;">
                     <div type="text" id="message_box" contenteditable></div>
                     <button id="gif_button"><i class="fa-solid fa-photo-film"></i></button>
-                    <div id="gif_results" style="right: -100%;">
+                    <div id="gif_results" class="hide_gif_holder">
                         <div id="input_but_holder">
                             <input type="text" id="gif_query" placeholder="search gif">
                             <button id="search_gif"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -90,7 +103,6 @@
                         </svg>
                     </button>
                 </div>
-
             </div>
         </div>
         <div id="list_users" class="closed">

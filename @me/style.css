@@ -50,6 +50,14 @@ button {
     margin: var(--default_margin);
 }
 
+tooltip {
+    width: max-content;
+}
+
+cross {
+    text-decoration: line-through;
+}
+
 #loading {
     height: var(--max_device_height);
     width: var(--max_device_width);
@@ -104,12 +112,12 @@ button {
     }
 }
 
-@keyframes blink{
-    0%{
+@keyframes blink {
+    0% {
         background-color: #e69c5b61;
     }
 
-    100%{
+    100% {
         background-color: transparent;
     }
 }
@@ -170,6 +178,54 @@ button#new_message_popup:hover {
     border: 2px solid #ff8989;
 }
 
+#profile_card {
+    position: relative;
+    background-color: #212121;
+    box-shadow: black 0 0 3px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    border-radius: .3rem;
+}
+
+#close_profile_card {
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    top: -25px;
+    right: -25px;
+    background-color: transparent;
+    border: none;
+    color: rgb(244, 85, 85);
+    font-size: 22pt;
+}
+
+#profile_card_holder {
+    height: calc(100dvh - .6rem);
+    width: calc(100dvw - .6rem);
+    padding: .3rem;
+    display: flex;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.562);
+    backdrop-filter: blur(24px);
+    justify-content: center;
+    align-items: center;
+}
+
+#profile_card_pfp {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+}
+
+#profile_username {
+    font-size: 32pt;
+}
+
 .form_wrapper {
     height: 100dvh;
     position: fixed;
@@ -204,7 +260,7 @@ button#new_message_popup:hover {
     color: white;
 }
 
-#user_selection{
+#user_selection {
     height: 20px;
     width: 20px;
     position: relative;
@@ -214,7 +270,7 @@ button#new_message_popup:hover {
     margin: 0 .5rem 0 0;
 }
 
-#user_selection::before{
+#user_selection::before {
     content: "";
     height: 24px;
     width: 24px;
@@ -225,7 +281,7 @@ button#new_message_popup:hover {
     position: absolute;
 }
 
-#user_selection:checked::before{
+#user_selection:checked::before {
     content: "\f00c";
     background-color: rgb(97, 97, 202);
     display: flex;
@@ -249,8 +305,22 @@ button#new_message_popup:hover {
     border: 4px solid #363636;
 }
 
-.offline{
+.offline {
     opacity: .5;
+}
+
+#offline_u,
+#online_u {
+    overflow-y: scroll;
+    height: 37dvh;
+}
+
+#load_more_msg {
+    width: 100%;
+    background-color: darkgrey;
+    border: none;
+    box-shadow: black 0 0 5px;
+    font-size: 14pt;
 }
 
 .form:focus {
@@ -390,7 +460,7 @@ button#new_message_popup:hover {
     padding: .7rem;
     overflow-y: auto;
     overflow-x: hidden;
-
+    position: relative;
 }
 
 #user_message {
@@ -512,7 +582,7 @@ button#new_message_popup:hover {
 }
 
 #search_results_holder {
-    height: calc(200px - 1.7rem);
+    height: auto;
     overflow: auto;
     overflow-x: hidden;
     padding: .3rem;
@@ -525,7 +595,16 @@ button#new_message_popup:hover {
 .gif_image {
     border-radius: .3rem;
     transition: .2s ease;
-    max-height: 100%;
+    height: auto;
+    width: calc(15dvw - 1.4rem);
+}
+
+.edited_indicator {
+    background-color: #363636;
+    border-radius: .3rem;
+    padding: 0.4rem;
+    margin: .2rem;
+    font-size: 9pt;
 }
 
 .gif_image:hover {
@@ -554,6 +633,7 @@ button#new_message_popup:hover {
     border: none;
     border-radius: 50%;
     padding: 0;
+    background-color: transparent;
 }
 
 #profile_pfp img {
@@ -666,10 +746,10 @@ button#new_message_popup:hover {
 
 #gif_results {
     position: absolute;
-    right: -100%;
+    left: calc(100% - 30dvw - 2rem);
     transform: translateY(-110%);
     width: 30dvw;
-    height: 250px;
+    height: 50dvh;
     overflow: hidden;
     background-color: #0f0f0f;
     padding: .7rem;
@@ -677,6 +757,17 @@ button#new_message_popup:hover {
     box-shadow: black 0 0 5px;
     border: 2px solid #494949;
     transition: .2s ease;
+    z-index: 12;
+}
+
+.hide_gif_holder {
+    display: none;
+}
+
+.show_gif_holder {
+    display: flex;
+    flex-direction: column;
+    /* align-items: start; */
 }
 
 .active {
@@ -722,31 +813,82 @@ button#new_message_popup:hover {
     overflow-wrap: anywhere;
 }
 
-.message_db:hover .reply_icon {
+.message_db:hover #msg_opt_grp {
     display: flex;
-    height: 25px;
-    width: 25px;
     transform: translate(-10px, -10px);
     align-items: center;
     justify-content: center;
 }
 
-.reply_icon {
-    background-color: rgb(37, 37, 37);
+#messages_loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.empty_messages #messages_loading {
+    display: none;
+}
+
+.open_profile_card {
+    background: transparent;
     border: none;
-    height: 50px;
-    width: 50px;
-    color: rgb(214, 214, 214);
-    border-radius: .3rem;
-    box-shadow: black 0 0 3px;
+    margin: 0;
+    padding: 0;
+}
+
+#msg_load_cir {
+    height: 100px;
+    width: 100px;
+    border: 2px solid white;
+    border-top: 2px solid red;
+    animation: rotate .5s infinite linear;
+    border-radius: 50%;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(180deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#msg_opt_grp {
+    padding: .05rem;
     position: absolute;
     right: 0;
     top: 0;
     display: none;
+    box-shadow: black 0 0 3px;
+    border-radius: .3rem;
+    background-color: #212121;
 }
 
-.reply_icon:hover {
+.reply_icon,
+.del_icon,
+.edit_icon {
+    border: none;
+    background-color: transparent;
+    color: rgb(214, 214, 214);
+    border-radius: .3rem;
+    padding: .2rem;
+}
+
+.reply_icon:hover,
+.del_icon:hover,
+.edit_icon:hover {
     opacity: .7;
+    background-color: grey;
 }
 
 .mentioned .message_db {
@@ -803,7 +945,7 @@ div.reply_message {
     width: calc(100% - 1.6rem);
 }
 
-.m_indicator{
+.m_indicator {
     animation: blink infinite .5s alternate;
 }
 
@@ -1161,16 +1303,16 @@ span.reply_content {
         height: 20dvh;
     }
 
-    #gif_query{
+    #gif_query {
         padding: .2rem;
     }
 
-    .gif_image{
+    .gif_image {
         max-width: 20dvw;
         height: auto;
     }
 
-    .component_image{
+    .component_image {
         max-width: 100%;
     }
 }

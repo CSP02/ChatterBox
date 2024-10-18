@@ -1,6 +1,6 @@
-let token = null
-let refreshToken = null
-let loggedUser = null
+let token = null;
+let refreshToken = null;
+let loggedUser = null;
 
 export async function LoginUser(user) {
     await fetch(
@@ -15,17 +15,17 @@ export async function LoginUser(user) {
     )
         .then(async (response) => {
             if (response.ok) return await response.json();
-            alert("something went wrong! Please reload the site and relogin")
+            alert("something went wrong! Please reload the site and relogin");
         })
         .then(async (response) => {
             if (response.token) {
                 token = response.token;
-                refreshToken = response.refreshToken
+                refreshToken = response.refreshToken;
                 loggedUser = response.user.username;
-                window.sessionStorage.setItem("token", token)
-                window.sessionStorage.setItem("refresh token", refreshToken)
-                window.sessionStorage.setItem("user", JSON.stringify(response.user))
-                window.location = "/@me"
+                window.sessionStorage.setItem("token", token);
+                window.sessionStorage.setItem("refresh token", refreshToken);
+                window.sessionStorage.setItem("user", JSON.stringify(response.user));
+                window.location = "/@me";
             } else {
                 document.getElementById("invalid_credentials").innerText =
                     "Username or Password is incorrect!";
