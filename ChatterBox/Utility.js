@@ -1,4 +1,4 @@
-import ComponentTypes from "./types.js"
+import Types from "./types.js"
 import { removeEvent } from "../@me/script.js";
 import { GetMessages, DeleteMessage, EditMessage } from "./Message.js";
 
@@ -9,7 +9,7 @@ let token = null;
 let refreshToken = null;
 const apiURL = "http://localhost:3001";
 let activeChannel = { name: "http://localhost:3000/@me" };
-const types = new ComponentTypes();
+const types = new Types();
 const repliedToCache = { isEmpty: true };
 
 export function SetDefaults(defaults, socketInit) {
@@ -230,11 +230,13 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
 
         editMsg.addEventListener("click", e => {
             const message = editMsg.parentElement.parentElement;
-            message.setAttribute("contenteditable", true);
-            message.focus();
-            message.addEventListener("input", e => {
+            message.firstChild.setAttribute("contenteditable", true);
+            message.firstChild.classList.add("active_edit");
+            message.firstChild.focus();
+            message.firstChild.addEventListener("input", e => {
                 if (e.inputType === "insertParagraph" || (e.inputType === "insertText" && e.data === null)) {
-                    message.removeAttribute("contenteditable");
+                    message.firstChild.removeAttribute("contenteditable");
+                    message.firstChild.classList.remove("active_edit");
                     EditMessage(message, message.innerText.trim(), params);
                 }
             })
@@ -383,7 +385,7 @@ async function ResolveContent(content, contentHolder, message) {
     [...text2el].forEach((node, index) => {
         if (node.nodeType === 3) {
             text += node.data;
-            
+
             if (index === text2el.length - 1 || isMD(text.trim())) {
                 const md = constructMD(text.trim());
 
@@ -558,4 +560,42 @@ export function SendNotification(data, type) {
     setTimeout(() => {
         notification.style.marginTop = "-100%";
     }, 3000);
+}
+
+export async function fetchData(url, method = "GET", body = null) {
+    let token = window.sessionStorage.getItem("token");
+    let refreshToken = window.sessionStorage.getItem("refresh token");
+
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${token}`);
+
+    const reqOpts = {
+        mode: 'cors',
+        method: method,
+        headers: headers
+    }
+    if (body !== null) reqOpts.body = body;
+    const response = await fetch(url, reqOpts);
+    if (response.ok)
+        return { response: await response.json(), status: response.status };
+    else {
+        if (response.status === 401 && response.error === types.ErrorTypes.JWT_EXPIRE) {
+            await requestNewToken(refreshToken);
+            await fetchData(url, method, body);
+        } else
+            return alert("something went wrong! please reload the site.");
+    }
+}
+
+async function requestNewToken(refreshToken) {
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${refreshToken}`);
+    const response = await fetch(`http://localhost:3001/api/request_new_token`, {
+        mode: "cors",
+        headers: headers
+    })
+    if (response.ok) {
+        const resJson = await response.json();
+        UpdateTokens(resJson);
+    }
 }

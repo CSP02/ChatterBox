@@ -1,82 +1,30 @@
-import { UpdateTokens } from "./Utility.js";
+import { fetchData } from "./Utility.js";
 
 export async function CreateChannel(params) {
-    let token = window.sessionStorage.getItem("token");
-    let refreshToken = window.sessionStorage.getItem("refresh token");
     const apiURL = params.apiURL;
 
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${token}`);
-
     const channelName = document.getElementById("channel_name").value;
-    const body = {
+    const body = new Blob([JSON.stringify({
         channelName: channelName
-    };
+    })], { type: "application/json" })
+    const url = `${apiURL}/api/channels`;
 
-    fetch(`${apiURL}/api/channels`, {
-        mode: "cors",
-        headers: headers,
-        method: "POST",
-        body: new Blob([JSON.stringify(body)], { type: "application/json" })
-    }).then((response) => {
-        if (response.status === 401 && response.error === params.types.ErrorTypes.JWT_EXPIRE) {
-            const headers = new Headers();
-
-            headers.append("Authorization", `Bearer ${refreshToken}`);
-            fetch(`${apiURL}/api/request_new_token`, {
-                mode: "cors",
-                headers: headers
-            }).then(async response => {
-                if (response.ok) return await response.json();
-            }).then(response => {
-                [token, refreshToken] = UpdateTokens(response);
-                CreateChannel(params);
-            })
-        } else if (response.status === 401 || response.status === 500) {
-            alert("Something went wrong! Please reload the website. If this error appeared again please login again.");
-        }
-        if (response.ok) return response.json();
-    })
-        .then(async (response) => {
-            if (!response.channel) return;
-            AddToChannels([response.channel]);
-        });
+    const { response, status } = await fetchData(url, "POST", body);
+    if (status !== 200) return alert("something went wrong!");
+    AddToChannels([response.channel]);
 }
 
 export async function GetChannels(params) {
-    let token = window.sessionStorage.getItem("token");
-    let refreshToken = window.sessionStorage.getItem("refresh token");
     const apiURL = params.apiURL;
+    const url = `${apiURL}/api/channels`;
 
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${token}`);
+    const { response, status } = await fetchData(url);
+    if (status !== 200) return alert("something went wrong!");
+    if (await response.channels.length <= 0) return;
+    const channels = await response.channels;
 
-    fetch(`${apiURL}/api/channels`, {
-        mode: "cors",
-        headers: headers
-    }).then((response) => {
-        if (response.status === 401) {
-            const headers = new Headers();
-            headers.append("Authorization", `Bearer ${refreshToken}`);
-            fetch(`${apiURL}/api/request_new_token`, {
-                mode: "cors",
-                headers: headers
-            }).then(async response => {
-                if (response.ok) return await response.json();
-            }).then(response => {
-                [token, refreshToken] = UpdateTokens(response);
-                GetChannels(params);
-            })
-        }
-        if (response.ok) return response.json();
-    })
-        .then(async (response) => {
-            if (await response.channels.length <= 0) return;
-            const channels = await response.channels;
-
-            AddToChannels(channels, params.socket);
-            window.sessionStorage.setItem("channels", JSON.stringify(channels));
-        });
+    AddToChannels(channels, params.socket);
+    window.sessionStorage.setItem("channels", JSON.stringify(channels));
 }
 
 function AddToChannels(channels, socket) {
@@ -85,7 +33,7 @@ function AddToChannels(channels, socket) {
     channels.forEach(channel => {
         const channelName = channel.name;
         const iconURL = channel.iconURL;
-        const  loggedUser = window.sessionStorage.getItem("user");
+        const loggedUser = window.sessionStorage.getItem("user");
 
         const nameButton = document.createElement("button");
         nameButton.innerText = channelName;

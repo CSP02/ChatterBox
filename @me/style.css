@@ -260,6 +260,13 @@ button#new_message_popup:hover {
     color: white;
 }
 
+.active_edit {
+    width: calc(100% - 1rem);
+    display: block;
+    padding: .5rem;
+    border-radius: .4rem;
+}
+
 #user_selection {
     height: 20px;
     width: 20px;

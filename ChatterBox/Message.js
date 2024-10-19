@@ -1,11 +1,8 @@
-import { AddToMessages, ScrollToBottom, UpdateTokens } from "./Utility.js";
+import { AddToMessages, ScrollToBottom, fetchData } from "./Utility.js";
 
 export async function SendMessage(message, params) {
     let socket = params.socket;
-    let token = window.sessionStorage.getItem("token");
-    let refreshToken = window.sessionStorage.getItem("refresh token");
     const apiURL = params.apiURL;
-    const types = params.types;
     const previousMessage = params.previousMessage;
 
     previousMessage.username = "";
@@ -18,158 +15,61 @@ export async function SendMessage(message, params) {
     const path = location.pathname;
     const channelId = path.split("/").reverse()[0].toString();
 
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${token}`);
-    fetch(`${apiURL}/api/messages?channel_id=${channelId}`, {
-        method: "POST",
-        mode: "cors",
-        body: new Blob([JSON.stringify(message)], {
-            type: "application/json",
-        }),
-        headers: headers
-    }).then((response) => {
-        if (response.status === 401 && response.error === types.ErrorTypes.JWT_EXPIRE) {
-            const headers = new Headers();
-
-            headers.append("Authorization", `Bearer ${refreshToken}`);
-            fetch(`${apiURL}/api/request_new_token`, {
-                mode: "cors",
-                headers: headers
-            }).then(async response => {
-                if (response.ok) return await response.json();
-            }).then(response => {
-                [token, refreshToken] = UpdateTokens(response);
-                SendMessage(message, params);
-            })
-        } else if (response.status === 500) {
-            alert("Something went wrong! Please reload the website. If this error appeared again please login again.");
-        }
-        if (response.ok) return true;
-    }).then(async (response) => {
-        if (!response) return;
-        socket.emit("MESSAGES", channelId);
-        document.getElementById("message_box").focus();
-        document.getElementById("reply_indicator").innerHTML = "";
-        document.getElementById("reply_indicator").style.display = "none";
-        window.sessionStorage.setItem("repliedTo", "");
+    const url = `${apiURL}/api/messages?channel_id=${channelId}`;
+    const body = new Blob([JSON.stringify(message)], {
+        type: "application/json",
     });
+    const { response, status } = await fetchData(url, "POST", body);
+    if (status !== 200) return alert("something went wrong!");
+    message._id = response.messageId;
+    socket.emit("MESSAGES", message);
+    document.getElementById("message_box").focus();
+    document.getElementById("reply_indicator").innerHTML = "";
+    document.getElementById("reply_indicator").style.display = "none";
+    window.sessionStorage.setItem("repliedTo", "");
 }
 
 export async function GetMessages(activeChannel, params, chunkSize = 16) {
-    let token = window.sessionStorage.getItem("token");
-    let refreshToken = window.sessionStorage.getItem("refresh token");
     const apiURL = params.apiURL;
-    const types = params.types;
     const previousMessage = params.previousMessage;
 
     previousMessage.username = "";
     previousMessage.timestamp = "";
     const messagesDiv = document.getElementById("messages");
-    const headers = new Headers();
+    const url = `${apiURL}/api/messages?channel_id=${activeChannel._id}&chunk=${chunkSize}`;
+    const { response, status } = await fetchData(url);
+    if (status !== 200) return alert("something went wrong!");
+    const messages = await response.messages;
 
-    headers.append("Authorization", `Bearer ${token}`);
-    fetch(`${apiURL}/api/messages?channel_id=${activeChannel._id}&chunk=${chunkSize}`, {
-        mode: "cors",
-        headers: headers
-    }).then((response) => {
-        if (response.status === 401 && response.error === types.ErrorTypes.JWT_EXPIRE) {
-            const headers = new Headers();
-
-            headers.append("Authorization", `Bearer ${refreshToken}`);
-            fetch(`${apiURL}/api/request_new_token`, {
-                mode: "cors",
-                headers: headers
-            }).then(async response => {
-                if (response.ok) return await response.json();
-            }).then(response => {
-                [token, refreshToken] = UpdateTokens(response);
-                GetMessages(activeChannel, params);
-            })
-        } else if (response.status === 401 || response.status === 500) {
-            alert("Something went wrong! Please reload the website. If this error appeared again please login again.");
-        }
-        if (response.ok) return response.json();
-    }).then(async (response) => {
-        const messages = await response.messages;
-
-        if (messages.length <= 0) return messagesDiv.classList.add("empty_messages");
-        messagesDiv.classList.remove("empty_messages");
-        messagesDiv.innerHTML = "";
-        AddToMessages(messages, response.fetched_all_messages, params);
-        ScrollToBottom(false);
-    });
+    if (messages.length <= 0) return messagesDiv.classList.add("empty_messages");
+    messagesDiv.classList.remove("empty_messages");
+    messagesDiv.innerHTML = "";
+    AddToMessages(messages, response.fetched_all_messages, params);
+    ScrollToBottom(false);
 }
 
 export async function DeleteMessage(deleteMsg, params) {
-    let token = window.sessionStorage.getItem("token");
-    let refreshToken = window.sessionStorage.getItem("refresh token");
+    let socket = params.socket;
 
     const messageId = deleteMsg.parentElement.parentElement.id;
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${token}`);
 
-    fetch(`${params.apiURL}/api/delete_msg?id=${messageId}`, {
-        mode: "cors",
-        headers: headers,
-    }).then(async response => {
-        if (response.ok) return response.json();
-
-        if (response.status === 401 && response.error === params.types.ErrorTypes.JWT_EXPIRE) {
-            const headers = new Headers();
-
-            headers.append("Authorization", `Bearer ${refreshToken}`);
-            fetch(`${apiURL}/api/request_new_token`, {
-                mode: "cors",
-                headers: headers
-            }).then(async response => {
-                if (response.ok) return await response.json();
-            }).then(response => {
-                [token, refreshToken] = UpdateTokens(response);
-                DeleteMessage(deleteMsg, params);
-            })
-        }
-    }).then(async response => {
-        if (deleteMsg.parentElement.parentElement.nextSibling === null && deleteMsg.parentElement.parentElement.previousSibling.id === '')
-            deleteMsg.parentElement.parentElement.parentElement.parentElement.remove();
-        else
-            deleteMsg.parentElement.parentElement.remove();
-    })
+    const url = `${params.apiURL}/api/delete_msg?id=${messageId}`;
+    const { response, status } = await fetchData(url, "DELETE");
+    if (status !== 200) return alert("something went wrong!");
+    socket.emit("DEL_MSG", { id: deleteMsg.parentElement.parentElement.id, channel: JSON.parse(window.sessionStorage.getItem("active_channel")) });
 }
 
 export async function EditMessage(message, content, params) {
-    let token = window.sessionStorage.getItem("token");
-    let refreshToken = window.sessionStorage.getItem("refresh token");
+    let socket = params.socket;
     const messageId = message.id;
 
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${token}`);
-
-    fetch(`${params.apiURL}/api/edit_msg?id=${messageId}`, {
-        mode: "cors",
-        headers: headers,
-        method: "PUT",
-        body: new Blob([JSON.stringify({ content: content })], {
-            type: "application/json",
-        }),
-    }).then(async response => {
-        if (response.ok) return response.json();
-
-        if (response.status === 401 && response.error === params.types.ErrorTypes.JWT_EXPIRE) {
-            const headers = new Headers();
-
-            headers.append("Authorization", `Bearer ${refreshToken}`);
-            fetch(`${params.apiURL}/api/request_new_token`, {
-                mode: "cors",
-                headers: headers
-            }).then(async response => {
-                if (response.ok) return await response.json();
-            }).then(response => {
-                [token, refreshToken] = UpdateTokens(response);
-                EditMessage(message, params);
-            })
-        }
-    }).then(async response => {
-        const activeChannel = window.sessionStorage.getItem("active_channel");
-        GetMessages(JSON.parse(activeChannel), params);
+    const url = `${params.apiURL}/api/edit_msg?id=${messageId}`;
+    const body = new Blob([JSON.stringify({ content: content })], {
+        type: "application/json",
     })
+
+    const { response, status } = await fetchData(url, "PUT", body);
+    if (status !== 200) return alert("something went wrong");
+    const activeChannel = JSON.parse(window.sessionStorage.getItem("active_channel"));
+    socket.emit("EDIT_MSG", { mid: messageId, cid: activeChannel._id, content: content });
 }

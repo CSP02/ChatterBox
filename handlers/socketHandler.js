@@ -2,7 +2,7 @@
  * ? Imports
  */
 import { GetChannels } from "../ChatterBox/Channel.js"
-import { GetMessages } from "../ChatterBox/Message.js"
+import { AddToMessages, ScrollToBottom } from "../ChatterBox/Utility.js"
 /**
  * ? method to handle all the sockets events
  */
@@ -20,7 +20,35 @@ export function HandleSocketEvents(socket, params) {
 
     // Get all messages when someone sent a message
     socket.on("MESSAGES", data => {
-        GetMessages(data, params)
+        AddToMessages([data], true, params);
+        ScrollToBottom(false);
+    })
+
+    // Event handler for delete message
+    socket.on("DEL_MSG", id => {
+        const message = document.getElementById(id);
+        if (message.nextSibling === null && message.previousSibling.id === '')
+            message.parentElement.parentElement.remove();
+        else
+            message.remove();
+    })
+
+    // Event handler for edit message
+    socket.on("EDIT_MSG", data => {
+        const tooltipHol = document.createElement("div");
+        const editedIndicator = document.createElement("i");
+        const tooltipDes = document.createElement("tooltip");
+        tooltipDes.innerText = "This message is edited!";
+        tooltipHol.style = "position: relative;width:auto;";
+        tooltipDes.setAttribute("hang", "top");
+        tooltipDes.setAttribute("style", "width: max-content;");
+
+        editedIndicator.setAttribute("tooltip", "true");
+        tooltipHol.append(...[editedIndicator, tooltipDes]);
+        editedIndicator.classList.add("fa-solid", "fa-pen", "edited_indicator");
+        const message = document.getElementById(data.id);
+        message.firstChild.innerText = data.content;
+        message.previousSibling.appendChild(tooltipHol);
     })
 
     // This event is when user updates their profile
@@ -80,7 +108,7 @@ export function HandleSocketEvents(socket, params) {
                 offlineUsersList.appendChild(userEl)
             }
         });
-        
+
         [...offlineUsersList.children].forEach(userEl => {
             const username = userEl.innerText
             const usernameE = data.user

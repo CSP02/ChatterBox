@@ -159,11 +159,42 @@ io.on("connection", socket => {
 
     socket.on("MESSAGES", data => {
         try {
-            const channelId = data;
+            const channelId = data.channel._id;
             const channelURL = `${url}/@me/${channelId}`;
-            io.to(channelURL).emit("MESSAGES", { _id: data });
+            const message = {
+                _id: data._id,
+                user: data.user,
+                content: data.content,
+                channel: data.channel,
+                components: [],
+                timestamp: Date.now(),
+                edited: false
+            }
+
+            if (data.repliedTo)
+                message.repliedTo = data.repliedTo;
+            
+            io.to(channelURL).emit("MESSAGES", message);
         } catch (error) {
             console.log(error);
+        }
+    })
+
+    socket.on("DEL_MSG", data => {
+        try {
+            const channelURL = `${url}/@me/${data.channel._id}`;
+            io.to(channelURL).emit("DEL_MSG", data.id);
+        } catch (e) {
+            console.log(e);
+        }
+    })
+
+    socket.on("EDIT_MSG", data => {
+        try {
+            const channelURL = `${url}/@me/${data.cid}`;
+            io.to(channelURL).emit("EDIT_MSG", { id: data.mid, content: data.content });
+        } catch (e) {
+            console.log(e);
         }
     })
 
@@ -202,7 +233,7 @@ io.on("connection", socket => {
     socket.on("disconnect", data => {
         try {
             const username = socket.data.username;
-            
+
             [...activeUsers.keys()].forEach(key => {
                 const u2push = [];
                 [...activeUsers.get(key)].forEach(user => {
@@ -210,7 +241,7 @@ io.on("connection", socket => {
                 });
                 activeUsers.set(key, u2push);
             })
-            io.emit("UPDATE_GLOBAL_USERS", {user: username, mode: "offline"});
+            io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "offline" });
         } catch (error) {
             console.log(error);
         }

@@ -103,8 +103,12 @@ sendMessage.addEventListener("click", event => {
     if (messageContent.innerText.trim() === "") return;
     // Creating a message object which contains content (it is a object because we are going to add JWT token to this object later)
     const message = {
-        content: messageContent.innerText.trim()
+        user: JSON.parse(window.sessionStorage.getItem("user")),
+        content: messageContent.innerText.trim(),
+        channel: JSON.parse(window.sessionStorage.getItem("active_channel")),
     };
+    if (window.sessionStorage.getItem("repliedTo") !== "")
+        message.repliedTo = JSON.parse(window.sessionStorage.getItem("repliedTo"));
     SendMessage(message, SetParams(params)); // Method imported from "./ChatterBox/Message.js"
     messageContent.innerText = "" // Removing the content in #message_box element
 })
@@ -156,7 +160,7 @@ let isLineBreak = false;
 messageBox.addEventListener("input", event => {
     if (messageBox.innerText.length > 500) messageBox.style.outlineColor = "#ff4d4d";
     else messageBox.style.outlineColor = "rgb(214, 214, 214)";
-    
+
     if (messageBox.innerText.trim() !== "") sendMessage.removeAttribute("disabled");
     else if (!messageBox.innerText || messageBox.innerText.trim() === "") sendMessage.setAttribute("disabled", true);
 
