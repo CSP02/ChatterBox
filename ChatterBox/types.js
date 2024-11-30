@@ -3,7 +3,8 @@ export default class Types {
         this.ComponentTypes = Object.freeze({
             EMBED: 1,
             IMAGE: 2,
-            VIDEO: 3
+            VIDEO: 3,
+            GIF: 4
         })
 
         this.ErrorTypes = Object.freeze({

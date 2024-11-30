@@ -63,6 +63,8 @@ const showCreateForm = document.getElementById("create_channel");
 const createChannelButton = document.getElementById("channel_create_but");
 const cancelChannelButton = document.getElementById("cancel");
 const formWrapper = document.getElementById("create_channel_form");
+const emojisButton = document.getElementById("emojis_button");
+const emojisHolder = document.getElementById("emojis_holder");
 
 /**
  * ? Event listener for profile button which shows the profile details
@@ -135,6 +137,26 @@ newMessagePopup.addEventListener("click", () => {
     newMessagePopup.style.display = "none"; // removing the popup message 
 })
 
+
+emojisButton.addEventListener("click", e => {
+    emojisHolder.classList.toggle("emojis_open");
+});
+
+document.getElementById("emojis_click").addEventListener("click", e => {
+    const emojiDup = document.createTextNode(":kekw: ");
+    messageBox.append(emojiDup);
+})
+
+window.addEventListener("keydown", e => {
+    if(e.ctrlKey && e.key === "c") {
+        e.preventDefault();
+        const selection = window.getSelection().toString();
+        const text = selection.replace(/<[^>]*>/g, '');
+
+        navigator.clipboard.writeText(text);
+    }
+})
+
 /**
  * ? This event is to disable the send button when there is no content/text in the textbox
  */
@@ -171,6 +193,11 @@ messageBox.addEventListener("input", event => {
         sendMessage.click();
         sendMessage.disabled = true;
     }
+})
+
+messageBox.addEventListener("drop", e => {
+    e.preventDefault();
+    messageBox.textContent = window.getSelection().toString().replaceAll(/<[^>]*>/g, "");
 })
 
 messageBox.addEventListener("keydown", key => {

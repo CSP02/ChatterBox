@@ -222,7 +222,7 @@ button#new_message_popup:hover {
     border-radius: 50%;
 }
 
-#profile_username {
+#profile_username, #profile_uname {
     font-size: 32pt;
 }
 
@@ -255,7 +255,7 @@ button#new_message_popup:hover {
     border-radius: .6rem;
     border: 1px solid rgb(49, 49, 49);
     background-color: transparent;
-    outline: 3px soild transparent;
+    outline: 3px transparent;
     outline-offset: 2px;
     color: white;
 }
@@ -331,7 +331,7 @@ button#new_message_popup:hover {
 }
 
 .form:focus {
-    outline: 3px soild white;
+    outline: 3px white;
 }
 
 .buttons {
@@ -523,7 +523,7 @@ button#new_message_popup:hover {
     box-shadow: black 0 0 5px;
 }
 
-#gif_button {
+#gif_button, #emojis_button {
     grid-area: gifsearch;
     width: 50px;
     margin: .5rem;
@@ -539,14 +539,18 @@ button#new_message_popup:hover {
     font-size: 14pt;
 }
 
-#gif_button:hover {
+#emojis_button{
+    grid-area: emojis;
+}
+
+#gif_button:hover, #emojis_button:hover {
     box-shadow: black 0 0 5px;
 }
 
 #send_message_holder {
     display: grid;
     grid-template:
-        "inputmessage gifsearch sendmessage";
+        "inputmessage emojis gifsearch sendmessage";
     position: relative;
 }
 
@@ -751,7 +755,7 @@ button#new_message_popup:hover {
     width: calc(100% - 1rem);
 }
 
-#gif_results {
+#gif_results, #emojis_holder {
     position: absolute;
     left: calc(100% - 30dvw - 2rem);
     transform: translateY(-110%);
@@ -767,14 +771,36 @@ button#new_message_popup:hover {
     z-index: 12;
 }
 
-.hide_gif_holder {
+.hide_gif_holder, .emojis_close {
     display: none;
 }
 
-.show_gif_holder {
+.show_gif_holder, .emojis_open {
     display: flex;
     flex-direction: column;
     /* align-items: start; */
+}
+
+.emojis_open{
+    flex-wrap: wrap;
+}
+
+#emojis_holder img, #message_box img{
+    height: 32px;
+    width: 32px;
+}
+
+#emojis_holder button{
+    padding: 0;
+    margin: .2rem;
+    background-color: transparent;
+    border: none;
+    width: fit-content;
+}
+
+.message_emoji{
+    height: 18pt;
+    width: 18pt;
 }
 
 .active {

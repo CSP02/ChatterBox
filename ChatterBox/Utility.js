@@ -385,15 +385,27 @@ async function ResolveContent(content, contentHolder, message) {
     [...text2el].forEach((node, index) => {
         if (node.nodeType === 3) {
             text += node.data;
-
-            if (index === text2el.length - 1 || isMD(text.trim())) {
-                const md = constructMD(text.trim());
+            if (index === text2el.length - 1 || isMD(node.data.trim()) || isMD(text.trim())) {
+                let md = document.createTextNode(text.trim());
+                if (isMD(text.trim()))
+                    md = constructMD(text.trim());
+                else if (isMD(node.data.trim()))
+                    md = constructMD(node.data.trim())
 
                 const textEl = document.createElement("span");
                 textEl.appendChild(md);
 
                 wholeTextHolder.appendChild(textEl);
                 text = "";
+            } else if (text2el[index + 1].data && (text2el[index + 1].data.startsWith("*") ||
+                text2el[index + 1].data.startsWith("?") ||
+                text2el[index + 1].data.startsWith("^") ||
+                text2el[index + 1].data.startsWith("~"))) {
+                const textNode = document.createTextNode(text);
+                const span = document.createElement("span");
+
+                span.appendChild(textNode);
+                wholeTextHolder.appendChild(span);
             }
         } else {
             if ((!text || text === "" || text === "\s") && node.nodeName === "BR") return;
@@ -479,12 +491,15 @@ async function ResolveContent(content, contentHolder, message) {
 function isMD(data) {
     return (data.startsWith("~") && data.endsWith("~")) ||
         (data.startsWith("*") && data.endsWith("*")) ||
-        (data.startsWith("^") && data.endsWith("^"));
+        (data.startsWith("^") && data.endsWith("^")) ||
+        (data.startsWith("?") && data.endsWith("?")) ||
+        (data.startsWith("!") && data.endsWith("!")) ||
+        (data.startsWith("_") && data.endsWith("_"));
 }
 
 function constructMD(data) {
     if (!isMD(data)) {
-        const span = document.createTextNode(data.toString());
+        const span = document.createTextNode(data.toString() + " ");
         return span;
     }
     switch (data[0]) {
@@ -500,6 +515,19 @@ function constructMD(data) {
             const bold = document.createElement("b");
             bold.appendChild(constructMD(data.slice(1, data.length - 1)));
             return bold;
+        case "?":
+            const emoji = new Image();
+            emoji.src = "https://cdn.discordapp.com/emojis/706561487346335806.webp";
+            emoji.classList.add("message_emoji");
+            return emoji;
+        case "!":
+            const heading = document.createElement("h3");
+            heading.appendChild(constructMD(data.slice(1, data.length - 1)));
+            return heading;
+        case "_":
+            const underline = document.createElement("u");
+            underline.appendChild(constructMD(data.slice(1, data.length - 1)));
+            return underline;
     }
 }
 

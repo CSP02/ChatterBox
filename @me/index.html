@@ -30,7 +30,7 @@
                 onclick="document.getElementById('profile_card_holder').style.zIndex = '-1'"><i
                     class="fa-solid fa-xmark"></i></button>
             <img src="" alt="" id="profile_card_pfp">
-            <b id="profile_username"></b>
+            <b id="profile_uname"></b>
         </div>
     </div>
     <div id="notification"></div>
@@ -87,9 +87,13 @@
                 <div id="send_message_holder" style="grid-template-columns: 1fr .01fr;">
                     <div type="text" id="message_box" contenteditable></div>
                     <button id="gif_button"><i class="fa-solid fa-photo-film"></i></button>
+                    <button id="emojis_button"><i class="fa-solid fa-face-smile"></i></button>
+                    <div id="emojis_holder" class="emojis_close">
+                        <button id="emojis_click"><img src="https://cdn.discordapp.com/emojis/706561487346335806.webp" alt=""></button>
+                    </div>
                     <div id="gif_results" class="hide_gif_holder">
                         <div id="input_but_holder">
-                            <input type="text" id="gif_query" placeholder="search gif">
+                            <input type="text" id="gif_query" placeholder="search gif" autocomplete="off">
                             <button id="search_gif"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                         <div id="search_results_holder"></div>
@@ -134,7 +138,7 @@
         <div id="reload" style="display: none;">
             <div>
                 <p>Your details are updated successfully!</p>
-                <p>To start chatting you have to login again.</p>
+                <p>To start chatting you have to log in again.</p>
                 <a href="/login">Login again</a>
             </div>
         </div>

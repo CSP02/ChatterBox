@@ -34,6 +34,7 @@ body {
 a {
     color: rgb(159, 176, 255);
     text-decoration: none;
+    transition: .2s ease-in-out;
 }
 
 nav {
@@ -57,7 +58,7 @@ nav a {
 
 nav a:hover {
     color: rgb(211, 211, 211);
-    text-decoration: underline;
+    transition: .2s ease-in-out;
 }
 
 #auth_buttons a {
