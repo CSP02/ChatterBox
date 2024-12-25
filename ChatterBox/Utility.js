@@ -1,13 +1,14 @@
 import Types from "./types.js"
 import { removeEvent } from "../@me/script.js";
 import { GetMessages, DeleteMessage, EditMessage } from "./Message.js";
+import HandleErrors from "../handlers/errorHandler.js";
 
 let socket;
 const messagesHolder = document.getElementById("messages");
 let loggedUser = null;
 let token = null;
 let refreshToken = null;
-const apiURL = "http://localhost:3001";
+const apiURL = "http://localhost:3001/api";
 let activeChannel = { name: "http://localhost:3000/@me" };
 const types = new Types();
 const repliedToCache = { isEmpty: true };
@@ -27,7 +28,7 @@ export function SendSocketEvent(event, data) {
         const channel = JSON.parse(window.sessionStorage.getItem("active_channel"));
 
         headers.append("Authorization", `Bearer ${token}`);
-        fetch(`${apiURL}/api/typing?channel_id=${channel._id}`, {
+        fetch(`${apiURL}/typing?channel_id=${channel._id}`, {
             mode: "cors",
             headers: headers
         }).then(async response => {
@@ -35,7 +36,7 @@ export function SendSocketEvent(event, data) {
                 const headers = new Headers();
 
                 headers.append("Authorization", `Bearer ${refreshToken}`);
-                fetch(`${apiURL}/api/request_new_token`, {
+                fetch(`${apiURL}/request_new_token`, {
                     mode: "cors",
                     headers: headers
                 }).then(async response => {
@@ -89,39 +90,7 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
         const repliedTo = message.repliedTo;
         const date = new Date(message.timestamp);
         const messageId = message._id;
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        let AmOrPm = "AM";
-
-        const hours = () => {
-            if (date.getHours() > 12) {
-                const hrs12Format = parseInt(date.getHours(), 10) - 12;
-                AmOrPm = "PM";
-                return hrs12Format;
-            } else {
-                return date.getHours();
-            }
-        };
-        const minutes =
-            date.getMinutes().toString().length === 1
-                ? `0${date.getMinutes()}`
-                : date.getMinutes().toString();
-
-        const timeStamp =
-            day +
-            "/" +
-            month +
-            "/" +
-            year +
-            " at " +
-            hours() +
-            ":" +
-            minutes +
-            " " +
-            AmOrPm;
-
-
+        const timeStamp = date.toLocaleString();
         const usernameButton = document.createElement("button");
         usernameButton.innerText = username + " ";
         usernameHolder.appendChild(usernameButton);
@@ -159,7 +128,7 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
 
         pfpButton.addEventListener("click", e => {
             const profilePFP = document.getElementById("profile_card_pfp");
-            const profileUname = document.getElementById("profile_username");
+            const profileUname = document.getElementById("profile_uname");
 
             profilePFP.src = pfp.src;
             profileUname.innerText = username;
@@ -342,7 +311,7 @@ async function ResolveContent(content, contentHolder, message) {
     }
 
     content.split("\n").forEach((data) => {
-        data.split(" ").forEach((data, index) => {
+        data.split(/\s/).forEach((data, index) => {
             if (data.startsWith("http://") || data.startsWith("https://")) {
                 const link = document.createElement("a");
                 const text = document.createTextNode(data + "\ ");
@@ -406,18 +375,54 @@ async function ResolveContent(content, contentHolder, message) {
 
                 span.appendChild(textNode);
                 wholeTextHolder.appendChild(span);
+                text = "";
             }
         } else {
             if ((!text || text === "" || text === "\s") && node.nodeName === "BR") return;
-            const italic = document.createElement("i");
-            italic.innerText = node.innerText.slice(1, node.innerText.length - 2);
+            if (node.nodeName === "A" && message.components.length <= 0 && (node.href.toString().endsWith(".gif") && node.href.toString().startsWith("https://"))) {
+                if (message.content.split(/\s/).length > 1) {
+                    const image = new Image;
+                    image.src = node.href;
+                    image.onload = () => {
+                        setTimeout(() => {
+                            ScrollToBottom(false);
+                        }, 100);
+                    };
+                    image.classList.add("component_image");
+                    wholeTextHolder.appendChild(node);
+                    contentHolder.appendChild(image);
+                    contentHolder.classList.add("message_has_components");
+                } else {
+                    const image = new Image;
+                    image.src = node.href;
+                    image.onload = () => {
+                        setTimeout(() => {
+                            ScrollToBottom(false);
+                        }, 100);
+                    };
+                    image.classList.add("component_image");
+                    wholeTextHolder.appendChild(image);
+                }
+            } else if (node.nodeName === "A" && message.components[0].type === types.ComponentTypes.GIF && message.content.split(/\s/).length <= 1) {
+                const image = new Image;
+                image.src = message.components[0].imageURL;
+                image.onload = () => {
+                    setTimeout(() => {
+                        ScrollToBottom(false);
+                    }, 100);
+                };
+                image.classList.add("component_image");
+                wholeTextHolder.appendChild(image);
+            } else {
+                const textNode = document.createTextNode(text);
 
-            const textEl = document.createElement("span");
-            if (node.nodeName !== "BR" && node.innerText.trim().startsWith("*") && node.innerText.trim().endsWith("*")) textEl.appendChild(italic);
-            else textEl.innerText = text.trim();
+                const textEl = document.createElement("span");
+                textEl.appendChild(textNode);
 
-            wholeTextHolder.appendChild(textEl);
-            wholeTextHolder.appendChild(node);
+                wholeTextHolder.appendChild(textEl);
+                wholeTextHolder.appendChild(node);
+                text = "";
+            }
         }
     })
 
@@ -469,7 +474,8 @@ async function ResolveContent(content, contentHolder, message) {
                 }
             }
 
-            if (component.type === types.ComponentTypes.IMAGE) {
+            // console.log(component.type === types.ComponentTypes.GIF && message.content.toString().split(" ").length > 1, component, message.content.split(/\s/))
+            if (component.type === types.ComponentTypes.IMAGE || component.type === types.ComponentTypes.GIF && message.content.split(/\s/).length > 1) {
                 const image = new Image;
                 image.src = component.imageURL;
                 image.onload = () => {
@@ -494,6 +500,8 @@ function isMD(data) {
         (data.startsWith("^") && data.endsWith("^")) ||
         (data.startsWith("?") && data.endsWith("?")) ||
         (data.startsWith("!") && data.endsWith("!")) ||
+        (data.startsWith("<") && data.endsWith(">")) ||
+        (data.startsWith("|") && data.endsWith("|")) ||
         (data.startsWith("_") && data.endsWith("_"));
 }
 
@@ -528,6 +536,19 @@ function constructMD(data) {
             const underline = document.createElement("u");
             underline.appendChild(constructMD(data.slice(1, data.length - 1)));
             return underline;
+        case "<":
+            const header = document.createElement("b");
+            header.style.fontSize = "24pt";
+            header.appendChild(constructMD(data.slice(1, data.length - 1)));
+            return header;
+        case "|":
+            const spoiler = document.createElement("span");
+            spoiler.classList.add("spoiler");
+            spoiler.addEventListener("click", e => {
+                spoiler.classList.add("revealed");
+            })
+            spoiler.appendChild(constructMD(data.slice(1, data.length - 1)));
+            return spoiler;
     }
 }
 
@@ -538,7 +559,7 @@ export function ScrollToBottom(onload) {
     const offsetHeight = messagesDiv.offsetHeight;
     const lastChild = messagesDiv.lastChild;
 
-    if (onload) return messagesDiv.scrollTo(0, scrollHeight + lastChild.offsetHeight);
+    if (!onload) return messagesDiv.scrollTo(0, scrollHeight + lastChild.offsetHeight);
 
     if (scrollHeight <= scrollTop + offsetHeight + 140) {
         messagesDiv.scrollTo(0, scrollHeight + lastChild.offsetHeight);
@@ -592,7 +613,6 @@ export function SendNotification(data, type) {
 
 export async function fetchData(url, method = "GET", body = null) {
     let token = window.sessionStorage.getItem("token");
-    let refreshToken = window.sessionStorage.getItem("refresh token");
 
     const headers = new Headers();
     headers.append("Authorization", `Bearer ${token}`);
@@ -603,19 +623,26 @@ export async function fetchData(url, method = "GET", body = null) {
         headers: headers
     }
     if (body !== null) reqOpts.body = body;
-    const response = await fetch(url, reqOpts);
-    if (response.ok)
-        return { response: await response.json(), status: response.status };
-    else {
-        if (response.status === 401 && response.error === types.ErrorTypes.JWT_EXPIRE) {
-            await requestNewToken(refreshToken);
+    try{
+        const response = await fetch(url, reqOpts);
+        if (response.ok)
+            return { response: await response.json(), status: response.status };
+        else {
+            const resJson = await response.json();
+            if (!response.ok) throw new Error(`${resJson.error} ${response.status}`)
+        }
+    }catch(e){
+        const [error, status] = e.message.split(" "); 
+        if (parseInt(status) === 401 && parseInt(error) === types.ErrorTypes.JWT_EXPIRE) {
+            await requestNewToken();
             await fetchData(url, method, body);
         } else
-            return alert("something went wrong! please reload the site.");
+            return HandleErrors(parseInt(status));
     }
 }
 
-async function requestNewToken(refreshToken) {
+async function requestNewToken() {
+    let refreshToken = window.sessionStorage.getItem("refresh token");
     const headers = new Headers();
     headers.append("Authorization", `Bearer ${refreshToken}`);
     const response = await fetch(`http://localhost:3001/api/request_new_token`, {

@@ -24,13 +24,20 @@
 </head>
 
 <body>
+    <div id="error_notif"></div>
+    <div id="success_notif"></div>
     <div id="profile_card_holder">
         <div id="profile_card">
-            <button id="close_profile_card"
-                onclick="document.getElementById('profile_card_holder').style.zIndex = '-1'"><i
-                    class="fa-solid fa-xmark"></i></button>
-            <img src="" alt="" id="profile_card_pfp">
-            <b id="profile_uname"></b>
+            <header>
+                <button id="close_profile_card" style="padding: 0;margin: 0;"
+                    onclick="document.getElementById('profile_card_holder').style.zIndex = '-1'"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </header>
+            <div id="user_details">
+                <img src="" alt="" id="profile_card_pfp">
+                <b id="profile_uname"></b>
+            </div>
+            <div id="chatterbox_details"></div>
         </div>
     </div>
     <div id="notification"></div>
@@ -38,7 +45,9 @@
     <div id="create_channel_form" class="form_wrapper">
         <div id="channel_form_wrapper" class="form">
             <label for="channel_name">Channel Name</label>
-            <input type="text" placeholder="chitty cats" id="channel_name">
+            <input type="text" placeholder="chitty cats" id="channel_name" autocomplete="off">
+            <label for="channel_icon">Channel Icon</label>
+            <input type="file" name="channel_icon" id="channel_icon" accept="image/*" autocomplete="off">
             <div id="buttons" class="buttons">
                 <button id="cancel">Cancel</button>
                 <button id="channel_create_but">Create</button>
@@ -49,7 +58,7 @@
         <div class="form">
             <label for="Username">Username of your friend:</label>
             <div style="display: flex;">
-                <input type="text" id="Username" name="Username" placeholder="username">
+                <input type="text" id="Username" name="Username" placeholder="username" autocomplete="off">
                 <button id="search_user"><i class="fas fa-magnifying-glass"></i></button>
             </div>
             <div id="users_search_results"></div>
@@ -73,10 +82,15 @@
             </div>
         </div>
         <div id="app_main_container" style="grid-template-rows: .2fr 1fr 1fr .01fr;">
-            <div id="channel_name_indicator"></div>
+            <div id="channel_name_indicator">
+                <div id="channel_details"></div>
+                <button id="channel_settings"><i class="fa-solid fa-gear"></i></button>
+            </div>
             <div id="messages">
                 <div id="messages_loading">
-                    <div id="msg_load_cir"></div>
+                    <div id="circle_4"></div>
+                    <div id="circle_5"></div>
+                    <div id="circle_6"></div>
                 </div>
                 <div id="init_message">Nothing here! check your channels maybe?</div>
             </div>
@@ -89,7 +103,8 @@
                     <button id="gif_button"><i class="fa-solid fa-photo-film"></i></button>
                     <button id="emojis_button"><i class="fa-solid fa-face-smile"></i></button>
                     <div id="emojis_holder" class="emojis_close">
-                        <button id="emojis_click"><img src="https://cdn.discordapp.com/emojis/706561487346335806.webp" alt=""></button>
+                        <button id="emojis_click"><img src="https://cdn.discordapp.com/emojis/706561487346335806.webp"
+                                alt=""></button>
                     </div>
                     <div id="gif_results" class="hide_gif_holder">
                         <div id="input_but_holder">
@@ -134,35 +149,80 @@
             </div>
         </div>
     </div>
-    <div id="profile_page" style="display: none;">
-        <div id="reload" style="display: none;">
-            <div>
-                <p>Your details are updated successfully!</p>
-                <p>To start chatting you have to log in again.</p>
-                <a href="/login">Login again</a>
+    <div id="profile_page" style="display: none;" class="settings_window">
+        <div class="settings_container">
+            <div class="settings_sidebar">
+                <div class="user_settings set_grp">
+                    <h3>User settings:</h3>
+                    <ul>
+                        <li><button id="profile" class="settings_buttons">My Profile</button></li>
+                    </ul>
+                </div>
+                <div class="app_settings set_grp">
+                    <h3>App settings:</h3>
+                    <ul>
+                        <li><button id="theme" class="settings_buttons">Theme</button></li>
+                        <li><button id="language" class="settings_buttons">Language</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="settings_elob_window">
+                <div id="my_profile_settings_win">
+                    <div id="avatar_wrapper">
+                        <div class="setting_attributes">
+                            <h3>Profile picture:</h3>
+                            <img src="" alt="pfp" id="avatar">
+                            <input class="settings_buttons" type="file" name="upload_pfp" id="upload_pfp"
+                                accept="image/*">
+                        </div>
+                    </div>
+                    <div id="profile_attr_wrapper">
+                        <div class="setting_attributes">
+                            <h3>Username</h3>
+                            <input type="text" class="settings_buttons" id="profile_username" name="profile_username" autocomplete="off"/>
+                        </div>
+                        <div class="setting_attributes"
+                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                            <h3>Color preferred</h3>
+                            <input type="color" class="settings_buttons" id="profile_color" name="profile_color" />
+                            <input id="color_pref_selected" class="settings_buttons" type="text" autocomplete="off"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="setting_attributes" id="update_profile_buttons">
+                    <button id="close_update_profile" class="update_buttons">Close</button>
+                    <button id="update_profile" class="update_buttons">Update</button>
+                </div>
             </div>
         </div>
-        <div id="profile_container">
-            <div id="avatar_wrapper">
-                <div class="profile_attributes">
-                    <label for="profile_avatar_url">Avatar URL:</label>
-                    <input type="url" id="profile_avatar_url" name="profile_avatar_url" />
-                </div>
-                <img src="" alt="pfp" id="avatar">
-            </div>
-            <div id="profile_attr_wrapper">
-                <div class="profile_attributes">
-                    <label for="profile_username">Username:</label>
-                    <input type="text" id="profile_username" name="profile_username" />
-                </div>
-                <div class="profile_attributes">
-                    <label for="profile_color">Prefered color:</label>
-                    <input type="color" id="profile_color" name="profile_color" />
+    </div>
+    <div id="channel_settings_win" style="display: none;" class="settings_window">
+        <div class="settings_container">
+            <div class="settings_sidebar">
+                <div class="set_grp">
+                    <h3>Channel settings:</h3>
+                    <ul>
+                        <li><button id="channel_base_details" class="settings_buttons">Channel</button></li>
+                    </ul>
                 </div>
             </div>
-            <div class="profile_attributes" id="update_profile_buttons">
-                <button id="close_update_profile">Close</button>
-                <button id="update_profile">Update</button>
+            <div class="settings_elob_window">
+                <div id="chnl_settings_win">
+                    <div id="chnl_iconUrl" class="setting_attributes">
+                        <h3>Channel Icon</h3>
+                        <img src="" alt="" srcset="" id="channel_icon_update">
+                        <input type="file" name="update_icon" id="update_icon" class="settings_buttons">
+                    </div>
+                    <div id="update_chnl_name">
+                        <h3>Channel Name</h3>
+                        <input type="text" name="new_channel_name" id="new_channel_name" class="settings_buttons"
+                            required autocomplete="off">
+                    </div>
+                </div>
+                <div class="setting_attributes" id="update_profile_buttons">
+                    <button id="close_update_channel" class="update_buttons">Close</button>
+                    <button id="update_channel" class="update_buttons">Update</button>
+                </div>
             </div>
         </div>
     </div>

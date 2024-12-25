@@ -34,47 +34,59 @@
     </nav>
     <div id="signup">
         <div id="signup_fields_wrapper">
-            <div id="logo_and_text">
-                <img src="/Resources/chatterbox_logo_transparent.png" alt="" srcset=""
-                    style="height: 85px; width: 85px;">
-                <!-- <h2 style="margin: .3rem .5rem;color: rgb(209, 209, 209);text-align: center;">ChatterBox</h2> -->
-            </div>
-            <!-- <h2 style="margin: .5rem 0;color: rgb(143, 255, 99);">Sign up to chatter box</h2> -->
             <div id="invalid_credentials"></div>
-            <div style="position: relative;display: block;">
-                <input placeholder="Username" type="text" name="username_box" id="username_box" required
-                    autocomplete="false" vanb="true" variant="input">
-                <div id="user_valid">
-                    Your username must be:
-                    <ol>
-                        <li>case sensitive.</li>
-                        <li>cannot contain spaces.</li>
-                        <li>spaces will be replaced with "_".</li>
-                    </ol>
+            <div id="form_wrapper">
+                <div id="pfp_holder_signup">
+                    <h3>PFP</h3>
+                    <button id="new_pfp_holder">
+                        <img src="" alt="" vanb="true" type="avatar_small" id="new_pfp">
+                        <i class="fa-solid fa-arrow-up-from-bracket" id="edit_icon"></i>
+                    </button>
+                    <input type="file" name="update_new_pfp" id="update_new_pfp" accept="image/*"
+                    style="display: none;">
+                </div>
+                <div>
+                    <div id="logo_and_text">
+                        <img src="/Resources/chatterbox_logo_transparent.png" alt="" srcset=""
+                            style="height: 85px; width: 85px;">
+                    </div>
+                    <div style="position: relative;display: block;">
+                        <input placeholder="Username" type="text" name="username_box" id="username_box" required
+                            autocomplete="off" vanb="true" variant="input">
+                        <div id="user_valid">
+                            Your username must be:
+                            <ol>
+                                <li>case sensitive.</li>
+                                <li>cannot contain spaces.</li>
+                                <li>spaces will be replaced with "_".</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div style="position: relative;display: block;">
+                        <input type="password" placeholder="Password" name="password_box" id="password_box" required
+                            autocomplete="off" vanb="true" variant="input">
+                        <div id="validation_list">
+                            Your password must be:
+                            <ol>
+                                <li>8 characters long.</li>
+                                <li>contains an uppercase characters.</li>
+                                <li>contains a lowercase characters.</li>
+                                <li>contains numbers.</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div id="color_text">
+                        <input type="text" name="pref_color" id="pref_color" placeholder="#9BCF53" vanb="true"
+                            variant="input" autocomplete="off" value="#9BCF53">
+                        <input type="color" name="color" id="profile_color" value="#9BCF53">
+                    </div>
+                    <div id="auth_buttons">
+                        <button id="signup_button" vanb="true" variant="white" style="padding: .5rem .7rem;">Sign
+                            up</button>
+                    </div>
+                    <p style="font-size: 10pt;text-align: center;">Already have an account? <a href="/login">Login</a></p>
                 </div>
             </div>
-            <div style="position: relative;display: block;">
-                <input type="password" placeholder="Password" name="password_box" id="password_box" required
-                    autocomplete="false" vanb="true" variant="input">
-                <div id="validation_list">
-                    Your password must be:
-                    <ol>
-                        <li>8 characters long.</li>
-                        <li>contains an uppercase characters.</li>
-                        <li>contains a lowercase characters.</li>
-                        <li>contains numbers.</li>
-                    </ol>
-                </div>
-            </div>
-            <div id="color_text">
-                <input type="text" name="pref_color" id="pref_color" placeholder="#9BCF53" vanb="true" variant="input">
-                <input type="color" name="color" id="profile_color" value="#9BCF53">
-                <img src="" alt="" vanb="true" type="avatar_small" id="new_pfp">
-            </div>
-            <div id="auth_buttons">
-                <button id="signup_button" vanb="true" variant="white" style="padding: .5rem .7rem;">Sign up</button>
-            </div>
-            <p style="font-size: 10pt;text-align: center;">Already have an account? <a href="/login">Login</a></p>
         </div>
     </div>
     <script src="/signup/script.js" type="module"></script>

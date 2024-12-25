@@ -6,14 +6,15 @@ import { SendMessage, GetMessages } from "../ChatterBox/Message.js";
 import ComponentTypes from "../ChatterBox/types.js";
 import { HandleSocketEvents } from "../handlers/socketHandler.js";
 import { UpdateUser, UpdateUserdetails, AddUserToChannel, SearchUser } from "../ChatterBox/User.js";
-import { GetChannels, CreateChannel } from "../ChatterBox/Channel.js";
+import { GetChannels, CreateChannel, UpdateChannel } from "../ChatterBox/Channel.js";
+import HandleErrors from "../handlers/errorHandler.js";
 
 let socket = io();
 const messagesHolder = document.getElementById("messages");
 let loggedUser = JSON.parse(window.sessionStorage.getItem("user"));
 let token = window.sessionStorage.getItem("token");
 let refreshToken = window.sessionStorage.getItem("refresh token");
-const apiURL = "http://localhost:3001";
+const apiURL = "http://localhost:3001/api";
 let activeChannel = { name: "http://localhost:3000/@me" };
 const types = new ComponentTypes();
 const repliedToCache = { isEmpty: true };
@@ -39,7 +40,6 @@ function SetParams(params) {
     return params;
 }
 
-
 HandleSocketEvents(socket, SetParams(params))
 
 SetDefaults({
@@ -59,6 +59,8 @@ const logout = document.getElementById("logout");
 const profile = document.getElementById("profile_pfp");
 const updateProfileButton = document.getElementById("update_profile");
 const closeUpdateProfile = document.getElementById("close_update_profile");
+const updateChannelButton = document.getElementById("update_channel");
+const closeUpdateChannel = document.getElementById("close_update_channel");
 const showCreateForm = document.getElementById("create_channel");
 const createChannelButton = document.getElementById("channel_create_but");
 const cancelChannelButton = document.getElementById("cancel");
@@ -91,6 +93,21 @@ closeUpdateProfile.addEventListener("click", (event) => {
 })
 
 /**
+ * ? Event listener for "update" button in profile
+ * ? this will update the "Channel" in the database
+ */
+updateChannelButton.addEventListener("click", (event) => {
+    UpdateChannel(SetParams(params)); // Method imported from "./ChatterBox/Channel.js"
+})
+
+/**
+ * ? event listener to close channel settings window (not really a window it's just an element with fixed position)
+ */
+closeUpdateChannel.addEventListener("click", (event) => {
+    document.getElementById("channel_settings_win").style.display = "none";
+})
+
+/**
  * ? Event listener for logout button
  */
 logout.addEventListener("click", event => {
@@ -104,6 +121,9 @@ sendMessage.addEventListener("click", event => {
     const messageContent = document.getElementById("message_box");
     if (messageContent.innerText.trim() === "") return;
     // Creating a message object which contains content (it is a object because we are going to add JWT token to this object later)
+    if (messageContent.innerText.trim().split(" ").length <= 1) {
+
+    }
     const message = {
         user: JSON.parse(window.sessionStorage.getItem("user")),
         content: messageContent.innerText.trim(),
@@ -148,7 +168,7 @@ document.getElementById("emojis_click").addEventListener("click", e => {
 })
 
 window.addEventListener("keydown", e => {
-    if(e.ctrlKey && e.key === "c") {
+    if (e.ctrlKey && e.key === "c") {
         e.preventDefault();
         const selection = window.getSelection().toString();
         const text = selection.replace(/<[^>]*>/g, '');
@@ -301,16 +321,23 @@ window.onload = () => {
         if (path !== "/@me/") {
             const channel = document.getElementById(path.split("/").reverse()[0].toString());
             const channelId = { _id: path.split("/").reverse()[0].toString() };
-            const channelIndicator = document.getElementById("channel_name_indicator");
-            if (!channel) location = "/@me/";
+            const channelIndicator = document.getElementById("channel_details");
+            
+            if (!channel) return HandleErrors("INVALID_CHANNEL");
             channel.classList.replace("inactive", "active");
-            channelIndicator.innerText = channel.innerText;
+            channelIndicator.innerText = channel.title;
             const previousChannel = window.sessionStorage.getItem("active_channel");
-
             SendJoinEvent(channelId, previousChannel);
-
-            // window.sessionStorage.setItem("active_channel", JSON.stringify(channelId))
-
+            
+            const channelIcon = document.getElementById("channel_icon_update");
+            const newChnlName = document.getElementById("new_channel_name");
+            const chnlSettingsButton = document.getElementById("channel_settings");
+            chnlSettingsButton.addEventListener("click", async click => {
+                const chnlSetWin = document.getElementById("channel_settings_win");
+                channelIcon.src = channel.getElementsByTagName("img")[0].src;
+                newChnlName.value = channel.title;
+                chnlSetWin.style.display = "flex";
+            })
             const invite = document.createElement("button");
             const icon = document.createElement("i");
             icon.classList.add("fas", "fa-user-plus");
@@ -349,6 +376,8 @@ window.onload = () => {
         ScrollToBottom(true);
 
         document.getElementById("loading").style.display = "none";
+        if (path.replaceAll("/", "").endsWith("@me"))
+            document.getElementById("messages_loading").style.display = "none";
     }, 1000);
 }
 

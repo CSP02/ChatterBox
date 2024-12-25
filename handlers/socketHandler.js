@@ -53,6 +53,19 @@ export function HandleSocketEvents(socket, params) {
 
     // This event is when user updates their profile
     socket.on("UPDATE_USERS_LIST", users => {
+        const usersSorted = users.sort((a, b) => {
+            const unameA = a.username.toUpperCase(); // ignore upper and lowercase
+            const unameB = b.username.toUpperCase(); // ignore upper and lowercase
+            if (unameA < unameB) {
+                return -1;
+            }
+            if (unameA > unameB) {
+                return 1;
+            }
+
+            return 0;
+        });
+
         const onlineUsersList = document.getElementById("online_u")
         const offlineUsersList = document.getElementById("offline_u")
 
@@ -62,7 +75,7 @@ export function HandleSocketEvents(socket, params) {
         const onlineUsers = []
         const offlineUsers = []
 
-        users.forEach(user => {
+        usersSorted.forEach(user => {
             const userDetailsWrapper = document.createElement("div")
             const username = document.createElement("p")
             let pfp = new Image()
@@ -98,7 +111,19 @@ export function HandleSocketEvents(socket, params) {
         const onlineUsersList = document.getElementById("online_u");
         const offlineUsersList = document.getElementById("offline_u");
 
-        [...onlineUsersList.children].forEach(userEl => {
+        [...onlineUsersList.children].sort((a, b) => {
+            const nameA = a.innerText.toUpperCase(); // ignore upper and lowercase
+            const nameB = b.innerText.toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+
+            // names must be equal
+            return 0;
+        }).forEach(userEl => {
             const username = userEl.innerText
             const usernameE = data.user
 
@@ -109,7 +134,19 @@ export function HandleSocketEvents(socket, params) {
             }
         });
 
-        [...offlineUsersList.children].forEach(userEl => {
+        [...offlineUsersList.children].sort((a, b) => {
+            const nameA = a.innerText.toUpperCase(); // ignore upper and lowercase
+            const nameB = b.innerText.toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+
+            // names must be equal
+            return 0;
+        }).forEach(userEl => {
             const username = userEl.innerText
             const usernameE = data.user
 

@@ -102,9 +102,11 @@ nav {
 }
 
 #signup_fields_wrapper {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     margin: var(--default_margin);
     justify-items: center;
+    align-items: center;
     width: 17dvw;
     position: relative;
 }
@@ -147,6 +149,7 @@ nav {
 #color_text {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 #pref_color {
@@ -170,6 +173,44 @@ nav {
     padding: .5rem .7rem;
     width: 100%;
     padding: .3rem;
+}
+
+#new_pfp {
+    height: 100px;
+    width: 100px;
+    background-color: rgb(114, 114, 114);
+}
+
+#pfp_holder_signup {
+    display: flex;
+    flex-direction: column;
+}
+
+#form_wrapper {
+    display: flex;
+    align-items: center;
+}
+
+#logo_and_text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#new_pfp_holder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit_icon {
+    position: absolute;
+    font-size: 32pt;
+    display: none;
+}
+
+#new_pfp_holder:hover #edit_icon {
+    display: flex;
 }
 
 /** 

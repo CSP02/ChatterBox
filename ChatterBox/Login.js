@@ -1,3 +1,5 @@
+import HandleErrors from "../handlers/errorHandler.js";
+
 let token = null;
 let refreshToken = null;
 let loggedUser = null;
@@ -15,7 +17,7 @@ export async function LoginUser(user) {
     )
         .then(async (response) => {
             if (response.ok) return await response.json();
-            alert("something went wrong! Please reload the site and relogin");
+            HandleErrors(response.status);
         })
         .then(async (response) => {
             if (response.token) {

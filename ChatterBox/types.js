@@ -18,7 +18,8 @@ export default class Types {
             NULL_CONTENT: 8,
             VERIFICATION_FAILED: 9,
             UNKNOWN_ERROR: 10,
-            CHANNEL_LIMIT: 11
+            CHANNEL_LIMIT: 11,
+            ALREADY_EXISTS: 12
         })
 
         this.SuccessTypes = Object.freeze({
