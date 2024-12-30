@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.18/dist/katex.min.css"
+        integrity="sha384-veTAhWILPOotXm+kbR5uY7dRamYLJf58I7P+hJhjeuc7hsMAkJHTsPahAl0hBST0" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.18/dist/katex.min.js"
+        integrity="sha384-v6mkHYHfY/4BWq54f7lQAdtIsoZZIByznQ3ZqN38OL4KCsrxo31SLlPiak7cj/Mg"
+        crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.18/dist/contrib/auto-render.min.js"
+        integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jost:ital,wght@0,100..900;1,100..900&family=Karla:ital,wght@0,200..800;1,200..800&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
@@ -100,8 +112,11 @@
                 <div id="action_indicator"></div>
                 <div id="send_message_holder" style="grid-template-columns: 1fr .01fr;">
                     <div type="text" id="message_box" contenteditable></div>
-                    <button id="gif_button"><i class="fa-solid fa-photo-film"></i></button>
-                    <button id="emojis_button"><i class="fa-solid fa-face-smile"></i></button>
+                    <div id="misc_holder">
+                        <button id="gif_button"><i class="fa-solid fa-photo-film"></i></button>
+                        <button id="emojis_button"><i class="fa-solid fa-face-smile"></i></button>
+                        <button id="send_message" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
                     <div id="emojis_holder" class="emojis_close">
                         <button id="emojis_click"><img src="https://cdn.discordapp.com/emojis/706561487346335806.webp"
                                 alt=""></button>
@@ -113,14 +128,6 @@
                         </div>
                         <div id="search_results_holder"></div>
                     </div>
-                    <button id="send_message" disabled>
-                        <svg width="30px" height="30px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-                            fill="none">
-                            <path fill="#ffffff" fill-rule="evenodd"
-                                d="M2.345 2.245a1 1 0 0 1 1.102-.14l18 9a1 1 0 0 1 0 1.79l-18 9a1 1 0 0 1-1.396-1.211L4.613 13H10a1 1 0 1 0 0-2H4.613L2.05 3.316a1 1 0 0 1 .294-1.071z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
                 </div>
             </div>
         </div>
@@ -179,13 +186,14 @@
                     <div id="profile_attr_wrapper">
                         <div class="setting_attributes">
                             <h3>Username</h3>
-                            <input type="text" class="settings_buttons" id="profile_username" name="profile_username" autocomplete="off"/>
+                            <input type="text" class="settings_buttons" id="profile_username" name="profile_username"
+                                autocomplete="off" />
                         </div>
                         <div class="setting_attributes"
                             style="display: flex;flex-direction: column;align-items: flex-start;">
                             <h3>Color preferred</h3>
                             <input type="color" class="settings_buttons" id="profile_color" name="profile_color" />
-                            <input id="color_pref_selected" class="settings_buttons" type="text" autocomplete="off"/>
+                            <input id="color_pref_selected" class="settings_buttons" type="text" autocomplete="off" />
                         </div>
                     </div>
                 </div>

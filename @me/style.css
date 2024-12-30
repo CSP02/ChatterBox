@@ -244,7 +244,8 @@ button#new_message_popup:hover {
     font-size: 18pt;
 }
 
-#error_notif, #success_notif {
+#error_notif,
+#success_notif {
     width: calc(100% - 2rem);
     position: fixed;
     z-index: 1000;
@@ -257,7 +258,7 @@ button#new_message_popup:hover {
     display: none;
 }
 
-#success_notif{
+#success_notif {
     background-color: rgb(84, 207, 84);
 }
 
@@ -579,41 +580,34 @@ button#new_message_popup:hover {
     outline: 3px solid rgb(214, 214, 214);
 }
 
-#send_message {
-    grid-area: sendmessage;
-    height: fit-content;
-    margin: .5rem;
-    display: flex;
-    padding: .5rem;
-    border-radius: .6rem;
-    background-color: transparent;
-    border: none;
-}
 
 #send_message:hover {
     box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
     ;
 }
 
-#gif_button,
-#emojis_button {
-    grid-area: gifsearch;
-    width: 50px;
-    margin: .5rem;
+#misc_holder {
+    grid-area: mischolder;
     display: flex;
-    height: 50px;
-    padding: .5rem;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    margin: .5rem;
+}
+
+#gif_button,
+#emojis_button,
+#send_message {
+    margin: 0;
+    display: flex;
+    padding: 0;
     border-radius: .6rem;
     background-color: transparent;
     border: none;
     color: #c4c4c4;
     justify-content: center;
     align-items: center;
-    font-size: 14pt;
-}
-
-#emojis_button {
-    grid-area: emojis;
+    font-size: 18pt;
+    /* gap: 1rem; */
 }
 
 #gif_button:hover,
@@ -625,7 +619,7 @@ button#new_message_popup:hover {
 #send_message_holder {
     display: grid;
     grid-template:
-        "inputmessage emojis gifsearch sendmessage";
+        "inputmessage mischolder";
     position: relative;
 }
 
@@ -1040,6 +1034,29 @@ button#new_message_popup:hover {
 
 .message_db:hover {
     background-color: rgb(17, 17, 17);
+}
+
+.codeblock{
+    width: fit-content;
+}
+
+.codeblock.multiple {
+    background-color: #272727;
+    border-radius: .5rem;
+    box-shadow: black 0 0 2px;
+    border: .5px solid black;
+    padding: 1rem;
+}
+
+.indentation{
+    border-left: .5px solid white;
+}
+
+.codeblock.multiple code {
+    background-color: transparent;
+    white-space: pre;
+    border: none;
+    box-shadow: none;
 }
 
 div.reply_message {
@@ -1498,5 +1515,10 @@ button.update_buttons:hover {
 
     .component_image {
         max-width: 100%;
+    }
+
+    #misc_holder {
+        position: absolute;
+        right: 0;
     }
 }

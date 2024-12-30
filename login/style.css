@@ -59,6 +59,18 @@ nav {
     align-content: center;
     justify-items: center;
 }
+#error_notif{
+    width: calc(100% - 2rem);
+    position: fixed;
+    z-index: 1000;
+    background-color: #ff8989;
+    color: white;
+    padding: .5rem;
+    margin: .5rem;
+    border-radius: .6rem;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
+    display: none;
+}
 
 #chatter_loading {
     display: flex;

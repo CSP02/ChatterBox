@@ -351,34 +351,46 @@ async function ResolveContent(content, contentHolder, message) {
 
     const wholeTextHolder = document.createElement("span");
     let text = "";
-    [...text2el].forEach((node, index) => {
+    for (let index = 0; index < text2el.length; index++) {
+        const node = text2el[index];
+        console.log(text2el, node.nodeType, node)
         if (node.nodeType === 3) {
             text += node.data;
-            if (index === text2el.length - 1 || isMD(node.data.trim()) || isMD(text.trim())) {
+            if ((index === text2el.length - 1 && node.data[0] !== "$") || isMD(node.data.trim()) || isMD(text.trim())) {
                 let md = document.createTextNode(text.trim());
                 if (isMD(text.trim()))
                     md = constructMD(text.trim());
                 else if (isMD(node.data.trim()))
                     md = constructMD(node.data.trim())
-
+                
                 const textEl = document.createElement("span");
                 textEl.appendChild(md);
-
+                
                 wholeTextHolder.appendChild(textEl);
                 text = "";
-            } else if (text2el[index + 1].data && (text2el[index + 1].data.startsWith("*") ||
-                text2el[index + 1].data.startsWith("?") ||
-                text2el[index + 1].data.startsWith("^") ||
-                text2el[index + 1].data.startsWith("~"))) {
+            } else if (text2el[index + 1].data && ((/[*?^;_|~<$]/).test(text2el[index + 1].data)) && !(/[*?^;_|~<$]/).test(text[0])) {
                 const textNode = document.createTextNode(text);
                 const span = document.createElement("span");
-
+                
                 span.appendChild(textNode);
                 wholeTextHolder.appendChild(span);
                 text = "";
+            } else {
+                if (node.data[0] === "$") {
+                    index++;
+                    for (index; index < text2el.length; index++) {
+                        if (text2el[index] === undefined) break;
+                        text2el[index].nodeName === "BR" ? text += "\n" : text += text2el[index].data;
+                        if (text2el[index].nodeName === "BR") continue;
+                        if (text2el[index].data.endsWith("$") || text2el[index].data === "$") break;
+                    }
+                    
+                    wholeTextHolder.appendChild(constructMD(text.trim()));
+                    text = "";
+                }
             }
         } else {
-            if ((!text || text === "" || text === "\s") && node.nodeName === "BR") return;
+            if ((!text || text === "" || text === "\s") && node.nodeName === "BR") continue;
             if (node.nodeName === "A" && message.components.length <= 0 && (node.href.toString().endsWith(".gif") && node.href.toString().startsWith("https://"))) {
                 if (message.content.split(/\s/).length > 1) {
                     const image = new Image;
@@ -424,7 +436,7 @@ async function ResolveContent(content, contentHolder, message) {
                 text = "";
             }
         }
-    })
+    }
 
     contentHolder.appendChild(wholeTextHolder)
     if (message.components.length > 0)
@@ -474,7 +486,6 @@ async function ResolveContent(content, contentHolder, message) {
                 }
             }
 
-            // console.log(component.type === types.ComponentTypes.GIF && message.content.toString().split(" ").length > 1, component, message.content.split(/\s/))
             if (component.type === types.ComponentTypes.IMAGE || component.type === types.ComponentTypes.GIF && message.content.split(/\s/).length > 1) {
                 const image = new Image;
                 image.src = component.imageURL;
@@ -502,7 +513,9 @@ function isMD(data) {
         (data.startsWith("!") && data.endsWith("!")) ||
         (data.startsWith("<") && data.endsWith(">")) ||
         (data.startsWith("|") && data.endsWith("|")) ||
-        (data.startsWith("_") && data.endsWith("_"));
+        (data.startsWith("_") && data.endsWith("_")) ||
+        (data.startsWith("$") && data.endsWith("$")) ||
+        (data.startsWith(";") && data.endsWith(";"));
 }
 
 function constructMD(data) {
@@ -549,6 +562,37 @@ function constructMD(data) {
             })
             spoiler.appendChild(constructMD(data.slice(1, data.length - 1)));
             return spoiler;
+        case ";":
+            const katexEl = document.createElement("span");
+            katexEl.classList.add("tex");
+            katex.render(String.raw`${data.slice(1, data.length - 1)}`, katexEl, {
+                throwOnError: false
+            });
+            return katexEl;
+        case "$":
+            const codeBlock = document.createElement("div");
+            const code = document.createElement("code");
+            let braceCount = 0;
+            data.slice(1, data.length - 1).split("\n").forEach((line, index) => {
+                line.split("").includes("{") ? braceCount++ : braceCount;
+                code.appendChild(document.createTextNode(line.trim()));
+                code.appendChild(document.createTextNode("\n"));
+
+                const nextLine = data.slice(1, data.length - 1).split("\n")[index + 1];
+                if (nextLine !== undefined) {
+                    if (nextLine.trim().endsWith("}")) braceCount--;
+                    if (braceCount > 0)
+                        code.appendChild(document.createTextNode(("  ").repeat(braceCount)));
+                }
+            })
+            codeBlock.classList.add("codeblock");
+            if (code.innerText.split("\n").length > 2) codeBlock.classList.add("multiple");
+            codeBlock.appendChild(code);
+            return codeBlock;
+        default:
+            const textSpan = document.createElement("span");
+            textSpan.innerText = data.slice(1, data.length - 1);
+            return textSpan;
     }
 }
 
@@ -623,7 +667,7 @@ export async function fetchData(url, method = "GET", body = null) {
         headers: headers
     }
     if (body !== null) reqOpts.body = body;
-    try{
+    try {
         const response = await fetch(url, reqOpts);
         if (response.ok)
             return { response: await response.json(), status: response.status };
@@ -631,8 +675,8 @@ export async function fetchData(url, method = "GET", body = null) {
             const resJson = await response.json();
             if (!response.ok) throw new Error(`${resJson.error} ${response.status}`)
         }
-    }catch(e){
-        const [error, status] = e.message.split(" "); 
+    } catch (e) {
+        const [error, status] = e.message.split(" ");
         if (parseInt(status) === 401 && parseInt(error) === types.ErrorTypes.JWT_EXPIRE) {
             await requestNewToken();
             await fetchData(url, method, body);
