@@ -20,7 +20,7 @@ export function HandleSocketEvents(socket, params) {
 
     // Get all messages when someone sent a message
     socket.on("MESSAGES", data => {
-        AddToMessages([data], true, params);
+        AddToMessages([data], false, params);
         ScrollToBottom(false);
     })
 

@@ -110,9 +110,13 @@
                 <button id="new_message_popup">new messages!</button>
                 <div id="reply_indicator"></div>
                 <div id="action_indicator"></div>
+                <div id="file_indicator"></div>
                 <div id="send_message_holder" style="grid-template-columns: 1fr .01fr;">
                     <div type="text" id="message_box" contenteditable></div>
                     <div id="misc_holder">
+                        <button id="file_button"><i class="fa-solid fa-paperclip"></i>
+                        <input type="file" name="file_upload" id="file_upload" style="display: none;" accept=".txt,.png,.jpg,.jpeg,.webp,.gif">
+                        </button>
                         <button id="gif_button"><i class="fa-solid fa-photo-film"></i></button>
                         <button id="emojis_button"><i class="fa-solid fa-face-smile"></i></button>
                         <button id="send_message" disabled><i class="fa-solid fa-paper-plane"></i></button>

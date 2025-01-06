@@ -9,6 +9,7 @@ export default function HandleErrors(errorCode, error = null) {
                 errorNotif.innerText = "Seems like the resource you are trying to find is not available or does not exist.";
                 break;
             case 401:
+                if (errorCode === 1) return location.reload();
                 errorNotif.innerText = "You are not authorized to access this resource.";
                 break;
             default:

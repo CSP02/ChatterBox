@@ -114,12 +114,14 @@ logout.addEventListener("click", event => {
     LogoutUser(); // Method imported from "./ChatterBox/Message.js"
 })
 
+const fileUploadButton = document.getElementById("file_button");
+const fileUploadInp = document.getElementById("file_upload");
 /**
  * ? Event listener for "send" button (at the message box) 
  */
 sendMessage.addEventListener("click", event => {
     const messageContent = document.getElementById("message_box");
-    if (messageContent.innerText.trim() === "") return;
+    if (messageContent.innerText.trim() === "" && !fileUploadInp.files[0]) return;
     // Creating a message object which contains content (it is a object because we are going to add JWT token to this object later)
     if (messageContent.innerText.trim().split(" ").length <= 1) {
 
@@ -130,9 +132,55 @@ sendMessage.addEventListener("click", event => {
         channel: JSON.parse(window.sessionStorage.getItem("active_channel")),
     };
     if (window.sessionStorage.getItem("repliedTo") !== "")
-        message.repliedTo = JSON.parse(window.sessionStorage.getItem("repliedTo"));
+        message.repliedTo = window.sessionStorage.getItem("repliedTo");
     SendMessage(message, SetParams(params)); // Method imported from "./ChatterBox/Message.js"
     messageContent.innerText = "" // Removing the content in #message_box element
+    document.getElementById("file_indicator").classList.remove("show_ind");
+    fileUploadInp.value = "";
+});
+
+fileUploadButton.addEventListener("click", e => {
+    fileUploadInp.click();
+})
+
+fileUploadInp.addEventListener("change", e => {
+    sendMessage.removeAttribute("disabled");
+
+    const file = fileUploadInp.files[0];
+    const removeFile = document.createElement("button");
+    const cancelIcon = document.createElement("i");
+    const fileHolder = document.createElement("div");
+    fileHolder.classList.add("file_holder");
+    cancelIcon.classList.add(...["fa-solid", "fa-xmark"]);
+    removeFile.appendChild(cancelIcon);
+    removeFile.classList.add("remove_file_button");
+    removeFile.addEventListener("click", e => {
+        fileUploadInp.value = "";
+        document.getElementById("file_indicator").innerHTML = "";
+        document.getElementById("file_indicator").classList.remove("show_ind");
+    })
+    console.log(fileUploadInp.files[0])
+    const reader = new FileReader();
+    if (file.type.includes("image")) {
+        const img = new Image();
+        reader.onload = (ev) => {
+            img.src = ev.target.result;
+        }
+        reader.readAsDataURL(file);
+        fileHolder.append(...[img, removeFile])
+    }else if(file.type === "text/plain"){
+        const linkFileHolder = document.createElement("div");
+        const fileIcon = document.createElement("i");
+        fileIcon.classList.add(...["fa-solid", "fa-file-lines"]);
+        const fileName = file.name;
+        const nameHolder = document.createElement("p");
+        nameHolder.innerText = fileName;
+        linkFileHolder.append(...[fileIcon, nameHolder]);
+        linkFileHolder.classList.add("file_link_holder");
+        fileHolder.append(...[linkFileHolder, removeFile]);
+    }
+    document.getElementById("file_indicator").appendChild(fileHolder);
+    document.getElementById("file_indicator").classList.add("show_ind");
 })
 
 const messagesDiv = document.getElementById("messages");
@@ -322,13 +370,13 @@ window.onload = () => {
             const channel = document.getElementById(path.split("/").reverse()[0].toString());
             const channelId = { _id: path.split("/").reverse()[0].toString() };
             const channelIndicator = document.getElementById("channel_details");
-            
+
             if (!channel) return HandleErrors("INVALID_CHANNEL");
             channel.classList.replace("inactive", "active");
             channelIndicator.innerText = channel.title;
             const previousChannel = window.sessionStorage.getItem("active_channel");
             SendJoinEvent(channelId, previousChannel);
-            
+
             const channelIcon = document.getElementById("channel_icon_update");
             const newChnlName = document.getElementById("new_channel_name");
             const chnlSettingsButton = document.getElementById("channel_settings");

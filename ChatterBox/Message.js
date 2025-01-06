@@ -9,20 +9,33 @@ export async function SendMessage(message, params) {
     previousMessage.username = "";
     previousMessage.timestamp = "";
     if (window.sessionStorage.getItem("repliedTo") !== null && window.sessionStorage.getItem("repliedTo") !== "") {
-        const repliedTo = JSON.parse(window.sessionStorage.getItem("repliedTo"));
+        const repliedTo = window.sessionStorage.getItem("repliedTo");
         message.repliedTo = repliedTo;
     }
 
     const path = location.pathname;
     const channelId = path.split("/").reverse()[0].toString();
 
+    const fileUpload = document.getElementById("file_upload");
+    const file = fileUpload.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("channel", message.channel);
+    formData.append("components", message.components);
+    formData.append("content", message.content);
+    if (message.repliedTo)
+        formData.append("repliedTo", message.repliedTo);
+    formData.append("user", message.user);
+    formData.append("_id", message._id);
+
     const url = `${apiURL}/messages?channel_id=${channelId}`;
-    const body = new Blob([JSON.stringify(message)], {
-        type: "application/json",
-    });
+    const body = formData;
     const { response, status } = await fetchData(url, "POST", body);
     if (status !== 200) return HandleErrors(status);
-    message._id = response.messageId;
+    message._id = await response.messageId;
+    message.repliedTo = await response.repliedTo;
+    message.components = await response.components;
+
     socket.emit("MESSAGES", message);
     document.getElementById("message_box").focus();
     document.getElementById("reply_indicator").innerHTML = "";
@@ -30,14 +43,14 @@ export async function SendMessage(message, params) {
     window.sessionStorage.setItem("repliedTo", "");
 }
 
-export async function GetMessages(activeChannel, params, chunkSize = 16) {
+export async function GetMessages(activeChannel, params, chunkSize = 16, page = 1) {
     const apiURL = params.apiURL;
     const previousMessage = params.previousMessage;
 
     previousMessage.username = "";
     previousMessage.timestamp = "";
     const messagesDiv = document.getElementById("messages");
-    const url = `${apiURL}/messages?channel_id=${activeChannel._id}&chunk=${chunkSize}`;
+    const url = `${apiURL}/messages?channel_id=${activeChannel._id}&chunk=${chunkSize}&page=${page}`;
     const { response, status } = await fetchData(url);
     if (status !== 200) return HandleErrors(status);
     const messages = await response.messages;
@@ -45,7 +58,7 @@ export async function GetMessages(activeChannel, params, chunkSize = 16) {
     if (messages.length <= 0) return messagesDiv.classList.add("empty_messages");
     messagesDiv.classList.remove("empty_messages");
     messagesDiv.innerHTML = "";
-    AddToMessages(messages, response.fetched_all_messages, params);
+    AddToMessages(messages, response.hasMore, params);
     if (document.getElementById("messages_loading"))
         document.getElementById("messages_loading").style.display = "none";
     ScrollToBottom(false);

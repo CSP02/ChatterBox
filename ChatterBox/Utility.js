@@ -11,7 +11,6 @@ let refreshToken = null;
 const apiURL = "http://localhost:3001/api";
 let activeChannel = { name: "http://localhost:3000/@me" };
 const types = new Types();
-const repliedToCache = { isEmpty: true };
 
 export function SetDefaults(defaults, socketInit) {
     token = defaults.token;
@@ -64,15 +63,16 @@ const previousMessage = {
     timestamp: ""
 };
 let chunkSize = 16;
+let page = 1;
 
-export async function AddToMessages(messages, fetchedAllMsgs, params) {
+export async function AddToMessages(messages, hasMore, params) {
     const loadMoreMsg = document.createElement("button");
     loadMoreMsg.id = "load_more_msg";
     loadMoreMsg.textContent = "Load more messages...";
 
     loadMoreMsg.addEventListener("click", e => {
-        GetMessages(activeChannel, params, chunkSize + 16);
-        chunkSize += 16;
+        page++;
+        GetMessages(activeChannel, params, chunkSize, page);
     })
 
     messages.forEach(message => {
@@ -147,14 +147,14 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
 
         contentHolder.classList.add("message_db");
         contentHolder.id = messageId;
-        if (repliedTo !== undefined && repliedTo.username !== "") {
+        if (repliedTo !== undefined && repliedTo.username !== "" && repliedTo.username !== undefined) {
             const replyIndicator = document.createElement("button");
             const userPfp = document.createElement("img");
             const username = document.createElement("span");
             const content = document.createElement("span");
 
             username.innerText = repliedTo.username;
-            content.innerText = repliedTo.content;
+            content.innerText = repliedTo.content.trim().slice("0, 32").split("\n")[0] + "...";
             content.classList.add("reply_content");
             userPfp.src = repliedTo.avatarURL;
             userPfp.style = "height:25px;width:25px;border-radius:50%;";
@@ -166,6 +166,43 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
 
             replyIndicator.addEventListener("click", e => {
                 const replyM = document.getElementById(repliedTo._id);
+                replyM.parentElement.parentElement.scrollIntoView({ block: "center" });
+                replyM.classList.add("m_indicator");
+
+                setTimeout(() => {
+                    replyM.classList.remove("m_indicator");
+                }, 1500);
+            })
+            messAndUserholder.appendChild(replyIndicator);
+
+            pfp.style.marginTop = "calc(25px + 1.2rem)";
+        }
+        else if (repliedTo !== "" && repliedTo !== null && repliedTo !== undefined) {
+            const replyIndicator = document.createElement("button");
+            const userPfp = document.createElement("img");
+            const username = document.createElement("span");
+            const content = document.createElement("span");
+            const repliedMess = document.getElementById(repliedTo);
+
+            if (repliedMess.parentElement.firstChild.tagName.toLowerCase() === 'button')
+                username.innerText = repliedMess.parentElement.children[1].firstChild.innerText;
+            else
+                username.innerText = repliedMess.parentElement.firstChild.firstChild.innerText;
+            content.innerText = repliedMess.innerText;
+            content.classList.add("reply_content");
+            userPfp.src = repliedMess.parentElement.previousSibling.firstChild.src;
+            userPfp.style = "height:25px;width:25px;border-radius:50%;";
+
+            if (repliedMess.parentElement.firstChild.tagName.toLowerCase() === 'button')
+                username.style.color = repliedMess.parentElement.children[1].firstChild.style.color;
+            else
+                username.style.color = repliedMess.parentElement.firstChild.firstChild.style.color;
+
+            replyIndicator.append(...[userPfp, username, content]);
+            replyIndicator.classList.add("replied_to");
+
+            replyIndicator.addEventListener("click", e => {
+                const replyM = document.getElementById(repliedTo);
                 replyM.parentElement.parentElement.scrollIntoView({ block: "center" });
                 replyM.classList.add("m_indicator");
 
@@ -220,7 +257,7 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
 
         reply.addEventListener("click", click => {
             const replyMsgID = reply.parentElement.parentElement.id;
-            window.sessionStorage.setItem("repliedTo", JSON.stringify({ _id: replyMsgID }));
+            window.sessionStorage.setItem("repliedTo", replyMsgID);
 
             const replyEl = document.createElement("div");
             const username = document.createElement("span");
@@ -233,7 +270,7 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
             closeIcon.classList.add("fa-circle-xmark");
             cancelButton.appendChild(closeIcon);
             cancelButton.classList.add("cancel_reply");
-            username.innerText = "replying to " + reply.parentElement.previousSibling.firstChild.innerText;
+            username.innerText = "replying to " + reply.parentElement.parentElement.previousSibling.firstChild.innerText.slice(0, 32).split("\n")[0] + "...";
             cancelButton.addEventListener("click", click => {
                 window.sessionStorage.removeItem("repliedTo");
                 replyEl.remove();
@@ -279,7 +316,7 @@ export async function AddToMessages(messages, fetchedAllMsgs, params) {
         }
         previousMessage.username = username;
         previousMessage.timestamp = new Date(message.timestamp);
-        if (!fetchedAllMsgs) {
+        if (hasMore) {
             if ([...messagesHolder.children].filter(el => el === loadMoreMsg).length <= 0)
                 messagesHolder.appendChild(loadMoreMsg);
         }
@@ -297,94 +334,98 @@ export function SendTypingEvent() {
 }
 
 async function ResolveContent(content, contentHolder, message) {
-    let finalText = content.split(/\s/g);
     const text2el = [];
+    let repliedToUName
 
-    if (message.repliedTo && message.repliedTo.username === loggedUser.username) {
+    if (typeof message.repliedTo === "string")
+        if (document.getElementById(message.repliedTo).parentElement.firstChild.tagName.toLowerCase() === 'button')
+            repliedToUName = document.getElementById(message.repliedTo).parentElement.children[1].firstChild.innerText.trim();
+        else
+            repliedToUName = document.getElementById(message.repliedTo).parentElement.firstChild.firstChild.innerText.trim();
+    if ((repliedToUName && repliedToUName === loggedUser.username) || (message.repliedTo && message.repliedTo.username === loggedUser.username)) {
         setTimeout(() => {
             const messageHolder = contentHolder.parentElement.parentElement;
             messageHolder.classList.add("mentioned");
             messageHolder.style.backgroundColor = loggedUser.color + "11";
-            messageHolder.style.borderTop = "solid " + loggedUser.color;
-            messageHolder.style.borderBottom = "solid " + loggedUser.color;
+            messageHolder.style.border = "solid " + loggedUser.color;
+            messageHolder.style.boxShadow = `${loggedUser.color} 0 0 8px`;
+            messageHolder.style.borderRadius = "1.5rem";
         }, 100);
     }
+    if (content !== "")
+        content.split("\n").forEach((data) => {
+            data.split(/\s/).forEach((data, index) => {
+                if (data.startsWith("http://") || data.startsWith("https://")) {
+                    const link = document.createElement("a");
+                    const text = document.createTextNode(data + "\ ");
+                    link.href = data;
+                    link.target = "_blank";
+                    link.append(text);
 
-    content.split("\n").forEach((data) => {
-        data.split(/\s/).forEach((data, index) => {
-            if (data.startsWith("http://") || data.startsWith("https://")) {
-                const link = document.createElement("a");
-                const text = document.createTextNode(data + "\ ");
-                link.href = data;
-                link.target = "_blank";
-                link.append(text);
+                    text2el.push(link);
+                }
 
-                text2el.push(link);
-            }
+                if (data === `@${loggedUser.username}`) {
+                    const mentionWrapper = document.createElement("b");
+                    const mention = document.createTextNode(data + "\ ");
 
-            if (data === `@${loggedUser.username}`) {
-                const mentionWrapper = document.createElement("b");
-                const mention = document.createTextNode(data + "\ ");
+                    mention.innerText = data;
 
-                mention.innerText = data;
+                    mentionWrapper.append(mention);
+                    text2el.push(mentionWrapper);
+                    setTimeout(() => {
+                        const messageHolder = contentHolder.parentElement.parentElement;
+                        messageHolder.classList.add("mentioned");
+                        messageHolder.style.backgroundColor = loggedUser.color + "11";
+                        messageHolder.style.borderTop = "solid " + loggedUser.color;
+                        messageHolder.style.borderBottom = "solid " + loggedUser.color;
+                    }, 100);
+                }
 
-                mentionWrapper.append(mention);
-                text2el.push(mentionWrapper);
-                setTimeout(() => {
-                    const messageHolder = contentHolder.parentElement.parentElement;
-                    messageHolder.classList.add("mentioned");
-                    messageHolder.style.backgroundColor = loggedUser.color + "11";
-                    messageHolder.style.borderTop = "solid " + loggedUser.color;
-                    messageHolder.style.borderBottom = "solid " + loggedUser.color;
-                }, 100);
-            }
-
-            if (!(data.includes("http://") || data.includes("https://")) && data !== `@${loggedUser.username}`) {
-                const text = document.createTextNode(data + "\ ");
-                text2el.push(text);
-            }
-        })
-        const breakEl = document.createElement("br");
-
-        text2el.push(breakEl);
-    });
+                if (!(data.includes("http://") || data.includes("https://")) && data !== `@${loggedUser.username}`) {
+                    const text = document.createTextNode(data + "\ ");
+                    text2el.push(text);
+                }
+            })
+            const breakEl = document.createElement("br");
+            text2el.push(breakEl);
+        });
 
     const wholeTextHolder = document.createElement("span");
     let text = "";
     for (let index = 0; index < text2el.length; index++) {
         const node = text2el[index];
-        console.log(text2el, node.nodeType, node)
         if (node.nodeType === 3) {
             text += node.data;
-            if ((index === text2el.length - 1 && node.data[0] !== "$") || isMD(node.data.trim()) || isMD(text.trim())) {
+            if ((index === text2el.length - 1 && node.data[0] !== "`") || isMD(node.data.trim()) || isMD(text.trim())) {
                 let md = document.createTextNode(text.trim());
                 if (isMD(text.trim()))
                     md = constructMD(text.trim());
                 else if (isMD(node.data.trim()))
                     md = constructMD(node.data.trim())
-                
+
                 const textEl = document.createElement("span");
                 textEl.appendChild(md);
-                
+
                 wholeTextHolder.appendChild(textEl);
                 text = "";
-            } else if (text2el[index + 1].data && ((/[*?^;_|~<$]/).test(text2el[index + 1].data)) && !(/[*?^;_|~<$]/).test(text[0])) {
+            } else if (text2el[index + 1].data && ((/[*?^;_|~#`]/).test(text2el[index + 1].data)) && !(/[*?^;_|~#`]/).test(text[0])) {
                 const textNode = document.createTextNode(text);
                 const span = document.createElement("span");
-                
+
                 span.appendChild(textNode);
                 wholeTextHolder.appendChild(span);
                 text = "";
             } else {
-                if (node.data[0] === "$") {
+                if (node.data[0] === "`") {
                     index++;
                     for (index; index < text2el.length; index++) {
                         if (text2el[index] === undefined) break;
                         text2el[index].nodeName === "BR" ? text += "\n" : text += text2el[index].data;
                         if (text2el[index].nodeName === "BR") continue;
-                        if (text2el[index].data.endsWith("$") || text2el[index].data === "$") break;
+                        if (text2el[index].data.endsWith("`") || text2el[index].data === "`") break;
                     }
-                    
+
                     wholeTextHolder.appendChild(constructMD(text.trim()));
                     text = "";
                 }
@@ -439,7 +480,7 @@ async function ResolveContent(content, contentHolder, message) {
     }
 
     contentHolder.appendChild(wholeTextHolder)
-    if (message.components.length > 0)
+    if (message.components && message.components.length > 0)
         [...message.components].forEach(component => {
             const embedWrapper = document.createElement("div");
             embedWrapper.classList.add("embed");
@@ -488,7 +529,7 @@ async function ResolveContent(content, contentHolder, message) {
 
             if (component.type === types.ComponentTypes.IMAGE || component.type === types.ComponentTypes.GIF && message.content.split(/\s/).length > 1) {
                 const image = new Image;
-                image.src = component.imageURL;
+                image.src = component.imageURL || component.url;
                 image.onload = () => {
                     setTimeout(() => {
                         ScrollToBottom(false);
@@ -498,11 +539,20 @@ async function ResolveContent(content, contentHolder, message) {
                 contentHolder.appendChild(image);
                 contentHolder.classList.add("message_has_component");
             }
-        });
 
-    // [...document.getElementsByTagName("span")].forEach(span => {
-    //     if(span.innerText === "") span.remove()
-    // })
+            if (component.type === types.ComponentTypes.FILE) {
+                const fileHolder = document.createElement("div");
+                const downloadLink = document.createElement("a");
+                downloadLink.innerText = component.title;
+                downloadLink.href = component.url.split("upload/").join("upload/fl_attachment/");
+                downloadLink.setAttribute("download", component.title);
+                downloadLink.target = "_blank"
+                fileHolder.appendChild(downloadLink);
+                fileHolder.classList.add("file_component_holder");
+                contentHolder.appendChild(fileHolder);
+                contentHolder.classList.add("message_has_component");
+            }
+        });
 }
 
 function isMD(data) {
@@ -511,10 +561,10 @@ function isMD(data) {
         (data.startsWith("^") && data.endsWith("^")) ||
         (data.startsWith("?") && data.endsWith("?")) ||
         (data.startsWith("!") && data.endsWith("!")) ||
-        (data.startsWith("<") && data.endsWith(">")) ||
+        (data.startsWith("#") && data.endsWith("#")) ||
         (data.startsWith("|") && data.endsWith("|")) ||
         (data.startsWith("_") && data.endsWith("_")) ||
-        (data.startsWith("$") && data.endsWith("$")) ||
+        (data.startsWith("`") && data.endsWith("`")) ||
         (data.startsWith(";") && data.endsWith(";"));
 }
 
@@ -549,7 +599,7 @@ function constructMD(data) {
             const underline = document.createElement("u");
             underline.appendChild(constructMD(data.slice(1, data.length - 1)));
             return underline;
-        case "<":
+        case "#":
             const header = document.createElement("b");
             header.style.fontSize = "24pt";
             header.appendChild(constructMD(data.slice(1, data.length - 1)));
@@ -569,7 +619,7 @@ function constructMD(data) {
                 throwOnError: false
             });
             return katexEl;
-        case "$":
+        case "`":
             const codeBlock = document.createElement("div");
             const code = document.createElement("code");
             let braceCount = 0;
@@ -580,13 +630,31 @@ function constructMD(data) {
 
                 const nextLine = data.slice(1, data.length - 1).split("\n")[index + 1];
                 if (nextLine !== undefined) {
-                    if (nextLine.trim().endsWith("}")) braceCount--;
+                    if (nextLine.trim().endsWith("}") || nextLine.trim().split("").includes("}")) braceCount--;
                     if (braceCount > 0)
                         code.appendChild(document.createTextNode(("  ").repeat(braceCount)));
                 }
             })
             codeBlock.classList.add("codeblock");
-            if (code.innerText.split("\n").length > 2) codeBlock.classList.add("multiple");
+            if (code.innerText.split("\n").length > 2) {
+                codeBlock.classList.add("multiple");
+                const copyVector = document.createElement("button");
+                const copyIcon = document.createElement("i");
+                copyIcon.classList.add("fa-solid");
+                copyIcon.classList.add("fa-copy");
+                copyVector.append(copyIcon);
+                copyVector.classList.add("copy_vector");
+                copyVector.addEventListener("click", e => {
+                    navigator.clipboard.writeText(code.innerText);
+                    copyIcon.classList.remove("fa-copy");
+                    copyIcon.classList.add("fa-check");
+                    setTimeout(() => {
+                        copyIcon.classList.remove("fa-check");
+                        copyIcon.classList.add("fa-copy");
+                    }, 3000);
+                });
+                codeBlock.appendChild(copyVector);
+            }
             codeBlock.appendChild(code);
             return codeBlock;
         default:

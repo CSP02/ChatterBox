@@ -71,15 +71,13 @@ setInterval(() => {
     usersTyping.clear();
 }, 5000);
 
-const url = "https://chatterbox.lol";
+const url = "http://localhost:3000";
 
 io.on("connection", socket => {
     socket.on("SET_UNAME", async data => {
         try {
             socket.data.username = data.user.username;
             socket.data.channelId = data.channel ? data.channel._id : data.user.username;
-
-            // const logoutRes = await fetch(`http://localhost:3001/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`);
         } catch (error) {
             console.log(error);
         }
@@ -91,21 +89,22 @@ io.on("connection", socket => {
             const username = data.user.username;
             const avatarURL = data.user.avatarURL;
             const colorPrefered = data.user.color;
-
+            
             const user = {
                 username: username,
                 avatarURL: avatarURL,
                 color: colorPrefered,
             };
-
+            
             const aUsersInChnl = (activeUsers.has(channel._id) && activeUsers.get(channel._id).length > 0) ? activeUsers.get(channel._id) : [];
             aUsersInChnl.push(user);
-
+            
             socket.join(`${url}/@me/${channel._id}`);
+            const onlineRes = await fetch(`http://localhost:3001/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`)
             io.to(`${url}/@me/${username}`).emit("GET_USERS", channel);
             io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "online" });
             activeUsers.set(channel._id, aUsersInChnl);
-            if(socket.data.username !== undefined) await fetch(`http://localhost:3001/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`);
+            if (socket.data.username !== undefined) await fetch(`http://localhost:3001/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`);
         } catch (error) {
             console.log(error);
         }
@@ -171,7 +170,7 @@ io.on("connection", socket => {
                 user: data.user,
                 content: data.content,
                 channel: data.channel,
-                components: [],
+                components: data.components ? data.components : [],
                 timestamp: Date.now(),
                 edited: false
             }
@@ -247,9 +246,8 @@ io.on("connection", socket => {
                 activeUsers.set(key, u2push);
             })
             io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "offline" });
-            const logoutRes = await fetch(`http://localhost:3001/api/make_offline?key=${process.env.logoutKey}&uname=${socket.data.username}`)
-            const response = await logoutRes.json();
-            if (response.ok) console.log("ok");
+            const logoutRes = await fetch(`http://localhost:3001/api/make_offline?key=${process.env.logoutKey}&uname=${socket.data.username}`);
+            if (logoutRes.ok) return;
             else console.log("something went wrong!");
         } catch (error) {
             console.log(error);

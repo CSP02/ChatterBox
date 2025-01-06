@@ -123,7 +123,6 @@ export async function AddUserToChannel(channelId, username, params) {
     const url = `${apiURL}/add_user?channel_id=${channelId._id}&username=${username}`;
     const { response, status } = await fetchData(url);
     if (status !== 200) return HandleErrors(status);
-    if (response.error === types.ErrorTypes.ALREADY_EXISTs) return SendNotification("User already exist!", types.SuccessTypes.FAILED);
     SendNotification("Added " + username + " to this channel successfully 😎", types.SuccessTypes.SUCCESS);
     socket.emit("USER_INVITE", username, loggedUser);
 }

@@ -596,7 +596,8 @@ button#new_message_popup:hover {
 
 #gif_button,
 #emojis_button,
-#send_message {
+#send_message,
+#file_button {
     margin: 0;
     display: flex;
     padding: 0;
@@ -608,6 +609,56 @@ button#new_message_popup:hover {
     align-items: center;
     font-size: 18pt;
     /* gap: 1rem; */
+}
+
+#file_indicator {
+    background-color: #2e2e2e;
+    box-shadow: black 0 0 5px;
+    border-radius: .5rem;
+    padding: .5rem;
+    margin: .5rem;
+    display: none;
+    max-height: 100px;
+}
+
+#file_indicator * {
+    max-height: inherit;
+}
+
+#file_indicator img {
+    border-radius: .5rem;
+    box-shadow: black 0 0 2px;
+}
+
+#file_indicator.show_ind {
+    display: flex;
+}
+
+.file_link_holder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fa-file-lines {
+    font-size: 56pt;
+}
+
+.remove_file_button {
+    background-color: #434141;
+    color: #ff5050;
+    border: none;
+    border-radius: 50%;
+    box-shadow: black 0 0 5px;
+    height: 25px;
+    width: 25px;
+    position: absolute;
+    top: -12.5px;
+    right: -12.5px;
+    font-size: 10pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #gif_button:hover,
@@ -1036,7 +1087,7 @@ button#new_message_popup:hover {
     background-color: rgb(17, 17, 17);
 }
 
-.codeblock{
+.codeblock {
     width: fit-content;
 }
 
@@ -1046,10 +1097,44 @@ button#new_message_popup:hover {
     box-shadow: black 0 0 2px;
     border: .5px solid black;
     padding: 1rem;
+    margin: .5rem 0;
 }
 
-.indentation{
-    border-left: .5px solid white;
+.copy_vector {
+    position: absolute;
+    opacity: .5;
+    border: none;
+    background: transparent;
+    color: white;
+    right: 0;
+    top: 0;
+    transition: .2s ease-in-out;
+}
+
+.file_component_holder {
+    margin: .5rem 0;
+    padding: .5rem 1rem;
+    background-color: #212121;
+    border-radius: .5rem;
+    border: 1px solid #313131;
+    width: fit-content;
+    box-shadow: black 0 0 2px;
+}
+
+.file_component_holder::before{
+    content: "\f0c6";
+    font: var(--fa-font-solid);
+    color: white;
+    margin: 0 .5rem 0 0;
+}
+
+.file_component_holder a:hover {
+    cursor: pointer;
+}
+
+.copy_vector:hover {
+    opacity: 1;
+    transition: .2s ease-in-out;
 }
 
 .codeblock.multiple code {
