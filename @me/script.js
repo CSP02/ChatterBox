@@ -159,7 +159,7 @@ fileUploadInp.addEventListener("change", e => {
         document.getElementById("file_indicator").innerHTML = "";
         document.getElementById("file_indicator").classList.remove("show_ind");
     })
-    console.log(fileUploadInp.files[0])
+    
     const reader = new FileReader();
     if (file.type.includes("image")) {
         const img = new Image();
@@ -172,9 +172,24 @@ fileUploadInp.addEventListener("change", e => {
         const linkFileHolder = document.createElement("div");
         const fileIcon = document.createElement("i");
         fileIcon.classList.add(...["fa-solid", "fa-file-lines"]);
+        file.modfilename = null;
         const fileName = file.name;
         const nameHolder = document.createElement("p");
         nameHolder.innerText = fileName;
+        nameHolder.addEventListener("click", () => {
+            nameHolder.contentEditable = true;
+            nameHolder.focus();
+            nameHolder.addEventListener("input", e => {
+                file.modfilename = nameHolder.innerText.trim();
+                if (e.inputType === "insertParagraph" || (e.inputType === "insertText" && e.data === null) && !isLineBreak){
+                    nameHolder.contentEditable = false;
+                    nameHolder.removeEventListener("input", r => {
+                        console.log("removed the event listener")
+                    });
+                    nameHolder.innerText = nameHolder.innerText.trim();
+                }
+            });
+        });
         linkFileHolder.append(...[fileIcon, nameHolder]);
         linkFileHolder.classList.add("file_link_holder");
         fileHolder.append(...[linkFileHolder, removeFile]);

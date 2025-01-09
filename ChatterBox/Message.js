@@ -23,6 +23,8 @@ export async function SendMessage(message, params) {
     formData.append("channel", message.channel);
     formData.append("components", message.components);
     formData.append("content", message.content);
+    if (file.modfilename !== null)
+        formData.append("custom_name", file.modfilename);
     if (message.repliedTo)
         formData.append("repliedTo", message.repliedTo);
     formData.append("user", message.user);
