@@ -57,16 +57,23 @@ export async function UpdateUser(params) {
     const uploadButton = document.getElementById("upload");
 
     const pfp = pfpUpload.files[0];
-    const formData = new FormData();
-    formData.append("pfp", pfp);
-    formData.append("username", updateUsername.value);
-    formData.append("color", updateColor.value);
+    let body = {
+        username: updateUsername.value,
+        color: updateColor.value
+    };
+    if (pfp && pfp !== null) {
+        const formData = new FormData();
+        formData.append("pfp", pfp);
+        formData.append("username", updateUsername.value);
+        formData.append("color", updateColor.value);
+        body = formData;
+    }
 
     pfpUpload.addEventListener("change", e => {
         document.getElementById("avatar").src = URL.createObjectURL(pfp);
     });
 
-    const { response, status } = await fetchData(url, "PUT", formData);
+    const { response, status } = await fetchData(url, "PUT", body);
     if (status !== 200) return HandleErrors(status);
 
     const updatedUsername = response.updatedUser.username;
@@ -80,7 +87,7 @@ export async function UpdateUser(params) {
 
     window.sessionStorage.setItem("user", JSON.stringify(response.updatedUser));
     document.getElementById("success_notif").innerText = "Updated successfully";
-    
+
     location = "/@me";
 }
 
@@ -92,7 +99,7 @@ export function UpdateUserdetails(user) {
     const profilePageUsername = document.getElementById("profile_username");
     const profilePageColor = document.getElementById("profile_color");
     const prefColorSel = document.getElementById("color_pref_selected");
-    
+
     const updatedUsername = user.username;
     const updatedColor = user.color;
     const updatedPfp = user.avatarURL;

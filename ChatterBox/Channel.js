@@ -12,10 +12,8 @@ export async function CreateChannel(params) {
     formData.append("channelName", channelName);
     formData.append("channelIcon", channelIcon);
 
-    const body = formData;
     const url = `${apiURL}/channels`;
-
-    const { response, status } = await fetchData(url, "POST", body);
+    const { response, status } = await fetchData(url, "POST", formData);
     if (status !== 200) return HandleErrors(status);
     AddToChannels([response.channel]);
 }
@@ -23,17 +21,17 @@ export async function CreateChannel(params) {
 export async function GetChannels(params) {
     const apiURL = params.apiURL;
     const url = `${apiURL}/channels`;
-    
+
     const { response, status } = await fetchData(url);
     if (status !== 200) return HandleErrors(status);
     if (await response.channels.length <= 0) return;
     const channels = await response.channels;
-    
+
     AddToChannels(channels, params.socket);
     window.sessionStorage.setItem("channels", JSON.stringify(channels));
 }
 
-export async function UpdateChannel(params){
+export async function UpdateChannel(params) {
     const apiURL = params.apiURL;
     const activeChannelId = JSON.parse(window.sessionStorage.getItem("active_channel"))._id;
     const newChnlName = document.getElementById("new_channel_name").value;
@@ -80,7 +78,7 @@ function AddToChannels(channels, socket) {
         nameButton.classList.add("channel");
         nameButton.id = channel._id;
         nameButton.append(channelIcon);
-        
+
         nameButton.addEventListener("click", click => {
             if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "@me") {
                 socket.emit("LEAVE_CHANNEL", { channel: { _id: location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] }, user: loggedUser });

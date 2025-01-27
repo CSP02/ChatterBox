@@ -831,7 +831,7 @@ button#new_message_popup:hover {
 
 .component_image {
     border-radius: .6rem;
-    margin: .5rem;
+    margin: .5rem 0;
     max-width: 40%;
 }
 
@@ -1064,6 +1064,11 @@ button#new_message_popup:hover {
     display: grid;
 }
 
+.message_has_component{
+    display: flex;
+    flex-direction: column;
+}
+
 .mentioned b {
     padding: 0px .4rem;
     border-radius: .3rem;
@@ -1121,7 +1126,16 @@ button#new_message_popup:hover {
     box-shadow: black 0 0 2px;
 }
 
-.file_component_holder::before{
+.fa-turn-down {
+    position: absolute;
+    left: 32px;
+    top: 11px;
+    font-size: 20pt;
+    color: #414141;
+    transform: rotate(270deg);
+}
+
+.file_component_holder::before {
     content: "\f0c6";
     font: var(--fa-font-solid);
     color: white;
@@ -1229,7 +1243,7 @@ span.reply_content {
 
 .embed {
     padding: .5rem;
-    margin: .5rem;
+    margin: .5rem 0;
     border-radius: .6rem;
     background-color: #272727;
     max-width: 40%;

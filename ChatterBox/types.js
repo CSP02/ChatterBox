@@ -25,8 +25,7 @@ export default class Types {
             CHANNEL_LIMIT: 11,
             ALREADY_EXISTS: 12,
             INVALID_FILE: 13,
-            INVALID_CHANNEL: 14,
-            CHANNEL_LIMIT: 15,
+            INVALID_CHANNEL: 14
         });
 
         this.SuccessTypes = Object.freeze({

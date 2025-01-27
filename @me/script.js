@@ -159,7 +159,7 @@ fileUploadInp.addEventListener("change", e => {
         document.getElementById("file_indicator").innerHTML = "";
         document.getElementById("file_indicator").classList.remove("show_ind");
     })
-    
+
     const reader = new FileReader();
     if (file.type.includes("image")) {
         const img = new Image();
@@ -168,7 +168,7 @@ fileUploadInp.addEventListener("change", e => {
         }
         reader.readAsDataURL(file);
         fileHolder.append(...[img, removeFile])
-    }else if(file.type === "text/plain"){
+    } else if (file.type === "text/plain") {
         const linkFileHolder = document.createElement("div");
         const fileIcon = document.createElement("i");
         fileIcon.classList.add(...["fa-solid", "fa-file-lines"]);
@@ -181,7 +181,8 @@ fileUploadInp.addEventListener("change", e => {
             nameHolder.focus();
             nameHolder.addEventListener("input", e => {
                 file.modfilename = nameHolder.innerText.trim();
-                if (e.inputType === "insertParagraph" || (e.inputType === "insertText" && e.data === null) && !isLineBreak){
+                if (e.inputType === "insertParagraph" || (e.inputType === "insertText" && e.data === null) && !isLineBreak) {
+                    e.preventDefault();
                     nameHolder.contentEditable = false;
                     nameHolder.removeEventListener("input", r => {
                         console.log("removed the event listener")
@@ -230,13 +231,23 @@ document.getElementById("emojis_click").addEventListener("click", e => {
     messageBox.append(emojiDup);
 })
 
-window.addEventListener("keydown", e => {
+window.addEventListener("keydown", async e => {
     if (e.ctrlKey && e.key === "c") {
         e.preventDefault();
         const selection = window.getSelection().toString();
         const text = selection.replace(/<[^>]*>/g, '');
 
         navigator.clipboard.writeText(text);
+    }
+
+    if (e.ctrlKey && e.key === "v") {
+        e.preventDefault();
+        // const selection = window.getSelection().toString();
+        const text = navigator.clipboard.readText();
+        // const text = selection.replace(/<[^>]*>/g, '');
+        console.log(text)
+        messageBox.innerText = await text;
+        messageBox.focus()
     }
 })
 
@@ -284,6 +295,13 @@ messageBox.addEventListener("drop", e => {
 })
 
 messageBox.addEventListener("keydown", key => {
+    if (key.key.toLowerCase() === "enter") {
+        key.preventDefault();
+
+        sendMessage.click();
+        sendMessage.disabled = true;
+    }
+
     if (key.shiftKey) isLineBreak = true;
     else isLineBreak = false;
 })

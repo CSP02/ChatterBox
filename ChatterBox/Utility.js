@@ -116,14 +116,19 @@ export async function AddToMessages(messages, hasMore, params) {
         }
 
         usernameHolder.style = "display: flex; align-items: center;";
-
+        
         pfp.src = avatarURL;
         pfp.height = "50px";
         pfp.width = "50px";
         pfp.classList.add("pfp");
-
+        
         const pfpButton = document.createElement("button");
         pfpButton.className = "open_profile_card";
+        if(repliedTo){
+            const replyMIconInd = document.createElement("i");
+            replyMIconInd.classList.add(...["fa-solid","fa-turn-down"]);
+            pfpButton.appendChild(replyMIconInd);
+        }
         pfpButton.appendChild(pfp);
 
         pfpButton.addEventListener("click", e => {
@@ -147,19 +152,19 @@ export async function AddToMessages(messages, hasMore, params) {
 
         contentHolder.classList.add("message_db");
         contentHolder.id = messageId;
-        if (repliedTo !== undefined && repliedTo.username !== "" && repliedTo.username !== undefined) {
+        if (repliedTo !== undefined && repliedTo.user.username !== "" && repliedTo.user.username !== undefined) {
             const replyIndicator = document.createElement("button");
             const userPfp = document.createElement("img");
             const username = document.createElement("span");
             const content = document.createElement("span");
 
-            username.innerText = repliedTo.username;
+            username.innerText = repliedTo.user.username;
             content.innerText = repliedTo.content.trim().slice("0, 32").split("\n")[0] + "...";
             content.classList.add("reply_content");
-            userPfp.src = repliedTo.avatarURL;
+            userPfp.src = repliedTo.user.avatarURL;
             userPfp.style = "height:25px;width:25px;border-radius:50%;";
 
-            username.style.color = repliedTo.color;
+            username.style.color = repliedTo.user.color;
 
             replyIndicator.append(...[userPfp, username, content]);
             replyIndicator.classList.add("replied_to");
@@ -338,11 +343,11 @@ async function ResolveContent(content, contentHolder, message) {
     let repliedToUName
 
     if (typeof message.repliedTo === "string")
-        if (document.getElementById(message.repliedTo).parentElement.firstChild.tagName.toLowerCase() === 'button')
-            repliedToUName = document.getElementById(message.repliedTo).parentElement.children[1].firstChild.innerText.trim();
+        if (document.getElementById(message.repliedTo._id).parentElement.firstChild.tagName.toLowerCase() === 'button')
+            repliedToUName = document.getElementById(message.repliedTo._id).parentElement.children[1].firstChild.innerText.trim();
         else
-            repliedToUName = document.getElementById(message.repliedTo).parentElement.firstChild.firstChild.innerText.trim();
-    if ((repliedToUName && repliedToUName === loggedUser.username) || (message.repliedTo && message.repliedTo.username === loggedUser.username)) {
+            repliedToUName = document.getElementById(message.repliedTo._id).parentElement.firstChild.firstChild.innerText.trim();
+    if ((repliedToUName && repliedToUName === loggedUser.username) || (message.repliedTo && message.repliedTo.user.username === loggedUser.username)) {
         setTimeout(() => {
             const messageHolder = contentHolder.parentElement.parentElement;
             messageHolder.classList.add("mentioned");
