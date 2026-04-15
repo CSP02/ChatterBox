@@ -37,7 +37,7 @@ app.post("/ValidatePassword", async (req, res) => {
     return res.send({ isValid: cond1 && cond2, charLen8: cond1, mixOfDiff: cond2 }); // return true if both the conditions are true
 })
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'Home')));
 
 app.get(`/@me/:channel_id`, async (req, res) => {
     res.sendFile(__dirname + "/@me/");
