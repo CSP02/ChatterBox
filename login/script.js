@@ -26,5 +26,5 @@ login.addEventListener("click", async (event) => {
 })
 
 window.onload = () => {
-    document.getElementById("loading").style.display = "none"
+    document.getElementById("loading").style.display = "none";
 }
