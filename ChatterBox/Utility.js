@@ -1,5 +1,5 @@
 import Types from "./types.js"
-import { removeEvent } from "../@me/script.mjs";
+import { removeEvent } from "../me/script.mjs";
 import { GetMessages, DeleteMessage, EditMessage } from "./Message.js";
 import HandleErrors from "../handlers/errorHandler.js";
 
@@ -9,7 +9,7 @@ let loggedUser = null;
 let token = null;
 let refreshToken = null;
 const apiURL = "https://chatter-box-api-pi.vercel.app/api";
-let activeChannel = { name: "https://chatter-box-indol.vercel.app/@me" };
+let activeChannel = { name: "https://chatter-box-indol.vercel.app/me" };
 const types = new Types();
 
 export function SetDefaults(defaults, socketInit) {

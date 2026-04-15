@@ -15,7 +15,7 @@ let loggedUser = JSON.parse(window.sessionStorage.getItem("user"));
 let token = window.sessionStorage.getItem("token");
 let refreshToken = window.sessionStorage.getItem("refresh token");
 const apiURL = "https://chatter-box-api-pi.vercel.app/api";
-let activeChannel = { name: "https://chatter-box-indol.vercel.app/@me" };
+let activeChannel = { name: "https://chatter-box-indol.vercel.app/me" };
 const types = new ComponentTypes();
 const repliedToCache = { isEmpty: true };
 const previousMessage = {
@@ -366,7 +366,7 @@ function getGifs(url, limit, query) {
                 const url = img.src;
 
                 messageBox.innerText = url;
-                if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "@me") {
+                if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "me") {
                     sendMessage.removeAttribute("disabled");
                     sendMessage.click();
                 }
@@ -404,7 +404,7 @@ window.onload = () => {
 
     setTimeout(() => {
         const path = location.pathname;
-        if (path !== "/@me/") {
+        if (path !== "/me/") {
             const channel = document.getElementById(path.split("/").reverse()[0].toString());
             const channelId = { _id: path.split("/").reverse()[0].toString() };
             const channelIndicator = document.getElementById("channel_details");
@@ -470,7 +470,7 @@ window.onload = () => {
         ScrollToBottom(true);
 
         document.getElementById("loading").style.display = "none";
-        if (path.replaceAll("/", "").endsWith("@me"))
+        if (path.replaceAll("/", "").endsWith("me"))
             document.getElementById("messages_loading").style.display = "none";
     }, 1000);
 }
