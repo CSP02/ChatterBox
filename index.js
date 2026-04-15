@@ -38,6 +38,9 @@ app.post("/ValidatePassword", async (req, res) => {
 })
 
 app.use(express.static(path.join(__dirname, 'Home')));
+app.use(express.static(path.join(__dirname, 'login')));
+app.use(express.static(path.join(__dirname, 'signup')));
+app.use(express.static(path.join(__dirname, '@me')));
 
 app.get(`/@me/:channel_id`, async (req, res) => {
     res.sendFile(__dirname + "/@me/");
