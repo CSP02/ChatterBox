@@ -40,7 +40,6 @@ app.post("/ValidatePassword", async (req, res) => {
 app.use(express.static(path.join(__dirname, 'Home')));
 app.use(express.static(path.join(__dirname, 'login')));
 app.use(express.static(path.join(__dirname, 'signup')));
-app.use(express.static(path.join(__dirname, '@me')));
 app.use(express.static(path.join(__dirname, 'Resources')));
 
 app.get("/", async (req, res)  => {
