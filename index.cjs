@@ -41,14 +41,14 @@ app.use(express.static(path.join(__dirname, 'Home')));
 app.use(express.static(path.join(__dirname, 'login')));
 app.use(express.static(path.join(__dirname, 'signup')));
 app.use(express.static(path.join(__dirname, 'Resources')));
-app.use(express.static(path.join(__dirname, '@me')));
+app.use(express.static(path.join(__dirname, 'me')));
 
 app.get("/", async (req, res)  => {
     res.sendFile(path.join(__dirname, 'Home'));
 })
 
-app.get(`/@me/:channel_id`, async (req, res) => {
-    res.sendFile(path.join(__dirname, "/@me/"));
+app.get(`/me/:channel_id`, async (req, res) => {
+    res.sendFile(path.join(__dirname, "/me/"));
 })
 
 app.get(`/gif`, async (req, res) => {
@@ -82,7 +82,7 @@ setInterval(() => {
     usersTyping.clear();
 }, 5000);
 
-const url = "http://localhost:3000";
+const url = "https://chatter-box-indol.vercel.app";
 
 io.on("connection", socket => {
     socket.on("SET_UNAME", async data => {
@@ -110,12 +110,12 @@ io.on("connection", socket => {
             const aUsersInChnl = (activeUsers.has(channel._id) && activeUsers.get(channel._id).length > 0) ? activeUsers.get(channel._id) : [];
             aUsersInChnl.push(user);
             
-            socket.join(`${url}/@me/${channel._id}`);
-            const onlineRes = await fetch(`http://localhost:3001/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`)
-            io.to(`${url}/@me/${username}`).emit("GET_USERS", channel);
+            socket.join(`${url}/me/${channel._id}`);
+            const onlineRes = await fetch(`https://chatter-box-api-pi.vercel.app/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`)
+            io.to(`${url}/me/${username}`).emit("GET_USERS", channel);
             io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "online" });
             activeUsers.set(channel._id, aUsersInChnl);
-            if (socket.data.username !== undefined) await fetch(`http://localhost:3001/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`);
+            if (socket.data.username !== undefined) await fetch(`https://chatter-box-api-pi.vercel.app/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`);
         } catch (error) {
             console.log(error);
         }
@@ -125,7 +125,7 @@ io.on("connection", socket => {
         try {
             const channel = data.channel;
             const user = data.user;
-            socket.leave(`${url}/@me/${channel._id}`);
+            socket.leave(`${url}/me/${channel._id}`);
 
             const aUsersInChnl = activeUsers.get(channel._id);
             const updatedUsers = [];
@@ -148,7 +148,7 @@ io.on("connection", socket => {
     })
 
     socket.on("UUL", data => {
-        io.to(`${url}/@me/${data.channel._id}`).emit("UPDATE_USERS_LIST", data.members);
+        io.to(`${url}/me/${data.channel._id}`).emit("UPDATE_USERS_LIST", data.members);
     })
 
     socket.on("LOGIN", async data => {
@@ -157,7 +157,7 @@ io.on("connection", socket => {
             const pfp = data.avatarURL;
             const colorPrefered = data.color;
 
-            socket.join(`${url}/@me/${username}`);
+            socket.join(`${url}/me/${username}`);
             const user = {
                 username: username,
                 pfp: pfp,
@@ -166,7 +166,7 @@ io.on("connection", socket => {
 
             io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "online" });
 
-            if (socket.data.username !== undefined) await fetch(`http://localhost:3001/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`);
+            if (socket.data.username !== undefined) await fetch(`https://chatter-box-api-pi.vercel.app/api/make_online?key=${process.env.logoutKey}&uname=${socket.data.username}`);
         } catch (error) {
             console.log(error);
         }
@@ -175,7 +175,7 @@ io.on("connection", socket => {
     socket.on("MESSAGES", data => {
         try {
             const channelId = data.channel._id;
-            const channelURL = `${url}/@me/${channelId}`;
+            const channelURL = `${url}/me/${channelId}`;
             const message = {
                 _id: data._id,
                 user: data.user,
@@ -197,7 +197,7 @@ io.on("connection", socket => {
 
     socket.on("DEL_MSG", data => {
         try {
-            const channelURL = `${url}/@me/${data.channel._id}`;
+            const channelURL = `${url}/me/${data.channel._id}`;
             io.to(channelURL).emit("DEL_MSG", data.id);
         } catch (e) {
             console.log(e);
@@ -206,7 +206,7 @@ io.on("connection", socket => {
 
     socket.on("EDIT_MSG", data => {
         try {
-            const channelURL = `${url}/@me/${data.cid}`;
+            const channelURL = `${url}/me/${data.cid}`;
             io.to(channelURL).emit("EDIT_MSG", { id: data.mid, content: data.content });
         } catch (e) {
             console.log(e);
@@ -231,7 +231,7 @@ io.on("connection", socket => {
                 usersTyping.set(channelId, Array.from(new Set(channelTypUsers).values()));
             }
 
-            io.to(`${url}/@me/${channelId}`).emit("TYPING", usersTyping.get(channelId));
+            io.to(`${url}/me/${channelId}`).emit("TYPING", usersTyping.get(channelId));
         } catch (error) {
             console.log(error);
         }
@@ -239,7 +239,7 @@ io.on("connection", socket => {
 
     socket.on("USER_INVITE", (username, user) => {
         try {
-            io.to(`${url}/@me/${username}`).emit("USER_INVITE", `${user.username} added you to a channel`);
+            io.to(`${url}/me/${username}`).emit("USER_INVITE", `${user.username} added you to a channel`);
         } catch (error) {
             console.log(error);
         }
@@ -257,7 +257,7 @@ io.on("connection", socket => {
                 activeUsers.set(key, u2push);
             })
             io.emit("UPDATE_GLOBAL_USERS", { user: username, mode: "offline" });
-            const logoutRes = await fetch(`http://localhost:3001/api/make_offline?key=${process.env.logoutKey}&uname=${socket.data.username}`);
+            const logoutRes = await fetch(`https://chatter-box-api-pi.vercel.app/api/make_offline?key=${process.env.logoutKey}&uname=${socket.data.username}`);
             if (logoutRes.ok) return;
             else console.log("something went wrong!");
         } catch (error) {

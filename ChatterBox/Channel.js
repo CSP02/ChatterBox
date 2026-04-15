@@ -87,11 +87,11 @@ function AddToChannels(channels, socket) {
         }
 
         nameButton.addEventListener("click", click => {
-            if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "@me") {
+            if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "me") {
                 socket.emit("LEAVE_CHANNEL", { channel: { _id: location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] }, user: loggedUser });
             }
             window.sessionStorage.setItem("active_channel", JSON.stringify({ _id: channel._id }));
-            location = "http://localhost:3000/@me/" + channel._id;
+            location = "http://localhost:3000/me/" + channel._id;
         });
 
         buttonHolder.append(...[nameButton, tooltip]);

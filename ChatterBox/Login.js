@@ -27,7 +27,7 @@ export async function LoginUser(user) {
                 window.sessionStorage.setItem("token", token);
                 window.sessionStorage.setItem("refresh token", refreshToken);
                 window.sessionStorage.setItem("user", JSON.stringify(response.user));
-                window.location = "https://chatter-box-indol.vercel.app/@me/index.html";
+                window.location = "https://chatter-box-indol.vercel.app/me/index.html";
             } else {
                 document.getElementById("invalid_credentials").innerText =
                     "Username or Password is incorrect!";

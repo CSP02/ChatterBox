@@ -87,7 +87,7 @@ export async function UpdateUser(params) {
     window.sessionStorage.setItem("user", JSON.stringify(response.updatedUser));
     document.getElementById("success_notif").innerText = "Updated successfully";
 
-    location = "/@me";
+    location = "/me";
 }
 
 export function UpdateUserdetails(user) {
