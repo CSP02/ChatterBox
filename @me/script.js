@@ -75,6 +75,7 @@ const emojisHolder = document.getElementById("emojis_holder");
 profile.addEventListener("click", event => {
     const profilePage = document.getElementById("profile_page"); // Profile page is the element which shows all the details about user (excluding password because for authentication this app uses JWT)
     profilePage.style.display = "grid";
+    profilePage.style.scale = "1";
 })
 
 /**
@@ -89,7 +90,7 @@ updateProfileButton.addEventListener("click", (event) => {
  * ? event listener to close profile window (not really a window it's just an element with fixed position)
  */
 closeUpdateProfile.addEventListener("click", (event) => {
-    document.getElementById("profile_page").style.display = "none";
+    document.getElementById("profile_page").style.scale = "0";
 })
 
 /**
@@ -104,7 +105,7 @@ updateChannelButton.addEventListener("click", (event) => {
  * ? event listener to close channel settings window (not really a window it's just an element with fixed position)
  */
 closeUpdateChannel.addEventListener("click", (event) => {
-    document.getElementById("channel_settings_win").style.display = "none";
+    document.getElementById("channel_settings_win").style.scale = "0";
 })
 
 /**
@@ -211,6 +212,11 @@ messagesDiv.addEventListener("scroll", () => {
     if (scrollHeight <= scrollTop + offsetHeight + 140) {
         document.getElementById("new_message_popup").style.display = "none";
     }
+
+    if(messagesDiv.scrollTop <= 0) {
+        document.getElementById("load_more_msg").click();
+        document.getElementById("more_msg_loading").style.display = "flex";
+    }
 })
 /**
  * ? Event listener for the "new messages" popup
@@ -245,7 +251,6 @@ window.addEventListener("keydown", async e => {
         // const selection = window.getSelection().toString();
         const text = navigator.clipboard.readText();
         // const text = selection.replace(/<[^>]*>/g, '');
-        console.log(text)
         messageBox.innerText = await text;
         messageBox.focus()
     }
@@ -295,15 +300,16 @@ messageBox.addEventListener("drop", e => {
 })
 
 messageBox.addEventListener("keydown", key => {
-    if (key.key.toLowerCase() === "enter") {
+    if (key.shiftKey) isLineBreak = true;
+    else isLineBreak = false;
+
+    if (!isLineBreak && key.key.toLowerCase() === "enter") {
         key.preventDefault();
 
         sendMessage.click();
         sendMessage.disabled = true;
     }
 
-    if (key.shiftKey) isLineBreak = true;
-    else isLineBreak = false;
 })
 
 messageBox.addEventListener("input", handleEvent);
@@ -316,16 +322,16 @@ export function removeEvent() {
 }
 
 showCreateForm.addEventListener("click", click => {
-    formWrapper.style.display = "flex";
+    formWrapper.style.scale = "1";
 })
 
 createChannelButton.addEventListener("click", click => {
     CreateChannel(SetParams(params));
-    formWrapper.style.display = "none";
+    formWrapper.style.scale = "0";
 })
 
 cancelChannelButton.addEventListener("click", click => {
-    formWrapper.style.display = "none";
+    formWrapper.style.scale = "0";
 })
 
 const gifButton = document.getElementById("gif_button");
@@ -384,7 +390,6 @@ searchUser.addEventListener("click", e => {
     const username = document.getElementById("Username").value;
     SearchUser(username, SetParams(params));
 })
-
 window.onload = () => {
     const user = JSON.parse(window.sessionStorage.getItem("user"));
     const inviteButton = document.getElementById("invite_okay");
@@ -417,7 +422,8 @@ window.onload = () => {
                 const chnlSetWin = document.getElementById("channel_settings_win");
                 channelIcon.src = channel.getElementsByTagName("img")[0].src;
                 newChnlName.value = channel.title;
-                chnlSetWin.style.display = "flex";
+                // chnlSetWin.style.display = "flex";
+                chnlSetWin.style.scale = "1";
             })
             const invite = document.createElement("button");
             const icon = document.createElement("i");
@@ -430,17 +436,18 @@ window.onload = () => {
             invite.addEventListener("click", click => {
                 const inviteForm = document.getElementById("invite_form");
                 inviteForm.style.display = "flex";
+                inviteForm.style.scale = "1";
 
                 inviteButton.addEventListener("click", click => {
                     if (document.getElementById("user_selection").checked) {
                         const username = document.getElementById("user_selection").previousSibling.innerText;
                         AddUserToChannel(channelId, username, SetParams(params));
                     }
-                    inviteForm.style.display = "none";
+                    inviteForm.style.scale = "0";
                 })
                 const cancelInvite = document.getElementById("cancel_invite");
                 cancelInvite.addEventListener("click", click => {
-                    inviteForm.style.display = "none";
+                    inviteForm.style.scale = "0";
                 })
             })
             channelIndicator.appendChild(invite);
@@ -451,8 +458,14 @@ window.onload = () => {
             messageBox.style.boxShadow = "black 0 0 5px";
             messageBox.focus();
         } else {
-            messageBox.setAttribute("contenteditable", false);
-            messageBox.style = "";
+            document.getElementById("channel_name_indicator").remove();
+            document.getElementById("user_message").remove();
+            document.getElementById("app_main_container").style.gridTemplate = `"messagesholder"\n"messagesholder"`;
+            document.getElementById("init_message").style.display = "flex";
+            document.getElementById("init_message").style.justifyContent = "center";
+            document.getElementById("init_message").style.alignItems = "center";
+            document.getElementById("init_message").style.height = "100%";
+            document.getElementById("init_message").style.opacity = .5;
         }
         ScrollToBottom(true);
 
@@ -462,26 +475,71 @@ window.onload = () => {
     }, 1000);
 }
 
-document.getElementById("open_users_list").addEventListener("click", click => {
+document.getElementById("open_users").addEventListener("click", c => {
     const usersList = document.getElementById("list_users");
-    if (usersList.classList.contains("opened")) {
-        usersList.classList.replace("opened", "closed");
-        usersList.style.marginLeft = "-100%";
-    }
-    else if (usersList.classList.contains("closed")) {
-        usersList.classList.replace("closed", "opened");
-        usersList.style.marginLeft = ".5rem";
-    }
-})
+    usersList.classList.toggle("closed");
+    usersList.display = "none"
+});
 
-document.getElementById("open_channel_button").addEventListener("click", click => {
+let clientInitPos;
+let clientEndPos;
+
+window.addEventListener("touchend", te => {
+    clientEndPos = te.changedTouches[0].clientX;
+
     const channels = document.getElementById("channels");
-    if (channels.classList.contains("opened")) {
-        channels.classList.replace("opened", "closed");
-        channels.style.marginLeft = "-100%";
+    const usersList = document.getElementById("list_users");
+
+    //swipe right open channels
+    if (clientInitPos < clientEndPos) {
+        if (usersList.classList.contains("opened")) {
+            usersList.classList.replace("opened", "closed");
+            usersList.style.marginRight = "-100%";
+        }
+        else if (usersList.classList.contains("closed")) {
+            channels.classList.replace("closed", "opened");
+            channels.style.marginLeft = ".5rem";
+        }
     }
-    else if (channels.classList.contains("closed")) {
-        channels.classList.replace("closed", "opened");
-        channels.style.marginLeft = ".5rem";
+
+    if (clientInitPos > clientEndPos) {
+        if (channels.classList.contains("opened")) {
+            channels.classList.replace("opened", "closed");
+            channels.style.marginLeft = "-100%";
+        }
+        else if (channels.classList.contains("closed")) {
+            usersList.classList.replace("closed", "opened");
+            usersList.style.marginRight = ".5rem";
+        }
     }
-})
+    clientInitPos = 0;
+    clientEndPos = 0;
+});
+
+window.addEventListener("touchstart", tm => {
+    clientInitPos = tm.touches[0].clientX;
+});
+
+// document.getElementById("open_users_list").addEventListener("click", click => {
+//     const usersList = document.getElementById("list_users");
+//     if (usersList.classList.contains("opened")) {
+//         usersList.classList.replace("opened", "closed");
+//         usersList.style.marginLeft = "-100%";
+//     }
+//     else if (usersList.classList.contains("closed")) {
+//         usersList.classList.replace("closed", "opened");
+//         usersList.style.marginLeft = ".5rem";
+//     }
+// })
+
+// document.getElementById("open_channel_button").addEventListener("click", click => {
+//     const channels = document.getElementById("channels");
+//     if (channels.classList.contains("opened")) {
+//         channels.classList.replace("opened", "closed");
+//         channels.style.marginLeft = "-100%";
+//     }
+//     else if (channels.classList.contains("closed")) {
+//         channels.classList.replace("closed", "opened");
+//         channels.style.marginLeft = ".5rem";
+//     }
+// })

@@ -1,0 +1,35 @@
+
+.form_wrapper {
+    height: 100dvh;
+    position: fixed;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.562);
+    backdrop-filter: blur(24px);
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.form {
+    display: grid;
+    padding: 1rem;
+    background-color: rgb(22, 22, 22);
+    border-radius: .6rem;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
+    ;
+}
+
+.form * {
+    padding: .3rem;
+}
+
+.form input {
+    margin: .3rem;
+    border-radius: .6rem;
+    border: 1px solid rgb(49, 49, 49);
+    background-color: transparent;
+    outline: 3px transparent;
+    outline-offset: 2px;
+    color: white;
+}

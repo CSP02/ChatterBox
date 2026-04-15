@@ -1,11 +1,30 @@
-const loading = document.getElementById("loading")
+document.addEventListener("DOMContentLoaded", () => {
+    const nav = document.querySelector("nav");
 
-window.onload = () => {
-    loading.style.display = "none"
+    // Handle Navbar scroll effect
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+            nav.classList.add("scrolled");
+        } else {
+            nav.classList.remove("scrolled");
+        }
+    });
 
-    const wrapper = document.getElementById("wrapper")
-    const nav = document.getElementById("navigation")
-    wrapper.addEventListener("scroll", scroll => {
-        wrapper.scrollTop > 0 ? nav.classList.replace("attop", "nattop") : nav.classList.replace("nattop", "attop")
-    })
-}
+    // Simple interaction: reveal features on scroll
+    const features = document.querySelectorAll(".feature");
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = "1";
+                entry.target.style.transform = "translateY(0)";
+            }
+        });
+    }, { threshold: 0.1 });
+
+    features.forEach(f => {
+        f.style.opacity = "0";
+        f.style.transform = "translateY(20px)";
+        f.style.transition = "all 0.6s ease-out";
+        observer.observe(f);
+    });
+});

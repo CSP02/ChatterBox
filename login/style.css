@@ -1,155 +1,203 @@
-* {
-    margin: 0;
-    padding: 0;
+:root {
+  --bg: #030303;
+  --card: rgba(15, 15, 15, 0.8);
+  --soft: #121212;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f5f5f5;
+  --muted: #888888;
+  --accent: #22c55e;
+  --accent-glow: rgba(34, 197, 94, 0.2);
 }
 
-:root {
-    --top_layer: 1;
-    --middle_layer: 2;
-    --bottom_layer: 3;
-    --max_device_height: 100dvh;
-    --max_device_width: 100dvw;
-    --default_padding: .3rem;
-    --default_margin: .2rem;
-    --extended_padding: .5rem;
-    --extended_margin: .5rem;
-    --background_color: #363636;
-    --primary_color: #2E4F4F;
-    --border_color: #61a5a5;
-    --button_ok: #9BCF53;
-    --button_danger: rgb(241, 84, 84);
-    --button_choice: rgb(206, 206, 206);
-    --mention_background: rgba(255, 255, 0, 0.205);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box
 }
 
 body {
-    background-color: var(--background_color);
-    color: white;
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
+  font-family: 'Roboto', sans-serif;
+  /* background: radial-gradient(circle at 20% 20%, #0d0d0d, #050505); */
+  background-color: var(--bg);
+  background: url("../Resources/login_doodle.svg") no-repeat center center;
+  background-size: cover;
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
 }
 
-a {
-    color: rgb(159, 176, 255);
+/* NAV */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  animation: slideDown .6s ease;
+}
+
+nav img {
+  height: 55px;
+  transition: .3s;
+}
+
+nav img:hover {
+  transform: scale(1.05);
+}
+
+/* CENTER LOGIN */
+#login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-card {
+  width: 350px;
+  background: var(--card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 2rem;
+  text-align: center;
+  animation: fadeUp .8s ease;
+}
+
+.logo {
+  margin-bottom: 1rem;
+}
+
+.logo img {
+  height: 70px;
+}
+
+h2 {
+  margin-bottom: .5rem;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: .9rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.input-group i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: .7rem .7rem .7rem 2.5rem;
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: white;
+  outline: none;
+  transition: .3s;
+}
+
+input:focus {
+  border-color: var(--accent);
 }
 
 button {
-    background-color: transparent;
-    border: none;
-    padding: var(--default_padding);
-    margin: var(--default_margin);
+  width: 100%;
+  padding: .7rem;
+  margin-top: .5rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: black;
+  font-weight: 500;
+  cursor: pointer;
+  transition: .3s;
 }
 
 button:hover {
-    opacity: .7;
-    cursor: pointer;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.2);
+  color: black;
 }
 
-nav {
-    position: fixed;
-    display: flex;
+.error {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--danger);
+  padding: .5rem;
+  border-radius: 8px;
+  margin-bottom: .8rem;
+  display: none;
+  animation: fadeUp .4s ease;
 }
 
-#loading {
-    height: var(--max_device_height);
-    width: var(--max_device_width);
-    background-color: var(--background_color);
-    position: fixed;
-    display: grid;
-    align-content: center;
-    justify-items: center;
-}
-#error_notif{
-    width: calc(100% - 2rem);
-    position: fixed;
-    z-index: 1000;
-    background-color: #ff8989;
-    color: white;
-    padding: .5rem;
-    margin: .5rem;
-    border-radius: .6rem;
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
-    display: none;
+.footer-text {
+  margin-top: 1rem;
+  font-size: .85rem;
+  color: var(--muted);
 }
 
-#chatter_loading {
-    display: flex;
-    height: 60px;
-    align-items: center;
-    margin: var(--default_margin);
-    padding: var(--default_padding);
+.footer-text a {
+  color: var(--accent);
+  text-decoration: none;
 }
 
-#circle_1,
-#circle_2,
-#circle_3 {
-    height: 30px;
-    width: 30px;
-    background-color: rgb(255, 84, 84);
-    border-radius: 50%;
-    margin: var(--default_margin);
-    animation: loading alternate-reverse .4s infinite;
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
 }
 
-#circle_2 {
-    background-color: rgb(112, 255, 84);
-    animation-delay: .2s;
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%)
+  }
+
+  to {
+    transform: translateY(0)
+  }
 }
 
-#circle_3 {
-    background-color: rgb(84, 95, 255);
-    animation-delay: .4s;
+/* floating bg glow */
+body::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(74, 222, 128, 0.08);
+  filter: blur(100px);
+  top: 10%;
+  left: 10%;
+  animation: float 6s ease-in-out infinite;
 }
 
-#login {
-    background-color: rgb(14, 14, 14);
-    height: var(--max_device_height);
-    width: var(--max_device_width);
-    position: fixed;
-    display: grid;
-    justify-items: center;
-    align-items: center;
-    align-content: center;
-}
+@keyframes float {
 
-#login_fields_wrapper {
-    display: grid;
-    border-radius: .3rem;
-}
+  0%,
+  100% {
+    transform: translateY(0)
+  }
 
-#auth_buttons {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-#invalid_credentials{
-    color: rgb(156, 28, 28);
-}
-
-input.auth_inps{
-    width: auto;
-}
-
-#logo_and_text{
-    width: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: .5rem;
-}
-
-/** 
-* ? Loading animation
-*/
-@keyframes loading {
-    0% {
-        margin-top: .3rem;
-        height: 25px;
-    }
-
-    100% {
-        margin-top: -10%;
-    }
+  50% {
+    transform: translateY(-20px)
+  }
 }

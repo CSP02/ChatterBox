@@ -1,60 +1,93 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"
-        integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatterBox</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="shortcut icon" href="/Resources/chatterbox_logo_transparent.png" type="image/png">
 
-    <link href="https://cdn.jsdelivr.net/gh/CSP02/vanbUI@latest/vanbUI/vanbUI.css" rel="stylesheet">
-    <link rel="shortcut icon" href="/Resources/chatterbox_logo_transparent.png" type="image/png">
-
-    <title>chat</title>
 </head>
 
 <body>
-    <div id="loading">
-        <div id="chatter_loading">
-            <div id="circle_1"></div>
-            <div id="circle_2"></div>
-            <div id="circle_3"></div>
-        </div>
+
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Features</a></li>
+      <li><a href="#">Support</a></li>
+    </ul>
+    <div class="btn-group">
+      <button><i class="fa-solid fa-right-to-bracket"></i> <a href="/login">Login</a></button>
+      <button style="background: var(--accent); color: black; border: none;">
+        <i class="fa-solid fa-user-plus"></i> <a href="/signup" style="color: black;">Signup</a>
+      </button>
     </div>
-    <div id="grid_wrapper">
-        <div id="wrapper">
-            <nav id="navigation" class="attop">
-                <ul id="nav_list">
-                    <li><a href="" id="home_link" class="links">Home</a></li>
-                    <li><a href="" id="contactus_link" class="links">Contact us</a></li>
-                    <li><a href="" id="support_link" class="links">Support</a></li>
-                </ul>
-                <div id="auth_buttons">
-                    <button vanb="true" variant="white"><a href="/login">Login</a></button>
-                    <button vanb="true" variant="white"><a href="/signup">Signup</a></button>
-                </div>
-            </nav>
-            <div id="content">
-                <header>
-                    <h3>ChatterBox</h3>
-                    <p>Its in the name, you wouldn't wanna leave</p>
-                </header>
-                <section>
-                    
-                </section>
-            </div>
-        </div>
+  </nav>
+
+  <div id="content">
+
+    <header>
+      <h1>ChatterBox</h1>
+      <p>A clean, modern chatting experience.</p>
+    </header>
+
+    <div class="hero">
+      <div class="card">
+        <h2><i class="fa-solid fa-bolt"></i> Real-time Messaging</h2>
+        <p style="color:var(--muted)">Fast, reliable, and minimal latency chat system.</p>
+      </div>
+
+      <div class="chat-preview">
+        <div class="msg bot">Hey 👋</div>
+        <div class="msg user">Hi! How are you?</div>
+        <div class="msg bot">All good. Ready to chat 🚀</div>
+      </div>
     </div>
-    <script src="./script.js"></script>
+
+    <section class="features">
+      <div class="feature">
+        <i class="fa-solid fa-gauge"></i>
+        <h3>Fast</h3>
+        <p>Instant message delivery powered by sockets.</p>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-lock"></i>
+        <h3>Secure</h3>
+        <p>Authentication and privacy focused design.</p>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-palette"></i>
+        <h3>Clean UI</h3>
+        <p>Minimal dark interface for focus.</p>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-mobile"></i>
+        <h3>Responsive</h3>
+        <p>Works perfectly on all devices.</p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h2><i class="fa-solid fa-comments"></i> Why ChatterBox?</h2>
+      <p style="color:var(--muted)">
+        Built for simplicity and performance. No clutter, just conversations.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>© 2026 ChatterBox</p>
+    </div>
+
+  </div>
+
 </body>
 
 </html>

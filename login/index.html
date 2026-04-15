@@ -2,61 +2,58 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/login/style.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"
-        integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ChatterBox</title>
+  <script src="script.js" type="module"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="/Resources/chatterbox_logo_transparent.png" type="image/png">
 
-    <link href="https://cdn.jsdelivr.net/gh/CSP02/vanbUI@latest/vanbUI/vanbUI.css" rel="stylesheet">
-    <link rel="shortcut icon" href="/Resources/chatterbox_logo_transparent.png" type="image/png">
-
-    <title>Login</title>
 </head>
 
 <body>
-    <div id="loading">
-        <div id="chatter_loading">
-            <div id="circle_1"></div>
-            <div id="circle_2"></div>
-            <div id="circle_3"></div>
-        </div>
+
+  <nav>
+    <a href="/">
+      <img src="/Resources/chatterbox_logo_transparent.png" alt="logo">
+    </a>
+  </nav>
+
+  <div id="login">
+    <div class="login-card">
+
+      <div class="logo">
+        <img src="/Resources/chatterbox_logo_transparent.png" alt="logo">
+      </div>
+
+      <h2>Welcome back</h2>
+      <p class="subtitle">Login to continue chatting</p>
+
+      <div class="error" id="errorBox">Invalid credentials</div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" placeholder="Username" id="username_box">
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" placeholder="Password" id="password_box">
+      </div>
+
+      <button id="login_button">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </button>
+
+      <p class="footer-text">
+        Don't have an account? <a href="/signup">Sign up</a>
+      </p>
+
     </div>
-    <nav style="position: fixed;width: 100%;z-index: 1000;padding: .5rem;">
-        <a href="/">
-            <img src="/Resources/chatterbox_logo_transparent.png" alt="test" height="65px" width="65px">
-        </a>
-    </nav>
-    <div id="login">
-        <div id="error_notif"></div>
-        <div id="logo_and_text">
-            <img src="/Resources/chatterbox_logo_transparent.png" alt="" srcset="" style="height: 85px; width: 85px;">
-            <!-- <h2 style="margin: .3rem .5rem;color: rgb(209, 209, 209);text-align: center;">ChatterBox</h2> -->
-        </div>
-        <div id="login_fields_wrapper">
-            <div id="invalid_credentials"></div>
-            <input placeholder="Username" type="text" name="username_box" id="username_box" required
-                autocomplete="false" vanb="true" variant="input" class="auth_inps" style="padding: .7rem;">
-            <input type="password" placeholder="Password" name="password_box" id="password_box" required
-                autocomplete="false" vanb="true" variant="input" class="auth_inps" style="padding: .7rem;">
-            <div id="auth_buttons">
-                <button id="login_button" type="submit" vanb="true" variant="white"
-                    style="width: 100%;padding: .7rem;">Login</button>
-                <!-- <button id="signup_button">Sign up</button> -->
-            </div>
-            <p style="font-size: 10pt;text-align: center;padding: .3rem;margin: .3rem;">Don't have an account? <a
-                    href="/signup" style="text-decoration: none;">Sign up</a></p>
-        </div>
-        <!-- <div id="empty_fields" style="display: none; font-size: 12pt;color: rgb(255, 107, 107);text-align: center;">Username and password cannot be empty</div> -->
-    </div>
-    <script src="/login/script.js" type="module"></script>
+  </div>
+
 </body>
 
 </html>

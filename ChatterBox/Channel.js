@@ -56,7 +56,7 @@ export async function UpdateChannel(params) {
 }
 
 function AddToChannels(channels, socket) {
-    const channelsWrapper = document.getElementById("channels");
+    const channelsWrapper = document.getElementById("channels_list");
 
     channels.forEach(channel => {
         const channelName = channel.name;
@@ -73,11 +73,18 @@ function AddToChannels(channels, socket) {
         tooltip.innerText = channelName;
         tooltip.classList.add("channel_title");
 
-        iconURL === "" ? (nameButton.innerText = channelName[0].toUpperCase()) : nameButton;
         nameButton.classList.add("inactive");
         nameButton.classList.add("channel");
         nameButton.id = channel._id;
-        nameButton.append(channelIcon);
+
+        if (iconURL)
+            nameButton.append(channelIcon);
+        else{
+            const channelLetter = document.createElement("span");
+            channelLetter.textContent = channelName[0].toUpperCase();
+
+            nameButton.append(channelLetter)
+        }
 
         nameButton.addEventListener("click", click => {
             if (location.pathname.split("/").join(" ").trim().split(" ").reverse()[0] !== "@me") {
@@ -85,7 +92,7 @@ function AddToChannels(channels, socket) {
             }
             window.sessionStorage.setItem("active_channel", JSON.stringify({ _id: channel._id }));
             location = "http://localhost:3000/@me/" + channel._id;
-        })
+        });
 
         buttonHolder.append(...[nameButton, tooltip]);
         if (document.getElementById(channel._id) === null)

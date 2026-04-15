@@ -1,179 +1,173 @@
-* {
-    margin: 0;
-    padding: 0;
-    color: white;
+:root {
+  --bg: #030303;
+  --card: #0a0a0a;
+  --soft: #121212;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f5f5f5;
+  --muted: #888888;
+  --accent: #22c55e;
+  --accent-glow: rgba(34, 197, 94, 0.2);
 }
 
-:root {
-    --top_layer: 1;
-    --middle_layer: 2;
-    --bottom_layer: 3;
-    --max_device_height: 100dvh;
-    --max_device_width: 100dvw;
-    --default_padding: .3rem;
-    --default_margin: .2rem;
-    --extended_padding: .5rem;
-    --extended_margin: .5rem;
-    --background_color: rgb(14, 14, 14);
-    --primary_color: #2E4F4F;
-    --border_color: #61a5a5;
-    --button_ok: #9BCF53;
-    --button_danger: rgb(241, 84, 84);
-    --button_choice: rgb(206, 206, 206);
-    --mention_background: rgba(255, 255, 0, 0.205);
-}
+* { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background-color: var(--background_color);
-    color: white;
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    overflow-y: none;
+  font-family: 'Roboto', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-a {
-    color: rgb(159, 176, 255);
-    text-decoration: none;
-    transition: .2s ease-in-out;
-}
-
+/* Navbar Enhancement */
 nav {
-    position: fixed;
-    display: flex;
-    width: 100dvw;
-    height: 10dvh;
-    justify-content: space-between;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 10%;
+  background: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  transition: all 0.3s ease;
 }
 
-nav ul {
-    display: flex;
-    list-style-type: none;
+nav.scrolled {
+  padding: 0.5rem 10%;
+  background: rgba(0, 0, 0, 0.95);
 }
 
-nav a {
-    color: white;
-    font-size: 18pt;
+nav ul { display: flex; list-style: none; gap: 2.5rem; }
+nav a { 
+  color: var(--muted); 
+  text-decoration: none; 
+  font-weight: 500; 
+  font-size: 0.95rem;
+  transition: 0.3s; 
+}
+nav a:hover { color: var(--text); }
+
+/* Buttons */
+.btn-group { display: flex; gap: 1rem; }
+
+button {
+  background: var(--soft);
+  border: 1px solid var(--border);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
 }
 
-nav a:hover {
-    color: rgb(211, 211, 211);
-    transition: .2s ease-in-out;
-}
+button a { color: inherit; text-decoration: none; }
 
-#auth_buttons a {
-    font-size: 12pt;
-}
-
-#auth_buttons a:hover {
-    text-decoration: none;
-}
-
-.attop {
-    border-bottom: 1px solid transparent;
-    background-color: transparent;
-    transition: .2s ease;
-}
-
-.nattop {
-    border-bottom: 1px solid rgb(75, 75, 75);
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(24px);
-    transition: .2s ease;
-}
-
-#loading {
-    height: var(--max_device_height);
-    width: var(--max_device_width);
-    background-color: var(--background_color);
-    position: fixed;
-    display: grid;
-    align-content: center;
-    justify-items: center;
-}
-
-#chatter_loading {
-    display: flex;
-    height: 60px;
-    align-items: center;
-    margin: var(--default_margin);
-    padding: var(--default_padding);
-}
-
-#circle_1,
-#circle_2,
-#circle_3 {
-    height: 30px;
-    width: 30px;
-    background-color: rgb(255, 84, 84);
-    border-radius: 50%;
-    margin: var(--default_margin);
-    animation: loading alternate-reverse .4s infinite;
-}
-
-#circle_2 {
-    background-color: rgb(112, 255, 84);
-    animation-delay: .2s;
-}
-
-#circle_3 {
-    background-color: rgb(84, 95, 255);
-    animation-delay: .4s;
-}
-
-/** 
-* ? Loading animation
-*/
-@keyframes loading {
-    0% {
-        margin-top: .3rem;
-        height: 25px;
-    }
-
-    100% {
-        margin-top: -10%;
-    }
-}
-
-#grid_wrapper {
-    height: var(--max_device_height);
-    width: var(--max_device_width);
-    display: grid;
-    font-size: 18pt;
-}
-
-#wrapper {
-    display: grid;
-    height: 100dvh;
-    overflow-y: auto;
-}
-
-#wrapper * {
-    padding: var(--extended_padding);
+button:hover {
+  background: var(--text);
+  color: var(--bg);
+  transform: translateY(-2px);
 }
 
 #content {
-    padding: 1.5rem;
-    margin-top: 12dvh;
+  padding: 8rem 10% 4rem;
+  max-width: 1400px;
+  margin: auto;
 }
 
-#auth_buttons {
-    display: flex;
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 5rem;
+  animation: fadeUp 0.8s ease;
 }
 
-#auth_buttons a {
-    color: rgb(34, 34, 34);
+header h1 {
+  font-size: 4rem;
+  letter-spacing: -1px;
+  margin-bottom: 1rem;
+  background: linear-gradient(to bottom, #fff 0%, #888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-#wrapper::-webkit-scrollbar{
-    width: .5rem;
+/* Hero & Grid */
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 3rem;
+  margin-bottom: 6rem;
 }
 
-/**
-* ? Responsive
-*/
-@media screen and (max-width: 600px) {
-    #wrapper {
-        width: auto;
-    }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeUp 1s ease;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 6rem;
+}
+
+.feature {
+  background: var(--card);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  transition: 0.4s;
+}
+
+.feature:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 30px var(--accent-glow);
+  transform: translateY(-5px);
+}
+
+.feature i {
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+  color: var(--accent);
+}
+
+/* Chat Preview */
+.chat-preview {
+  background: #000;
+  border-radius: 24px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.msg {
+  padding: 0.8rem 1.2rem;
+  margin: 0.8rem 0;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  max-width: 80%;
+}
+
+.user { background: var(--accent); color: #000; margin-left: auto; font-weight: 500; }
+.bot { background: var(--soft); border: 1px solid var(--border); }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  header h1 { font-size: 2.5rem; }
+  nav ul { display: none; } /* Simplified for mobile */
 }

@@ -1,0 +1,89 @@
+<svg width="100%" height="100%" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#2d2d2d"/>
+
+  <g stroke-width="1.2" fill="none" opacity="0.28">
+
+    <!-- Chat bubbles -->
+    <rect x="100" y="120" rx="12" width="120" height="50" stroke="#4f9cff" transform="rotate(-8 100 120)"/>
+    <rect x="850" y="200" rx="10" width="90" height="40" stroke="#9BCF53" transform="rotate(14 850 200)"/>
+    <rect x="500" y="700" rx="14" width="130" height="55" stroke="#61a5a5" transform="rotate(-5 500 700)"/>
+
+    <!-- Message typing dots -->
+    <circle cx="320" cy="500" r="3" fill="#aaa"/>
+    <circle cx="330" cy="500" r="3" fill="#aaa"/>
+    <circle cx="340" cy="500" r="3" fill="#aaa"/>
+
+    <!-- Emojis -->
+    <circle cx="600" cy="150" r="22" stroke="#ffd166"/>
+    <path d="M590 160 Q600 170 610 160" stroke="#ffd166"/>
+    <circle cx="590" cy="145" r="2" fill="#ffd166"/>
+    <circle cx="610" cy="145" r="2" fill="#ffd166"/>
+
+    <!-- Fire -->
+    <path d="M200 700 Q210 660 230 690 Q250 650 270 700 Q240 740 200 700Z" stroke="#ff7a18"/>
+
+    <!-- Cloud -->
+    <path d="M900 600 Q920 580 950 600 Q980 580 1000 600 Q1000 630 950 630 Q900 630 900 600Z" stroke="#bbb"/>
+
+    <!-- Rocket -->
+    <path d="M1000 300 L1020 260 L1040 300 Z" stroke="#aaa"/>
+    <line x1="1020" y1="300" x2="1020" y2="330" stroke="#ff6b6b"/>
+
+    <!-- Gear -->
+    <circle cx="150" cy="350" r="20" stroke="#888"/>
+    <line x1="150" y1="330" x2="150" y2="310" stroke="#888"/>
+    <line x1="150" y1="370" x2="150" y2="390" stroke="#888"/>
+
+    <!-- Checkmarks -->
+    <path d="M700 100 L710 110 L730 90" stroke="#9BCF53"/>
+    <path d="M720 120 L730 130 L750 110" stroke="#9BCF53"/>
+
+    <!-- X marks -->
+    <line x1="400" y1="200" x2="420" y2="220" stroke="#ff6b6b"/>
+    <line x1="420" y1="200" x2="400" y2="220" stroke="#ff6b6b"/>
+
+    <!-- Wifi signal -->
+    <path d="M300 750 Q320 730 340 750" stroke="#aaa"/>
+    <path d="M305 760 Q320 745 335 760" stroke="#aaa"/>
+    <circle cx="320" cy="770" r="2" fill="#aaa"/>
+
+    <!-- Folder -->
+    <rect x="800" y="720" width="60" height="40" rx="5" stroke="#bbb"/>
+    <line x1="800" y1="730" x2="860" y2="730" stroke="#bbb"/>
+
+    <!-- Bell -->
+    <path d="M500 100 Q500 60 540 60 Q580 60 580 100 L580 130 L500 130 Z" stroke="#ffd166"/>
+
+    <!-- Lock -->
+    <rect x="1000" y="700" width="35" height="25" rx="6" stroke="#bbb"/>
+    <path d="M1010 700 Q1010 670 1025 670 Q1040 670 1040 700" stroke="#bbb"/>
+
+    <!-- Stars -->
+    <polygon points="200,200 205,215 220,215 208,225 213,240 200,230 187,240 192,225 180,215 195,215" stroke="#aaa"/>
+
+    <!-- Hearts -->
+    <path d="M800 500 
+             C800 480, 830 480, 830 500 
+             C830 530, 800 550, 800 570 
+             C800 550, 770 530, 770 500 
+             C770 480, 800 480, 800 500Z" stroke="#ff6b6b"/>
+
+    <!-- Lightning -->
+    <path d="M600 400 L620 360 L610 400 L640 390 L600 460 L610 420 L580 430 Z" stroke="#ffd166"/>
+
+    <!-- Arrows -->
+    <line x1="100" y1="800" x2="140" y2="820" stroke="#4f9cff"/>
+    <polygon points="140,820 135,815 135,825" fill="#4f9cff"/>
+
+    <!-- Scribbles -->
+    <path d="M700 650 Q720 630 740 650 T780 650" stroke="#666"/>
+    <path d="M200 250 Q220 230 240 250 T280 250" stroke="#555"/>
+
+    <!-- Random circles -->
+    <circle cx="50" cy="50" r="2" fill="#666"/>
+    <circle cx="1150" cy="850" r="2" fill="#666"/>
+    <circle cx="600" cy="600" r="1.5" fill="#777"/>
+    <circle cx="350" cy="400" r="1.5" fill="#777"/>
+
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+.spoiler {
+    display: block;
+    width: fit-content;
+    padding: 0rem .2rem;
+    color: rgb(93, 93, 93);
+    background-color: rgb(93, 93, 93);
+    border-radius: .2rem;
+}
+
+.spoiler::selection {
+    color: white;
+    background-color: white;
+}
+
+.spoiler.revealed {
+    color: white;
+    background-color: rgb(77, 77, 77);
+}
+
+.spoiler:hover {
+    cursor: pointer;
+}

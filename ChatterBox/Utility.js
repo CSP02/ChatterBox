@@ -72,7 +72,7 @@ export async function AddToMessages(messages, hasMore, params) {
 
     loadMoreMsg.addEventListener("click", e => {
         page++;
-        GetMessages(activeChannel, params, chunkSize, page);
+        GetMessages(activeChannel, params, chunkSize, page, false);
     })
 
     messages.forEach(message => {
@@ -116,20 +116,29 @@ export async function AddToMessages(messages, hasMore, params) {
         }
 
         usernameHolder.style = "display: flex; align-items: center;";
-        
-        pfp.src = avatarURL;
+
+        pfp.src = avatarURL ? avatarURL : "";
         pfp.height = "50px";
         pfp.width = "50px";
         pfp.classList.add("pfp");
-        
+
         const pfpButton = document.createElement("button");
         pfpButton.className = "open_profile_card";
-        if(repliedTo){
+        if (repliedTo) {
             const replyMIconInd = document.createElement("i");
-            replyMIconInd.classList.add(...["fa-solid","fa-turn-down"]);
+            replyMIconInd.classList.add(...["fa-solid", "fa-turn-down"]);
             pfpButton.appendChild(replyMIconInd);
         }
-        pfpButton.appendChild(pfp);
+
+        if (avatarURL) {
+            pfpButton.appendChild(pfp);
+        } else {
+            const pfpLetter = document.createElement("span");
+            pfpLetter.textContent = username[0].toUpperCase();
+            pfpLetter.classList.add("pfp");
+
+            pfpButton.appendChild(pfpLetter);
+        }
 
         pfpButton.addEventListener("click", e => {
             const profilePFP = document.getElementById("profile_card_pfp");
@@ -166,7 +175,16 @@ export async function AddToMessages(messages, hasMore, params) {
 
             username.style.color = repliedTo.user.color;
 
-            replyIndicator.append(...[userPfp, username, content]);
+            if (repliedTo.user.avatarURL)
+                replyIndicator.append(...[userPfp, username, content]);
+            else {
+                const pfpLetter = document.createElement("span");
+                pfpLetter.textContent = repliedTo.user.username[0].toUpperCase();
+                pfpLetter.classList.add("pfp");
+                pfpLetter.style.height = "30px";
+                pfpLetter.style.width = "30px";
+                replyIndicator.append(...[pfpLetter, username, content]);
+            }
             replyIndicator.classList.add("replied_to");
 
             replyIndicator.addEventListener("click", e => {
@@ -203,7 +221,12 @@ export async function AddToMessages(messages, hasMore, params) {
             else
                 username.style.color = repliedMess.parentElement.firstChild.firstChild.style.color;
 
-            replyIndicator.append(...[userPfp, username, content]);
+            console.log(userPfp.src)
+            if (repliedMess.parentElement.previousSibling.firstChild.src)
+                replyIndicator.append(...[userPfp, username, content]);
+            else {
+                replyIndicator.append(...[userPfp, username, content]);
+            }
             replyIndicator.classList.add("replied_to");
 
             replyIndicator.addEventListener("click", e => {
@@ -352,9 +375,6 @@ async function ResolveContent(content, contentHolder, message) {
             const messageHolder = contentHolder.parentElement.parentElement;
             messageHolder.classList.add("mentioned");
             messageHolder.style.backgroundColor = loggedUser.color + "11";
-            messageHolder.style.border = "solid " + loggedUser.color;
-            messageHolder.style.boxShadow = `${loggedUser.color} 0 0 8px`;
-            messageHolder.style.borderRadius = "1.5rem";
         }, 100);
     }
     if (content !== "")
@@ -375,15 +395,13 @@ async function ResolveContent(content, contentHolder, message) {
                     const mention = document.createTextNode(data + "\ ");
 
                     mention.innerText = data;
-
+                    mentionWrapper.style.color = loggedUser.color;
                     mentionWrapper.append(mention);
                     text2el.push(mentionWrapper);
                     setTimeout(() => {
                         const messageHolder = contentHolder.parentElement.parentElement;
                         messageHolder.classList.add("mentioned");
                         messageHolder.style.backgroundColor = loggedUser.color + "11";
-                        messageHolder.style.borderTop = "solid " + loggedUser.color;
-                        messageHolder.style.borderBottom = "solid " + loggedUser.color;
                     }, 100);
                 }
 
@@ -414,7 +432,7 @@ async function ResolveContent(content, contentHolder, message) {
 
                 wholeTextHolder.appendChild(textEl);
                 text = "";
-            } else if (text2el[index + 1].data && ((/[*?^;_|~#`]/).test(text2el[index + 1].data)) && !(/[*?^;_|~#`]/).test(text[0])) {
+            } else if (text2el[index + 1].data && ((/[*?^;_|~#!`]/).test(text2el[index + 1].data)) && !(/[*?^;_|~#!`]/).test(text[0])) {
                 const textNode = document.createTextNode(text);
                 const span = document.createElement("span");
 
@@ -461,7 +479,7 @@ async function ResolveContent(content, contentHolder, message) {
                     image.classList.add("component_image");
                     wholeTextHolder.appendChild(image);
                 }
-            } else if (node.nodeName === "A" && message.components[0].type === types.ComponentTypes.GIF && message.content.split(/\s/).length <= 1) {
+            } else if (node.nodeName === "A" && message.components.length > 0 && message.components[0].type === types.ComponentTypes.GIF && message.content.split(/\s/).length <= 1) {
                 const image = new Image;
                 image.src = message.components[0].imageURL;
                 image.onload = () => {
@@ -561,6 +579,8 @@ async function ResolveContent(content, contentHolder, message) {
 }
 
 function isMD(data) {
+    // console.log(data)
+    if (data.length === 1) return false;
     return (data.startsWith("~") && data.endsWith("~")) ||
         (data.startsWith("*") && data.endsWith("*")) ||
         (data.startsWith("^") && data.endsWith("^")) ||
@@ -680,10 +700,12 @@ export function ScrollToBottom(onload) {
 
     if (scrollHeight <= scrollTop + offsetHeight + 140) {
         messagesDiv.scrollTo(0, scrollHeight + lastChild.offsetHeight);
-        document.getElementById("new_message_popup").style.display = "none";
+        if (document.getElementById("new_message_popup"))
+            document.getElementById("new_message_popup").style.display = "none";
     } else {
         if (scrollHeight >= messagesDiv.clientHeight)
-            document.getElementById("new_message_popup").style.display = "block";
+            if (document.getElementById("new_message_popup"))
+                document.getElementById("new_message_popup").style.display = "block";
     }
 }
 

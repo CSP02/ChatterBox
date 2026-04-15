@@ -1,0 +1,154 @@
+
+@media screen and (max-width: 680px) {
+    * {
+        font-size: 10pt;
+    }
+
+    body * {
+        margin: 0;
+        padding: 0;
+    }
+
+    #open_channel_button,
+    #open_users_list {
+        display: block;
+        background-color: #161616;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 4px 0px;
+        border-radius: .6rem;
+        border: none;
+        margin: 1rem;
+        height: 50px;
+        width: 50px;
+        font-size: 14pt;
+        color: white;
+    }
+
+    #app_wrapper {
+        display: block;
+    }
+
+
+    #channels,
+    #list_users {
+        height: calc(90dvh - 3.5rem);
+        margin: .5rem;
+        z-index: 2;
+        transition: .2s ease;
+    }
+
+    #channels {
+        position: absolute;
+        z-index: 6;
+        width: 90dvw;
+        margin-left: -100%;
+        gap: .5rem;
+    }
+
+    #open_users_list {
+        display: block;
+    }
+
+    #open_buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #list_users {
+        position: absolute;
+        top: 0;
+        width: 90dvw;
+        margin-right: -100%;
+    }
+
+    #auth_buts,
+    #app_main_container {
+        margin: .5rem;
+    }
+
+    #auth_buts {
+        max-height: 10dvh;
+        display: flex;
+    }
+
+    #auth_buts_wrapper {
+        width: 100%;
+    }
+
+    #app_main_container {
+        height: calc(90dvh - 2.5rem);
+        position: relative;
+    }
+
+    #channel_name_indicator {
+        z-index: 1;
+    }
+
+    .embed {
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .message_db {
+        max-width: 90%;
+        text-wrap: wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .mentioned .message_db {
+        display: block;
+    }
+
+    #avatar {
+        height: 100px;
+        width: 100px;
+    }
+
+    #profile_container {
+        margin: .5rem;
+    }
+
+    .channel {
+        min-height: 50px;
+    }
+
+    .chat_username {
+        font-size: 14pt;
+    }
+
+    .inactive_button {
+        color: grey;
+    }
+
+    .active_button {
+        color: white;
+    }
+
+    .message_holder .pfp {
+        height: 30px;
+        width: 30px;
+        margin: .5rem 0;
+    }
+
+    #gif_results {
+        width: 85dvw;
+        height: 20dvh;
+    }
+
+    #gif_query {
+        padding: .2rem;
+    }
+
+    .gif_image {
+        max-width: 20dvw;
+        height: auto;
+    }
+
+    .component_image {
+        max-width: 100%;
+    }
+
+    #misc_holder {
+        position: absolute;
+        right: 0;
+    }
+}

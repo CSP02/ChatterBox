@@ -45,7 +45,7 @@ export async function SendMessage(message, params) {
     window.sessionStorage.setItem("repliedTo", "");
 }
 
-export async function GetMessages(activeChannel, params, chunkSize = 16, page = 1) {
+export async function GetMessages(activeChannel, params, chunkSize = 16, page = 1, scrollToBottom = true) {
     const apiURL = params.apiURL;
     const previousMessage = params.previousMessage;
 
@@ -63,7 +63,8 @@ export async function GetMessages(activeChannel, params, chunkSize = 16, page = 
     AddToMessages(messages, response.hasMore, params);
     if (document.getElementById("messages_loading"))
         document.getElementById("messages_loading").style.display = "none";
-    ScrollToBottom(false);
+    scrollToBottom ?
+        ScrollToBottom(false) : {};
 }
 
 export async function DeleteMessage(deleteMsg, params) {

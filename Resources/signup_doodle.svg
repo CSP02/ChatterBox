@@ -1,0 +1,68 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6C63FF"/>
+      <stop offset="100%" stop-color="#00D4FF"/>
+    </linearGradient>
+
+    <linearGradient id="g2">
+      <stop offset="0%" stop-color="#FF7AD9"/>
+      <stop offset="100%" stop-color="#FFB86C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Animated background wave -->
+  <path fill="url(#g1)" opacity="0.4">
+    <animate attributeName="d" dur="9s" repeatCount="indefinite"
+      values="
+      M0,210 Q100,160 200,210 T400,210 V400 H0 Z;
+      M0,190 Q100,140 200,190 T400,190 V400 H0 Z;
+      M0,210 Q100,160 200,210 T400,210 V400 H0 Z"/>
+  </path>
+
+  <!-- Secondary wave (depth effect) -->
+  <path fill="url(#g2)" opacity="0.2">
+    <animate attributeName="d" dur="11s" repeatCount="indefinite"
+      values="
+      M0,250 Q100,220 200,250 T400,250 V400 H0 Z;
+      M0,230 Q100,200 200,230 T400,230 V400 H0 Z;
+      M0,250 Q100,220 200,250 T400,250 V400 H0 Z"/>
+  </path>
+
+  <!-- Floating circles -->
+  <circle cx="60" cy="100" r="10" fill="#FF7AD9">
+    <animate attributeName="cy" values="100;70;100" dur="6s" repeatCount="indefinite"/>
+  </circle>
+
+  <circle cx="320" cy="260" r="12" fill="#00D4FF">
+    <animate attributeName="cy" values="260;230;260" dur="7s" repeatCount="indefinite"/>
+  </circle>
+
+  <circle cx="200" cy="60" r="6" fill="#ffffff" opacity="0.8">
+    <animate attributeName="cy" values="60;40;60" dur="5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Rotating triangle -->
+  <polygon points="200,300 220,340 180,340" fill="#6C63FF">
+    <animateTransform attributeName="transform" type="rotate"
+      from="0 200 320" to="360 200 320" dur="12s" repeatCount="indefinite"/>
+  </polygon>
+
+  <!-- Rotating square -->
+  <rect x="140" y="280" width="18" height="18" fill="#FFB86C">
+    <animateTransform attributeName="transform" type="rotate"
+      from="0 150 290" to="-360 150 290" dur="10s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Subtle moving lines (tech feel) -->
+  <line x1="0" y1="50" x2="400" y2="50" stroke="#ffffff" opacity="0.05">
+    <animate attributeName="y1" values="50;70;50" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="50;70;50" dur="8s" repeatCount="indefinite"/>
+  </line>
+
+  <line x1="0" y1="150" x2="400" y2="150" stroke="#ffffff" opacity="0.03">
+    <animate attributeName="y1" values="150;130;150" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="150;130;150" dur="10s" repeatCount="indefinite"/>
+  </line>
+
+</svg>

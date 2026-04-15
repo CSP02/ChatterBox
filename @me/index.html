@@ -21,6 +21,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jost:ital,wght@0,100..900;1,100..900&family=Karla:ital,wght@0,200..800;1,200..800&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"
         integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
         crossorigin="anonymous"></script>
@@ -32,6 +34,7 @@
 
     <link href="https://cdn.jsdelivr.net/gh/CSP02/vanbUI@latest/vanbUI/vanbUI.css" rel="stylesheet">
     <link rel="stylesheet" href="/@me/style.css">
+    <!-- <link rel="stylesheet" href="legacy.css"> -->
     <title>me</title>
 </head>
 
@@ -92,11 +95,28 @@
             <div id="create_chnl_button">
                 <button id="create_channel"><i class="fa-solid fa-plus"></i></button>
             </div>
+            <hr>
+            <div id="channels_list"></div>
+        </div>
+        <div id="auth_buts">
+            <button id="profile_pfp" class="pfp"></button>
+            <div id="auth_buts_wrapper">
+                <div id="open_buttons">
+                    <button id="open_channel_button" title="open channels" class="inactive_button"><i
+                            class="fas fa-angle-right"></i></button>
+                    <button id="open_users_list" class="inactive_button" title="open users list"><i
+                            class="fa-solid fa-users"></i></button>
+                </div>
+                <button id="logout">logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+            </div>
         </div>
         <div id="app_main_container" style="grid-template-rows: .2fr 1fr 1fr .01fr;">
             <div id="channel_name_indicator">
                 <div id="channel_details"></div>
-                <button id="channel_settings"><i class="fa-solid fa-gear"></i></button>
+                <div id="more_options">
+                    <button id="open_users"><i class="fa-solid fa-users"></i></button>
+                    <button id="channel_settings"><i class="fa-solid fa-gear"></i></button>
+                </div>
             </div>
             <div id="messages">
                 <div id="messages_loading">
@@ -115,7 +135,8 @@
                     <div type="text" id="message_box" contenteditable></div>
                     <div id="misc_holder">
                         <button id="file_button"><i class="fa-solid fa-paperclip"></i>
-                        <input type="file" name="file_upload" id="file_upload" style="display: none;" accept=".txt,.png,.jpg,.jpeg,.webp,.gif">
+                            <input type="file" name="file_upload" id="file_upload" style="display: none;"
+                                accept=".txt,.png,.jpg,.jpeg,.webp,.gif">
                         </button>
                         <button id="gif_button"><i class="fa-solid fa-photo-film"></i></button>
                         <button id="emojis_button"><i class="fa-solid fa-face-smile"></i></button>
@@ -135,32 +156,22 @@
                 </div>
             </div>
         </div>
-        <div id="list_users" class="closed">
-            <div id="users_list">
-                <h3>Online:</h3>
-                <div id="online_u">
-                    Nothing here!
-                </div>
-                <h3>Offline:</h3>
-                <div id="offline_u">
-                    Nothing here!
+        <!-- <div id="user_panel"> -->
+            <div id="list_users" class="opened">
+                <div id="users_list">
+                    <h3>Online:</h3>
+                    <div id="online_u">
+                        Nothing here!
+                    </div>
+                    <h3>Offline:</h3>
+                    <div id="offline_u">
+                        Nothing here!
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="auth_buts">
-            <div id="auth_buts_wrapper">
-                <button id="profile_pfp" class="pfp"></button>
-                <div id="open_buttons">
-                    <button id="open_channel_button" title="open channels" class="inactive_button"><i
-                            class="fas fa-angle-right"></i></button>
-                    <button id="open_users_list" class="inactive_button" title="open users list"><i
-                            class="fa-solid fa-users"></i></button>
-                </div>
-                <button id="logout">logout <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
-            </div>
-        </div>
+        <!-- </div> -->
     </div>
-    <div id="profile_page" style="display: none;" class="settings_window">
+    <div id="profile_page" style="scale: 0;" class="settings_window">
         <div class="settings_container">
             <div class="settings_sidebar">
                 <div class="user_settings set_grp">
@@ -208,7 +219,7 @@
             </div>
         </div>
     </div>
-    <div id="channel_settings_win" style="display: none;" class="settings_window">
+    <div id="channel_settings_win" class="settings_window">
         <div class="settings_container">
             <div class="settings_sidebar">
                 <div class="set_grp">

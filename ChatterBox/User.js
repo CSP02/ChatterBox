@@ -15,7 +15,6 @@ export async function SearchUser(username, params) {
 
     resultHolder.innerHTML = "";
     const avatar = new Image();
-    avatar.src = avatarURL;
     avatar.classList.add("pfp");
 
     const usernameHolder = document.createElement("span");

@@ -3,6 +3,7 @@ const errorNotif = document.getElementById("error_notif");
 export default function HandleErrors(errorCode, error = null) {
     document.getElementById("loading").style.display = "none";
     errorNotif.style.display = "block";
+    errorNotif.style.marginTop = 0;
     if (errorCode)
         switch (errorCode) {
             case 400:
