@@ -195,7 +195,7 @@ export function HandleSocketEvents(socket, params) {
     socket.on("GET_USERS", channel => {
         const headers = new Headers
         headers.append("authorization", `Bearer ${window.sessionStorage.getItem("token")}`)
-        fetch(`http://localhost:3001/api/get_users?cid=${channel._id}`, {
+        fetch(`https://chatter-box-api-pi.vercel.app/api/get_users?cid=${channel._id}`, {
             mode: "cors",
             headers: headers
         }).then(async response => {

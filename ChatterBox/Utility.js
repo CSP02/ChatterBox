@@ -8,8 +8,8 @@ const messagesHolder = document.getElementById("messages");
 let loggedUser = null;
 let token = null;
 let refreshToken = null;
-const apiURL = "http://localhost:3001/api";
-let activeChannel = { name: "http://localhost:3000/@me" };
+const apiURL = "https://chatter-box-api-pi.vercel.app/api";
+let activeChannel = { name: "https://chatter-box-indol.vercel.app/@me" };
 const types = new Types();
 
 export function SetDefaults(defaults, socketInit) {
@@ -712,7 +712,7 @@ export function ScrollToBottom(onload) {
 export function LogoutUser() {
     const headers = new Headers;
     headers.append("Authorization", `Bearer ${token}`);
-    fetch("http://localhost:3001/api/logout", {
+    fetch("https://chatter-box-api-pi.vercel.app/api/logout", {
         mode: "cors",
         headers: headers
     }).then(async response => {
@@ -784,7 +784,7 @@ async function requestNewToken() {
     let refreshToken = window.sessionStorage.getItem("refresh token");
     const headers = new Headers();
     headers.append("Authorization", `Bearer ${refreshToken}`);
-    const response = await fetch(`http://localhost:3001/api/request_new_token`, {
+    const response = await fetch(`https://chatter-box-api-pi.vercel.app/api/request_new_token`, {
         mode: "cors",
         headers: headers
     })

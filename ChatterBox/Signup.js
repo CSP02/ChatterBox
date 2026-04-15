@@ -36,7 +36,7 @@ async function SignUpUser() {
     formData.append("color", color.toString());
     formData.append("avatarURL", newPfp.files[0]);
 
-    await fetch("http://localhost:3001/api/signup", {
+    await fetch("https://chatter-box-api-pi.vercel.app/api/signup", {
         method: "POST",
         mode: "cors",
         body: formData

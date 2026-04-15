@@ -6,7 +6,7 @@ let loggedUser = null;
 
 export async function LoginUser(user) {
     await fetch(
-        "http://localhost:3001/api/login",
+        "chatter-box-api-pi.vercel.app/api/login",
         {
             method: "POST",
             mode: "cors",
