@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "https://chatter-box-api-pi.vercel.app/api/(.*)",
+      "source": "https://chatter-box-api-pi.vercel.app/api/",
       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "https://chatter-box-indol.vercel.app" },
