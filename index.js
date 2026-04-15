@@ -3,6 +3,7 @@
  */
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const path = require('path');
 require("dotenv").config();
 
 /**
@@ -36,9 +37,7 @@ app.post("/ValidatePassword", async (req, res) => {
     return res.send({ isValid: cond1 && cond2, charLen8: cond1, mixOfDiff: cond2 }); // return true if both the conditions are true
 })
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Home', 'index.html'));
-});
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get(`/@me/:channel_id`, async (req, res) => {
     res.sendFile(__dirname + "/@me/");
