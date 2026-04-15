@@ -43,6 +43,10 @@ app.use(express.static(path.join(__dirname, 'signup')));
 app.use(express.static(path.join(__dirname, '@me')));
 app.use(express.static(path.join(__dirname, 'Resources')));
 
+app.get("/", async (req, res)  => {
+    res.sendFile(path.join(__dirname, 'Home'));
+})
+
 app.get(`/@me/:channel_id`, async (req, res) => {
     res.sendFile(__dirname + "/@me/");
 })

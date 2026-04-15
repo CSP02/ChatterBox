@@ -1,5 +1,5 @@
 import Types from "./types.js"
-import { removeEvent } from "../@me/script.js";
+import { removeEvent } from "../@me/script.mjs";
 import { GetMessages, DeleteMessage, EditMessage } from "./Message.js";
 import HandleErrors from "../handlers/errorHandler.js";
 
