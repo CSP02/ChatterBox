@@ -37,7 +37,7 @@ app.post("/ValidatePassword", async (req, res) => {
 })
 
 app.get("/", async (req, res)  => {
-    res.sendFile(__dirname + "/Home/");
+    res.location(__dirname + "/Home/");
 });
 
 app.get(`/@me/:channel_id`, async (req, res) => {
